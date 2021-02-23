@@ -311,7 +311,7 @@ void APhyloModel::init() {
             std::vector< double > blen(iter.second.offspring.size(), 1.0);
             for (auto& s : states) {
 
-                iter.second.arrays.push_back(iter.second.array);
+                iter.second.arrays.push_back(PhyloArray(iter.second.array, true));
                 iter.second.arrays.at(i).set_data(
                     new NodeData(blen, s),
                     true
@@ -472,7 +472,7 @@ double APhyloModel::likelihood(const std::vector< double > & par) {
 
     // Scaling root
     for (auto& p : par_root) {
-        p = std::exp(p)/(exp(p) + 1);
+        p = std::exp(p)/(std::exp(p) + 1);
     }
 
     std::vector< unsigned int > tmpstate(nfuns);
@@ -513,9 +513,14 @@ double APhyloModel::likelihood(const std::vector< double > & par) {
                 // Retrieving the sets of arrays
                 const std::vector< PhyloArray > * psets = model_full.get_pset(
                     nodes[i].idx_full[s]
-                    );
+                );
+
+                const std::vector< std::vector<double> > * psets_stats = model_full.get_stats(
+                    nodes[i].idx_full[s]
+                );
 
                 // Summation over all possible values of X
+                unsigned int nstate = 0u;
                 for (auto x = psets->begin(); x != psets->end(); ++x) {
 
                     // Extracting the possible values of each offspring
@@ -535,8 +540,9 @@ double APhyloModel::likelihood(const std::vector< double > & par) {
                     // Multiplying by P(x|x_n)
                     off_mult *= model_full.likelihood(
                         par0,
+                        psets_stats->at(nstate++),
                         nodes[i].idx_full[s]
-                        );
+                    );
 
                     // Adding to the total probabilities
                     totprob += off_mult;
