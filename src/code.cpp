@@ -45,6 +45,33 @@ double likelihood(SEXP p, const std::vector< double > & par) {
 
 }
 
+//' @rdname aphylo2-class
+//' @export
+// [[Rcpp::export]]
+NumericMatrix get_probabilities(SEXP p) {
+  Rcpp::XPtr< APhyloModel >ptr(p);
+  unsigned int N = ptr->nodes.size();
+  unsigned int M = ptr->states.size();
+  NumericMatrix m(N, M);
+  std::fill(m.begin(), m.end(), 0.0);
+
+  for (auto& i : ptr->sequence) {
+    unsigned int k = 0u;
+    for (auto& p : ptr->nodes.at(i).probabilities)
+      m(ptr->nodes.at(i).id, k++) = p;
+  }
+
+  return m;
+}
+
+//' @rdname aphylo2-class
+//' @export
+// [[Rcpp::export]]
+std::vector< unsigned int > get_sequence(SEXP p) {
+  Rcpp::XPtr< APhyloModel >ptr(p);
+  return ptr->sequence;
+}
+
 /******************************************************************************/
 
 //' @title Evolutionary terms

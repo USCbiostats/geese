@@ -23,6 +23,18 @@ likelihood <- function(p, par) {
     .Call(`_aphylo2_likelihood`, p, par)
 }
 
+#' @rdname aphylo2-class
+#' @export
+get_probabilities <- function(p) {
+    .Call(`_aphylo2_get_probabilities`, p)
+}
+
+#' @rdname aphylo2-class
+#' @export
+get_sequence <- function(p) {
+    .Call(`_aphylo2_get_sequence`, p)
+}
+
 #' @title Evolutionary terms
 #' @export
 #' @name aphylo2-terms

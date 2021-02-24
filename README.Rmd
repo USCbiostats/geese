@@ -77,10 +77,10 @@ params <- c(
 )
 
 # Testing the likelihood
-likelihood(amodel, params*0)
+likelihood(amodel, params)
 
 # Finding MLE
-ans <- optim(params*0, function(f) {
+ans <- optim(params*1, function(f) {
   log(likelihood(amodel, f))
 }, control = list(fnscale=-1, maxit = 2e3),
 hessian = TRUE)

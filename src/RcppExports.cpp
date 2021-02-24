@@ -41,6 +41,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_probabilities
+NumericMatrix get_probabilities(SEXP p);
+RcppExport SEXP _aphylo2_get_probabilities(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_probabilities(p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// get_sequence
+std::vector< unsigned int > get_sequence(SEXP p);
+RcppExport SEXP _aphylo2_get_sequence(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_sequence(p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // term_gains
 int term_gains(SEXP p, std::vector<unsigned int>& funs);
 RcppExport SEXP _aphylo2_term_gains(SEXP pSEXP, SEXP funsSEXP) {
@@ -109,6 +131,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_new_model", (DL_FUNC) &_aphylo2_new_model, 3},
     {"_aphylo2_init", (DL_FUNC) &_aphylo2_init, 1},
     {"_aphylo2_likelihood", (DL_FUNC) &_aphylo2_likelihood, 2},
+    {"_aphylo2_get_probabilities", (DL_FUNC) &_aphylo2_get_probabilities, 1},
+    {"_aphylo2_get_sequence", (DL_FUNC) &_aphylo2_get_sequence, 1},
     {"_aphylo2_term_gains", (DL_FUNC) &_aphylo2_term_gains, 2},
     {"_aphylo2_term_loss", (DL_FUNC) &_aphylo2_term_loss, 2},
     {"_aphylo2_term_cogain", (DL_FUNC) &_aphylo2_term_cogain, 3},

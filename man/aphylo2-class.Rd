@@ -5,6 +5,8 @@
 \alias{new_model}
 \alias{init}
 \alias{likelihood}
+\alias{get_probabilities}
+\alias{get_sequence}
 \title{Aphylo2 model}
 \usage{
 new_model(annotations, geneid, parent)
@@ -12,6 +14,10 @@ new_model(annotations, geneid, parent)
 init(p)
 
 likelihood(p, par)
+
+get_probabilities(p)
+
+get_sequence(p)
 }
 \arguments{
 \item{annotations}{Vector of integer vectors with annotations.}

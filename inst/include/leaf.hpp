@@ -142,7 +142,7 @@ public:
         std::vector< std::vector<unsigned int> > & annotations,
         std::vector< unsigned int > & geneid,
         std::vector< unsigned int> & parent
-        );
+    );
 
     ~APhyloModel() {};
 
@@ -153,6 +153,8 @@ public:
     void print();
     void calc_sequence(Node * n = nullptr);
     double likelihood(const std::vector< double > & par);
+
+    std::vector< double > get_probabilities() const;
 };
 
 APhyloModel::APhyloModel() : model_const(), model_full(), nodes() {
@@ -200,11 +202,11 @@ APhyloModel::APhyloModel(
             auto key_off = nodes.insert({
                 geneid.at(i),
                 Node({geneid.at(i), funs})
-                });
+            });
 
             // Adding the offspring to the parent
             key_par.first->second.offspring.push_back(
-                &key_off.first->second
+                    &key_off.first->second
             );
 
             // Adding the parent to the offspring
@@ -217,11 +219,11 @@ APhyloModel::APhyloModel(
             auto key_off = nodes.insert({
                 geneid.at(i),
                 Node({geneid.at(i), funs})
-                });
+            });
 
             // Adding the offspring to the parent
             iter->second.offspring.push_back(
-                &key_off.first->second
+                    &key_off.first->second
             );
 
             // Adding the parent to the offspring
@@ -290,13 +292,13 @@ void APhyloModel::init() {
                         if (o->annotations.at(k) != 0) {
                             iter.second.array.insert_cell(
                                 k, j, o->annotations.at(k), false, false
-                                );
+                            );
                         }
                     } else {
                         // Otherwise, we fill it with a 9.
                         iter.second.array.insert_cell(
                             k, j, 9u, false, false
-                            );
+                        );
 
                     }
 
@@ -313,17 +315,17 @@ void APhyloModel::init() {
 
                 iter.second.arrays.push_back(PhyloArray(iter.second.array, true));
                 iter.second.arrays.at(i).set_data(
-                    new NodeData(blen, s),
-                    true
+                        new NodeData(blen, s),
+                        true
                 );
 
                 // Once the array is ready, we can add it to the model
                 iter.second.idx_cons.push_back(
                     model_const.add_array(iter.second.arrays.at(i))
-                    );
+                );
                 iter.second.idx_full.push_back(
                     model_full.add_array(iter.second.arrays.at(i++))
-                    );
+                );
 
             }
         }
@@ -367,8 +369,8 @@ void APhyloModel::tip_prob(const std::vector< double > & par) {
 
                 tmp += ((
                     model_const.get_norm_const(par, iter.second.idx_cons.at(j)) /
-                    model_full.get_norm_const(par, iter.second.idx_full.at(j))
-                    ) / iter.second.idx_full.size());
+                        model_full.get_norm_const(par, iter.second.idx_full.at(j))
+                ) / iter.second.idx_full.size());
             }
             iter.second.array.print();
             model_full.print_stats(i);
@@ -578,4 +580,21 @@ double APhyloModel::likelihood(const std::vector< double > & par) {
 
 }
 
+std::vector< double > APhyloModel::get_probabilities() const {
+
+    std::vector< double > res;
+    res.reserve(
+        this->states.size() * nodes.size()
+    );
+
+    for (auto& i : sequence) {
+        for (auto& p : this->nodes.at(i).probabilities)
+            res.push_back(p);
+    }
+
+    return res;
+
+};
+
 #endif
+
