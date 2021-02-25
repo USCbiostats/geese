@@ -4,17 +4,7 @@
 #ifndef BARRY_BARRAY_MEAT_HPP
 #define BARRY_BARRAY_MEAT_HPP 
 
-template<typename Cell_Type,typename Data_Type>
-inline void BArrayCell<Cell_Type,Data_Type>::operator=(bool add) {
-  
-  if (add) {
-    Array->insert_cell(row, col, Array->Cell_default, true, true);
-  } else {
-    Array->rm_cell(row, col, true, true);
-  }
-  
-  return;
-}
+
 
 template<typename Cell_Type, typename Data_Type>
 Cell<Cell_Type> BArray<Cell_Type,Data_Type>::Cell_default = Cell<Cell_Type>(); 
@@ -1000,7 +990,7 @@ inline void BArray< Cell_Type, Data_Type >::print() const {
       if (this->is_empty(i, j, false)) {
         printf("    . ");
       } else {
-        printf(" %.2f ", (double) this->get_cell(i, j));
+        printf(" %.2f ", static_cast<double>(this->get_cell(i, j)));
       }
     }
     printf("\n");

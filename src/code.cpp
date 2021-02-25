@@ -1,6 +1,10 @@
-#include <Rcpp.h>
+#include <random>
+#include <iostream>
+#include <string>
+#include <algorithm>
 #include "barry/barry.hpp"
-#include "leaf.hpp"
+#include "aphylomodel.hpp"
+#include <Rcpp.h>
 using namespace Rcpp;
 
 //' @title Aphylo2 model
@@ -72,6 +76,17 @@ std::vector< unsigned int > get_sequence(SEXP p) {
   return ptr->sequence;
 }
 
+//' @rdname aphylo2-class
+//' @export
+// [[Rcpp::export]]
+std::vector< std::vector< unsigned int > > sim_aphylo2(
+    SEXP p, const std::vector<double> & par) {
+
+  Rcpp::XPtr< APhyloModel > ptr(p);
+  return ptr->simulate(par);
+
+}
+
 /******************************************************************************/
 
 //' @title Evolutionary terms
@@ -81,7 +96,7 @@ std::vector< unsigned int > get_sequence(SEXP p) {
 int term_gains(SEXP p, std::vector<unsigned int> & funs) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
-  counter_gains(&ptr->counters, funs);
+  phylocounters::counter_gains(&ptr->counters, funs);
   return 0;
 
 }
@@ -92,7 +107,7 @@ int term_gains(SEXP p, std::vector<unsigned int> & funs) {
 int term_loss(SEXP p, std::vector<unsigned int> & funs) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
-  counter_loss(&ptr->counters, funs);
+  phylocounters::counter_loss(&ptr->counters, funs);
   return 0;
 
 }
@@ -103,7 +118,7 @@ int term_loss(SEXP p, std::vector<unsigned int> & funs) {
 int term_cogain(SEXP p, unsigned int a, unsigned int b) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
-  counter_cogain(&ptr->counters, a, b);
+  phylocounters::counter_cogain(&ptr->counters, a, b);
   return 0;
 
 }

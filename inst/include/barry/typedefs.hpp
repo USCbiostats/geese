@@ -1,5 +1,5 @@
-#ifndef BARRAY_TYPEDEFS_HPP
-#define BARRAY_TYPEDEFS_HPP 
+#ifndef BARRY_TYPEDEFS_HPP
+#define BARRY_TYPEDEFS_HPP 1
 
 #include <vector>
 #include <unordered_map>
@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <cmath>
 #include <map>
+// #include <random>
 
 #ifdef BARRAY_USE_UNORDERED_MAP
 template<typename Ta,typename Tb>
@@ -44,7 +45,7 @@ namespace EXISTS {
   const int NONE = 0;
   const int ONE  = 1;
   const int TWO  = 1;
-  
+
   const int UKNOWN  = -1;
   const int AS_ZERO = 0;
   const int AS_ONE  = 1;
@@ -64,7 +65,7 @@ using Col_type = Map< uint, Cell<Cell_Type>* >;
 
 /**
  * @brief A wrapper class to store `source`, `target`, `val` from a `BArray` object.
- * 
+ *
  * @tparam Cell_Type Any type
  */
 template<typename Cell_Type>
@@ -73,7 +74,7 @@ public:
   std::vector< uint > source;
   std::vector< uint > target;
   std::vector< Cell_Type > val;
-  
+
   Entries() : source(0u), target(0u), val(0u) {};
   Entries(uint n) {
     source.reserve(n);
@@ -81,41 +82,41 @@ public:
     val.reserve(n);
     return;
   };
-  
+
   ~Entries() {};
-  
+
   void resize(uint n) {
     source.resize(n);
     target.resize(n);
     val.resize(n);
     return;
   }
-  
+
 };
 
 // Relevant for anything using vecHasher function ------------------------------
 template <typename T>
 struct vecHasher {
   std::size_t operator()(std::vector< T > const&  dat) const noexcept {
-    
+
     std::hash< T > hasher;
     std::size_t hash = hasher(dat[0u]);
-    
+
     // ^ makes bitwise XOR
     // 0x9e3779b9 is a 32 bit constant (comes from the golden ratio)
     // << is a shift operator, something like lhs * 2^(rhs)
     if (dat.size() > 1u)
       for (unsigned int i = 1u; i < dat.size(); ++i)
         hash ^= hasher(dat[i]) + 0x9e3779b9 + (hash<<6) + (hash>>2);
-    
+
     return hash;
-    
+
   }
 };
 
-template<typename Ta = double, typename Tb = uint> 
+template<typename Ta = double, typename Tb = uint>
 using MapVec_type = std::unordered_map< std::vector< Ta >, Tb, vecHasher<Ta>>;
- 
+
 
 // Mostly relevant in the case of the stats count functions -------------------
 template <typename Cell_Type, typename Data_Type> class BArray;
@@ -152,16 +153,16 @@ inline bool vec_equal(
     const std::vector< T > & a,
     const std::vector< T > & b
   ) {
-  
+
   if (a.size() != b.size())
     throw std::length_error("-a- and -b- should have the same length.");
-  
+
   unsigned int i = 0;
   while (a[i] == b[i]) {
     if (++i == a.size())
       return true;
   }
-  
+
   return false;
 }
 
@@ -171,16 +172,16 @@ inline bool vec_equal_approx(
     const std::vector< T > & b,
     double eps = 1e-10
   ) {
-  
+
   if (a.size() != b.size())
     throw std::length_error("-a- and -b- should have the same length.");
-  
+
   unsigned int i = 0;
-  while (((double) std::abs(a[i] - b[i])) < eps) {
+  while (static_cast<double>(std::abs(a[i] - b[i])) < eps) {
     if (++i == a.size())
       return true;
   }
-  
+
   return false;
 }
 ///@}
@@ -190,14 +191,14 @@ inline T vec_inner_prod(
   const std::vector< T > & a,
   const std::vector< T > & b
   ) {
-  
+
   if (a.size() != b.size())
     throw std::length_error("-a- and -b- should have the same length.");
-  
+
   double res = 0.0;
   for (unsigned int i = 0u; i < a.size(); ++i)
     res += (a[i] * b[i]);
-  
+
   return res;
 }
 

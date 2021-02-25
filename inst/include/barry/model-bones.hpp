@@ -58,7 +58,7 @@ inline double likelihood_(
  */
 template<typename Array_Type>
 inline std::vector< double > keygen_default(const Array_Type & Array_) {
-  return {(double) Array_.N, (double) Array_.M};
+  return {static_cast<double>(Array_.N), static_cast<double>(Array_.M)};
 }
 
 
@@ -93,10 +93,31 @@ class Model {
 
 public:
   
-  /**@name Random number generation*/
+  /**
+   * @name Random number generation
+   * @brief Random number generation
+   */
   ///@{
-  
+  std::mt19937 * rengine = nullptr;
+  bool rengine_deleted   = true;
+  void set_rengine(std::mt19937 * rengine_, bool delete_ = false) {
+
+    rengine = rengine_;
+    rengine_deleted = !delete_;
+    
+  };
+  void set_seed(unsigned int s) {
+
+    if (rengine == nullptr) {
+      rengine = new std::mt19937;
+      rengine_deleted = false;
+    }
+
+    rengine->seed(s);
+
+  };
   ///@}
+  
   
   /**@brief */
   std::vector< Counts_type >         stats;
@@ -133,10 +154,11 @@ public:
    */
   MapVec_type< double, uint > keys2support;
   
-  /**@name Functions to compute statistics
+  /**
+   * @name Functions to compute statistics
    * @details Arguments are recycled to save memory and computation.
    */
-  ///@[{
+  ///@{
   Counters<Array_Type,Data_Counter_Type>               counters;
   Rules<Array_Type,Data_Rule_Type>                     rules;
   Support<Array_Type,Data_Counter_Type,Data_Rule_Type> support_fun;
@@ -158,7 +180,10 @@ public:
   Model<Array_Type, Data_Counter_Type, Data_Rule_Type> & operator=(
     const Model<Array_Type, Data_Counter_Type, Data_Rule_Type> & Model_
     );
-  ~Model() {};
+  ~Model() {
+    if (!rengine_deleted)
+      delete rengine;
+  };
   
   void store_psets();
   void set_keygen(std::function<std::vector<double>(const Array_Type &)> keygen_);
@@ -247,6 +272,15 @@ public:
   );
   ///@}
 
+  /**
+   * @name Extract elements by index 
+   * @param i Index relative to the array in the model.
+   * @param params A new vector of model parameters to compute the normalizing
+   * constant.
+   * @param as_log When `true` returns the logged version of the normalizing
+   * constant.
+   */
+  ///@{
   double get_norm_const(
     const std::vector< double > & params,
     const uint & i,
@@ -260,13 +294,16 @@ public:
   const std::vector< std::vector< double > > * get_stats(
     const uint & i
     );
+  ///@}
   
   void print_stats(uint i) const;
   
   Array_Type sample(const Array_Type & Array_, const std::vector<double> & params = {});
-  Array_Type sample(const uint & i, const std::vector<double> & params = {});
+  Array_Type sample(const uint & i, const std::vector<double> & params);
   
   /**
+   * @name Size of the model
+   * 
    * @brief Number of different supports included in the model
    * 
    * This will return the size of `stats`.

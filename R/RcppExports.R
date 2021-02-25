@@ -35,6 +35,12 @@ get_sequence <- function(p) {
     .Call(`_aphylo2_get_sequence`, p)
 }
 
+#' @rdname aphylo2-class
+#' @export
+sim_aphylo2 <- function(p, par) {
+    .Call(`_aphylo2_sim_aphylo2`, p, par)
+}
+
 #' @title Evolutionary terms
 #' @export
 #' @name aphylo2-terms

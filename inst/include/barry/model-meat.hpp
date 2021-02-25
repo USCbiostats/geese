@@ -460,7 +460,10 @@ inline double Model<Array_Type,Data_Counter_Type,Data_Rule_Type>::get_norm_const
     
   }
   
-  return normalizing_constants[arrays2support[i]];
+  return as_log ? 
+    std::log(normalizing_constants[arrays2support[i]]) :
+    normalizing_constants[arrays2support[i]]
+    ;
   
 }
 
@@ -519,64 +522,40 @@ inline uint Model<Array_Type,Data_Counter_Type,Data_Rule_Type>::size_unique() co
   return this->stats.size();
 } 
   
-// template<typename Array_Type, typename Data_Counter_Type, typename Data_Rule_Type>
-// inline Array_Type Model<Array_Type,Data_Counter_Type,Data_Rule_Type>::sample(
-//   const Array_Type & Array_,
-//   const std::vector<double> & params
-// ) {
-//   
-//   // Can we find the array in the data
-//   auto location = keys2support.find(keygen(Array_));
-//   
-//   if (location == keys2support.end())
-//     throw std::range_error("The requested array has not been analyzed.");
-//   
-//   unsigned int idx = arrays2support[location->second];
-//   
-//   // Checking normalizing constant
-//   bool new_params = !vec_equal_approx(params, params_last[idx]);
-//   if (!first_calc_done || new_params ) {
-//     
-//     first_calc_done = true;
-//     normalizing_constants[idx] = update_normalizing_constant(
-//       params, stats[idx]
-//     );
-//     
-//     params_last[idx] = params;
-//     
-//   }
-// 
-//   /**If this data hasn't been computed yet, then we need to compute the
-//    * likelihood for each array in the support in order to be able to
-//    * sample.*/
-//   if (pset_probs[idx].size() == 0) {
-//     
-//     pset_probs[idx].resize(pset_arrays[idx].size());    
-//     
-//     for (unsigned int i = 0u; i != pset_stats[idx].size(); ++i) {
-//       pset_probs[idx][i] = likelihood_(
-//         pset_stats[idx][i], stats[idx], normalizing_constants[idx], false
-//       );
-//     }
-// 
-//   } else if (new_params) { // We only need to re-compute likelihoods if not done before
-//     
-//     for (unsigned int i = 0u; i != pset_stats[idx].size(); ++i) {
-//       pset_probs[idx][i] = likelihood_(
-//         pset_stats[idx][i], stats[idx], normalizing_constants[idx], false
-//       );
-//     }
-//     
-//   }
-//   
-//   
-//   // Drawing a random sample
-//   double cumprob = 0.0;
-//   double p       = runif();
-//   
-//   
-//   
-// }
+template<typename Array_Type, typename Data_Counter_Type, typename Data_Rule_Type>
+inline Array_Type Model<Array_Type,Data_Counter_Type,Data_Rule_Type>::sample(
+    const unsigned int & i,
+    const std::vector<double> & params
+) {
 
+    // Are we recording this?
+    if (!this->with_pset)
+        throw std::logic_error("Sampling is only available when store_pset() is active.");
+
+    if (i >= arrays2support.size())
+        throw std::range_error("The requested support is out of range");
+
+    // Getting the index
+    unsigned int a = arrays2support[i];
+    // if (pset_probs.at(a).size() == 0u) {
+    //   pset_probs.at(a).resize(pset_arrays.at(a).size(), 0u);
+    // }
+    
+    // Generating a random
+    std::uniform_real_distribution<> urand(0, 1);
+    double r = urand(*rengine);
+    double cumprob = 0.0;
+
+    // Updating until reach above
+    unsigned int j = 0u;
+    while (cumprob < r) {
+
+        cumprob += this->likelihood(params, this->pset_stats[a][j], i, false);
+        ++j;
+    }
+
+    return this->pset_arrays[a][j-1u];   
+
+}
 
 #endif

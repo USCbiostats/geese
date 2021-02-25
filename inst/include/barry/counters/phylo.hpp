@@ -7,7 +7,8 @@
 #ifndef BARRAY_PHYLO_H
 #define BARRAY_PHYLO_H 1
 
-/**@brief Data definition for the `PhyloArray` class.
+/**
+ * @brief Data definition for the `PhyloArray` class.
  * 
  * This holds basic information about a given node.
  * 
@@ -161,9 +162,9 @@ inline void counter_overall_loss(PhyloCounters * counters, bool duplication = tr
   PHYLO_COUNTER_LAMBDA(tmp_init) {
 
     if ((*data)[0u] == 1u & Array->data->duplication)
-      return (double) (Array->N * Array->M);
+      return static_cast<double>((Array->N * Array->M));
     else if ((*data)[0u] == 0u & !Array->data->duplication)
-      return (double) (Array->N * Array->M);
+      return static_cast<double>((Array->N * Array->M));
     else 
       return 0.0;
 
