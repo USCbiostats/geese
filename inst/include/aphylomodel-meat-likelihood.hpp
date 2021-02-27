@@ -1,7 +1,7 @@
+#include "aphylomodel-bones.hpp"
+
 #ifndef APHYLOMODEL_MEAT_LIKELIHOOD_HPP
 #define APHYLOMODEL_MEAT_LIKELIHOOD_HPP
-
-#include "aphylomodel-bones.hpp"
 
 double APhyloModel::likelihood(const std::vector< double > & par) {
 

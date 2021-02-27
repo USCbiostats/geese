@@ -46,22 +46,23 @@ annotations <- list(
   c(0, 9, 1),
   c(1, 0, 9),
   c(9, 9, 9),
+  c(9, 9, 9),
   c(9, 9, 9)
 )
 
-geneid   <- c(0, 1, 2, 3, 4, 5)
-parentid <- c(4, 4, 5, 5, 6, 6)
+geneid   <- c(0, 1, 2, 3, 4, 5, 6)
+parentid <- c(4, 4, 5, 5, 6, 6, -1)
+duplication <- rep(TRUE, 7)
 
 # Building the model
-amodel <- new_model(annotations, geneid, parentid)
+amodel <- new_model(annotations, geneid, parentid, duplication)
 
 invisible({
   
-  term_gains(amodel, 0:2)
-  term_loss(amodel, 0:2)
   term_cogain(amodel, 0, 1)
   term_cogain(amodel, 0, 2)
   term_cogain(amodel, 1, 2)
+  term_maxfuns(amodel, 2, 2)
   
   init(amodel)
   
@@ -69,21 +70,19 @@ invisible({
 
 # Testing
 params <- c(
-  # Gains
+  # Cogain
   .1, .1, .1,
-  # Loss
-  .1, .1, .1,
-  # Co-gain
-  .1, .1, .1,
+  # max funs
+  .1, 
   # Root probabilities
   .1, .1, .1
 )
 
 # Testing the likelihood
-likelihood(amodel, params)
+likelihood(amodel, params*0)
 
 # Finding MLE
-ans <- optim(params*1, function(f) {
+ans <- optim(params*0, function(f) {
   log(likelihood(amodel, f))
 }, control = list(fnscale=-1, maxit = 2e3),
 hessian = TRUE)
@@ -98,7 +97,9 @@ diag(MASS::ginv(-ans$hessian))
 # diag(solve(-ans$hessian, tol = 1e-100))
 
 # Simulating
-sim_aphylo2(amodel, ans$par)
+ans <- sim_aphylo2(amodel, c(10, 10, -10, 10, -100, -100, -100)/5)
+do.call(rbind, ans)
+
 ```
 
 

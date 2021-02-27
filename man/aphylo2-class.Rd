@@ -10,7 +10,7 @@
 \alias{sim_aphylo2}
 \title{Aphylo2 model}
 \usage{
-new_model(annotations, geneid, parent)
+new_model(annotations, geneid, parent, duplication)
 
 init(p)
 

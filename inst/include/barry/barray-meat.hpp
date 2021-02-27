@@ -228,6 +228,21 @@ inline BArray<Cell_Type,Data_Type>::~BArray() {
 }
 
 template<typename Cell_Type, typename Data_Type>
+inline void BArray<Cell_Type,Data_Type>::set_data(
+  Data_Type * data_, bool delete_data_
+) {  
+
+  if ((data != nullptr) && delete_data)
+    delete data;
+  
+  data        = data_;
+  delete_data = delete_data_;
+  
+  return;
+  
+}
+
+template<typename Cell_Type, typename Data_Type>
 inline void BArray< Cell_Type,Data_Type >::out_of_range(uint i, uint j) const {
   if (i >= N)
     throw std::range_error("The row is out of range.");
@@ -246,7 +261,6 @@ inline Cell_Type BArray< Cell_Type,Data_Type >::get_cell(
   if (check_bounds)
     out_of_range(i,j);
   
-
   if (ROW(i).size() == 0u)
     return (Cell_Type) 0.0;
   
@@ -320,7 +334,7 @@ BArray< Cell_Type,Data_Type >::get_col_vec(uint i, bool check_bounds) const {
 
   // Checking boundaries  
   if (check_bounds) 
-    out_of_range(i, 0u);
+    out_of_range(0u, i);
 
   std::vector< Cell_Type > ans(nrow(), (Cell_Type) false);
   for (auto iter = COL(i).begin(); iter != COL(i).end(); ++iter) 
@@ -337,7 +351,7 @@ BArray< Cell_Type,Data_Type >::get_col_vec(
 
   // Checking boundaries  
   if (check_bounds) 
-    out_of_range(i, 0u);
+    out_of_range(0u, i);
 
   for (auto iter = COL(i).begin(); iter != COL(i).end(); ++iter) 
     col->at(iter->first) = iter->second->value;//this->get_cell(iter->first, i, false);
@@ -954,15 +968,16 @@ inline void BArray<Cell_Type, Data_Type>::resize(
       zero_col(j, false);
   
   // Resizing will invalidate pointers and values out of range
-  if (N_ != N) {
+  if (M_ != M) {
     el_ji.resize(M_);
-    N = N_;
-  }
-  
-  if (N_ != M) {
-    el_ij.resize(N_);
     M = M_;
   }
+  
+  if (N_ != N) {
+    el_ij.resize(N_);
+    N = N_;
+  }
+   
   
   return;
 

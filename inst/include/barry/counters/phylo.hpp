@@ -93,9 +93,9 @@ typedef PowerSet<PhyloArray, PhyloRuleData> PhyloPowerSet;
 inline void counter_overall_gains(PhyloCounters * counters, bool duplication = true) {
   
   PHYLO_COUNTER_LAMBDA(tmp_count) {
-    if ((*data)[0u] == 1u & Array->data->duplication)
+    if ((data->at(0u) == 1u) & Array->data->duplication)
       return 1.0;
-    else if ((*data)[0u] == 0u & !Array->data->duplication) {
+    else if ((data->at(0u) == 0u) & !Array->data->duplication) {
       return 1.0;
     }
 
@@ -121,12 +121,12 @@ inline void counter_gains(PhyloCounters * counters, std::vector<uint> nfun, bool
   
   PHYLO_COUNTER_LAMBDA(tmp_count) {
 
-    if (Array->data->duplication & data->at(1u) == 0u)
+    if (Array->data->duplication & (data->at(1u) == 0u))
       return 0.0;
-    else if (!Array->data->duplication & data->at(1u) == 1u)
+    else if (!Array->data->duplication & (data->at(1u) == 1u))
       return 0.0;
     
-    return (!Array->data->states[i]) && (i == PHYLO_C_DATA_IDX(0u)) ? 1.0 : 0.0;
+    return (!Array->data->states[i]) && (i == data->at(0u)) ? 1.0 : 0.0;
 
   };
   
@@ -150,9 +150,9 @@ inline void counter_overall_loss(PhyloCounters * counters, bool duplication = tr
   
   PHYLO_COUNTER_LAMBDA(tmp_count) {
     
-    if ((*data)[0u] == 1u & Array->data->duplication)
+    if ((data->at(0u) == 1u) & Array->data->duplication)
       return -1.0;
-    else if ((*data)[0u] == 0u & !Array->data->duplication) {
+    else if ((data->at(0u) == 0u) & !Array->data->duplication) {
       return -1.0;
     } else {
       return 0.0;
@@ -161,9 +161,9 @@ inline void counter_overall_loss(PhyloCounters * counters, bool duplication = tr
   
   PHYLO_COUNTER_LAMBDA(tmp_init) {
 
-    if ((*data)[0u] == 1u & Array->data->duplication)
+    if ((data->at(0u) == 1u) & Array->data->duplication)
       return static_cast<double>((Array->N * Array->M));
-    else if ((*data)[0u] == 0u & !Array->data->duplication)
+    else if ((data->at(0u) == 0u) & !Array->data->duplication)
       return static_cast<double>((Array->N * Array->M));
     else 
       return 0.0;
@@ -180,6 +180,78 @@ inline void counter_overall_loss(PhyloCounters * counters, bool duplication = tr
 
 }
 
+// -----------------------------------------------------------------------------
+/**
+ * @brief Cap the number of functions per gene
+ */
+inline void counter_maxfuns(
+  PhyloCounters * counters,
+  uint            lb,
+  uint            ub,
+  bool duplication = true
+  ) {
+
+  PHYLO_COUNTER_LAMBDA(tmp_init) {
+    if (data->at(0u) == 0u)
+      return static_cast<double>(Array->ncol());
+    else {
+
+      double ans = 0.0;
+      for (uint j = 0u; j < Array->ncol(); ++j) {
+
+        uint count = 0u;
+        for (uint i = 0u; i < Array->nrow(); ++i) {
+          if (!Array->is_empty(i, j))
+            ++count;
+        }
+
+        if (count >= data->at(0u) && count <= data->at(1u))
+          ans += 1.0;
+
+      }
+
+      return ans;
+
+    }
+  };
+  
+  PHYLO_COUNTER_LAMBDA(tmp_count) {
+
+    if (Array->data->duplication & (data->at(2u) == 0u))
+      return 0.0;
+    else if (!Array->data->duplication & (data->at(2u) == 1u))
+      return 0.0;
+    
+    // Does the focal gene has nfun in [lb,ub]?
+    if (data->at(1u) == 0u) {
+
+      return
+        Array->el_ji.at(j).size() <= data->at(0u) ?
+        0.0 : -1.0;
+
+    } else {
+
+      // Right above the lb?
+      if (Array->el_ji.at(j).size() == data->at(0u))
+        return 1.0;
+      else if (Array->el_ji.at(j).size() == (data->at(1u) + 1u))
+        return -1.0;
+      else
+        return 0.0;
+
+    }
+
+  };
+
+  counters->add_counter(
+      tmp_count, tmp_init,
+      new PhyloCounterData({lb, ub, duplication ? 1u : 0u}),
+      true
+  );
+  
+  return;
+  
+}
   
 // -----------------------------------------------------------------------------
 /**
@@ -189,23 +261,23 @@ inline void counter_loss(PhyloCounters * counters, std::vector<uint> nfun, bool 
   
   PHYLO_COUNTER_LAMBDA(tmp_count) {
 
-    if (data->at(0u) == 1u & !Array->data->duplication)
+    if ((data->at(0u) == 1u) & !Array->data->duplication)
       return 0.0;
-    else if (data->at(0u) == 0u & Array->data->duplication)
+    else if ((data->at(0u) == 0u) & Array->data->duplication)
       return 0.0;
     else
-      return (Array->data->states[i]) && (i == PHYLO_C_DATA_IDX(0u)) ? -1.0 : 0.0;
+      return (Array->data->states[i]) && (i == data->at(0u)) ? -1.0 : 0.0;
 
   };
   
   PHYLO_COUNTER_LAMBDA(tmp_init) {
 
-    if (data->at(0u) == 1u & !Array->data->duplication)
+    if ((data->at(0u) == 1u) & !Array->data->duplication)
       return 0.0;
-    else if (data->at(0u) == 0u & Array->data->duplication)
+    else if ((data->at(0u) == 0u) & Array->data->duplication)
       return 0.0;
     else
-      return Array->data->states[PHYLO_C_DATA_IDX(0u)]? Array->M : 0.0;
+      return Array->data->states[data->at(0u)]? Array->M : 0.0;
 
   };
   
@@ -227,22 +299,29 @@ inline void counter_loss(PhyloCounters * counters, std::vector<uint> nfun, bool 
  * @brief Total count of Sub-functionalization events.
  * @details It requires to specify data = {funA, funB}
  */
-inline void counter_subfun(PhyloCounters * counters, uint nfunA, uint nfunB) {
+inline void counter_subfun(PhyloCounters * counters, uint nfunA, uint nfunB, bool duplication = true) {
   
   PHYLO_COUNTER_LAMBDA(tmp_count) {
+
+    // Is this node duplication?
+    if ((data->at(2u) == 1u) & !Array->data->duplication)
+      return 0.0;
+    else if ((data->at(2u) == 0u) & Array->data->duplication)  
+      return 0.0;
+
     // Are we looking at either of the relevant functions?
-    if ((PHYLO_C_DATA_IDX(0u) != i) && (PHYLO_C_DATA_IDX(1u) != i))
+    if ((data->at(0u) != i) && (data->at(1u) != i))
       return 0.0;
     
     // Are A and B existant? if not, no change
-    if (!Array->data->states[PHYLO_C_DATA_IDX(0u)] | !Array->data->states[PHYLO_C_DATA_IDX(1u)])
+    if (!Array->data->states[data->at(0u)] | !Array->data->states[data->at(1u)])
       return 0.0;
     
     // Figuring out which is the first (reference) function
-    uint other = (i == PHYLO_C_DATA_IDX(0u))? PHYLO_C_DATA_IDX(1u) :PHYLO_C_DATA_IDX(0u);
+    uint other = (i == data->at(0u))? data->at(1u) :data->at(0u);
     double res = 0.0;
     // There are 4 cases: (first x second) x (had the second function)
-    if (!Array->is_empty(other, j)) {
+    if (!Array->is_empty(other, j)) { 
       
       for (uint off = 0u; off < Array->M; ++off) {
         
@@ -276,7 +355,7 @@ inline void counter_subfun(PhyloCounters * counters, uint nfunA, uint nfunB) {
   
   counters->add_counter(
       tmp_count, nullptr,
-      new PhyloCounterData({nfunA, nfunB}),
+      new PhyloCounterData({nfunA, nfunB, duplication ? 1u : 0u}),
       true
   );
   
@@ -288,18 +367,24 @@ inline void counter_subfun(PhyloCounters * counters, uint nfunA, uint nfunB) {
 /**@brief Co-evolution (joint gain or loss)
  * @details Needs to specify pairs of functions (`nfunA`, `nfunB`).
  */
-inline void counter_cogain(PhyloCounters * counters, uint nfunA, uint nfunB) {
+inline void counter_cogain(PhyloCounters * counters, uint nfunA, uint nfunB, bool duplication = true) {
   
   PHYLO_COUNTER_LAMBDA(tmp_count) {
     
+        // Is this node duplication?
+    if ((data->at(2u) == 1u) & !Array->data->duplication)
+      return 0.0;
+    else if ((data->at(2u) == 0u) & Array->data->duplication)  
+      return 0.0;
+
     // Is the function in scope relevant?
-    if ((i != (*data)[0u]) && (i != (*data)[1u]))
+    if ((i != data->at(0u)) && (i != data->at(1u)))
       return 0.0;
     
     // None should have it
-    if (!Array->data->states[(*data)[0u]] && !Array->data->states[(*data)[1u]]) {
+    if (!Array->data->states[data->at(0u)] && !Array->data->states[data->at(1u)]) {
 
-      uint other = (i == (*data)[0u])? (*data)[1u] : (*data)[0u];
+      uint other = (i == data->at(0u))? data->at(1u) : data->at(0u);
 
       if (Array->get_cell(other, j) == 1u) {
 
@@ -321,7 +406,7 @@ inline void counter_cogain(PhyloCounters * counters, uint nfunA, uint nfunB) {
   
   counters->add_counter(
       tmp_count, nullptr,
-      new PhyloCounterData({nfunA, nfunB}),
+      new PhyloCounterData({nfunA, nfunB, duplication ? 1u : 0u}),
       true
   );
   
@@ -420,22 +505,29 @@ inline void counter_longest(PhyloCounters * counters) {
 /**@brief Total number of neofunctionalization events 
  * @details Needs to specify pairs of function.
  */
-inline void counter_neofun(PhyloCounters * counters, uint nfunA, uint nfunB) {
+inline void counter_neofun(PhyloCounters * counters, uint nfunA, uint nfunB, bool duplication = true) {
   
   PHYLO_COUNTER_LAMBDA(tmp_count) {
+
+    // Is this node duplication?
+    if ((data->at(2u) == 1u) & !Array->data->duplication)
+      return 0.0;
+    else if ((data->at(2u) == 0u) & Array->data->duplication)  
+      return 0.0;
+
     // Is the function in scope relevant?
-    if ((i != (*data)[0u]) && (i != (*data)[1u]))
+    if ((i != data->at(0u)) && (i != data->at(1u)))
       return 0.0;
     
     // Checking if the parent has both functions
-    if (!Array->data->states[(*data)[0u]] && !Array->data->states[(*data)[1u]]) {
+    if (!Array->data->states[data->at(0u)] && !Array->data->states[data->at(1u)]) {
       return 0.0;
-    } else if (Array->data->states[(*data)[0u]] && Array->data->states[(*data)[1u]]) {
+    } else if (Array->data->states[data->at(0u)] && Array->data->states[data->at(1u)]) {
       return 0.0;
     }
     
     // Figuring out which is the first (reference) function
-    uint other = (i == (*data)[0u])? (*data)[1u] : (*data)[0u];
+    uint other = (i == data->at(0u))? data->at(1u) : data->at(0u);
     double res = 0.0;
     
     if (Array->is_empty(other, j, false)) {
@@ -467,7 +559,7 @@ inline void counter_neofun(PhyloCounters * counters, uint nfunA, uint nfunB) {
   
   counters->add_counter(
       tmp_count, nullptr,
-      new PhyloCounterData({nfunA, nfunB}),
+      new PhyloCounterData({nfunA, nfunB, duplication ? 1u : 0u}),
       true
   );
   

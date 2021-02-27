@@ -7,6 +7,7 @@
 \alias{term_cogain}
 \alias{term_neofun}
 \alias{term_subfun}
+\alias{term_maxfuns}
 \title{Evolutionary terms}
 \usage{
 term_gains(p, funs)
@@ -18,6 +19,8 @@ term_cogain(p, a, b)
 term_neofun(p, a, b)
 
 term_subfun(p, a, b)
+
+term_maxfuns(p, lb, ub)
 }
 \description{
 Evolutionary terms

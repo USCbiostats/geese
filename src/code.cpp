@@ -17,11 +17,12 @@ using namespace Rcpp;
 SEXP new_model(
     std::vector< std::vector< unsigned int > > & annotations,
     std::vector< unsigned int > & geneid,
-    std::vector< unsigned int > & parent
+    std::vector< int > & parent,
+    std::vector< bool > & duplication
 ) {
 
   Rcpp::XPtr< APhyloModel > dat(
-      new APhyloModel(annotations, geneid, parent
+      new APhyloModel(annotations, geneid, parent, duplication
       ));
 
   return dat;
@@ -141,6 +142,17 @@ int term_subfun(SEXP p, unsigned int a, unsigned int b) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
   phylocounters::counter_subfun(&ptr->counters, a, b);
+  return 0;
+
+}
+
+//' @export
+//' @rdname aphylo2-terms
+// [[Rcpp::export]]
+int term_maxfuns(SEXP p, unsigned int lb, unsigned int ub) {
+
+  Rcpp::XPtr< APhyloModel >ptr(p);
+  phylocounters::counter_maxfuns(&ptr->counters, lb, ub);
   return 0;
 
 }

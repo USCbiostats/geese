@@ -1,10 +1,9 @@
+#include "aphylomodel-bones.hpp"
 // #include <algorithm>
 // #include <random>
 
 #ifndef APHYLOMODEL_MEAT_SIMULATE_HPP
 #define APHYLOMODEL_MEAT_SIMULATE_HPP 1
-
-#include "aphylomodel-bones.hpp"
 
 void APhyloModel::set_seed(const unsigned int & s) {
     rengine.seed(s);
@@ -32,7 +31,7 @@ std::vector< std::vector< unsigned int > > APhyloModel::simulate(
         p = std::exp(p)/(std::exp(p) + 1);
     }
 
-    // Making room
+    // Making room 
     std::vector< std::vector< unsigned int > > res(nodes.size());
 
     // Inverse sequence
@@ -55,7 +54,7 @@ std::vector< std::vector< unsigned int > > APhyloModel::simulate(
     while ((idx < rootp.size()) && (cumprob < r)) {
         cumprob += rootp[++idx];
     }
-
+    
     // We now know the state of the root
     res[nodes[preorder[0u]].id] =
         vector_caster< unsigned int, bool>(states[idx]);
@@ -66,7 +65,7 @@ std::vector< std::vector< unsigned int > > APhyloModel::simulate(
         if (nodes[i].is_leaf())
             continue;
 
-        // Getting the state of the node
+        // Getting the state of the node      
         unsigned int n = this->map_to_nodes[res[nodes[i].id]];
 
         // Given the state of the current node, sample the state of the
@@ -74,9 +73,8 @@ std::vector< std::vector< unsigned int > > APhyloModel::simulate(
         auto tmp = model_full.sample(nodes[i].idx_full[n], par0);
 
         // Iterating through the offspring to assign the state
-        unsigned int m;
         for (unsigned int j = 0u; j < nodes[i].offspring.size(); ++j) {
-            res[nodes[i].offspring[j]->id] = tmp.get_col_vec(j);
+            res[nodes[i].offspring[j]->id] = tmp.get_col_vec(j, false);
         }
 
     }

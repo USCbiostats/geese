@@ -7,8 +7,8 @@
 #' @param geneid integer vector with gene ids
 #' @param parent integer vector with parent gene id
 #' @export
-new_model <- function(annotations, geneid, parent) {
-    .Call(`_aphylo2_new_model`, annotations, geneid, parent)
+new_model <- function(annotations, geneid, parent, duplication) {
+    .Call(`_aphylo2_new_model`, annotations, geneid, parent, duplication)
 }
 
 #' @rdname aphylo2-class
@@ -70,5 +70,11 @@ term_neofun <- function(p, a, b) {
 #' @rdname aphylo2-terms
 term_subfun <- function(p, a, b) {
     .Call(`_aphylo2_term_subfun`, p, a, b)
+}
+
+#' @export
+#' @rdname aphylo2-terms
+term_maxfuns <- function(p, lb, ub) {
+    .Call(`_aphylo2_term_maxfuns`, p, lb, ub)
 }
 

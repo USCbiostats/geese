@@ -1,13 +1,15 @@
 // #include <vector>
 // #include <unordered_map>
-#ifndef BARRAY_BONES_HPP
-#define BARRAY_BONES_HPP 1
 #include "typedefs.hpp"
 #include "cell-bones.hpp"
 #include "barraycell-bones.hpp"
+
+#ifndef BARRAY_BONES_HPP 
+#define BARRAY_BONES_HPP 1
+
 /**
  * @brief Baseline class for binary arrays.
-
+ 
  * `BArray` class objects are arbitrary arrays
  * in which non-empty cells hold data of type `Cell_Type`. The non-empty cells
  * are stored by row and indexed using `unordered_map`s, i.e.
@@ -29,7 +31,7 @@ public:
   bool delete_data = false;
 
   static Cell< Cell_Type > Cell_default;
-
+  
   /** This is as a reference, if we need to iterate through the cells and we need
    *  to keep track which were visited, we use this as a reference. So that if
    *  cell.visited = true and visited = true, it means that we haven't been here
@@ -37,11 +39,11 @@ public:
    *  beginning of the routine.
    */
   bool visited = false;
-
+  
 
   /**
    * @name Constructors
-   *
+   * 
    * @param N_ Number of rows
    * @param M_ Number of columns
    * @param source An unsigned vector ranging from 0 to N_
@@ -49,13 +51,13 @@ public:
    * @param target When `true` tries to add repeated observations.
    */
   ///@{
-
+  
   /** @brief Zero-size array */
   BArray() : N(0u), M(0u), NCells(0u), el_ij(0u), el_ji(0u) {};
-
+  
   /** @brief Empty array */
   BArray (uint N_, uint M_) : N(N_), M(M_), NCells(0u), el_ij(N_), el_ji(M_) {};
-
+  
   /** @brief Edgelist with data */
   BArray (
       uint N_, uint M_,
@@ -64,7 +66,7 @@ public:
       const std::vector< Cell_Type > & value,
       bool add = true
   );
-
+  
   /** @brief Edgelist with no data (simpler) */
   BArray (
     uint N_, uint M_,
@@ -72,35 +74,26 @@ public:
     const std::vector< uint > & target,
     bool add = true
   );
-
+  
   BArray(const BArray<Cell_Type,Data_Type> & Array_, bool copy_data = false);
-
+  
   BArray<Cell_Type,Data_Type> & operator=(const BArray<Cell_Type,Data_Type> & Array_);
   ///@}
-
+  
   bool operator==(const BArray<Cell_Type,Data_Type> & Array_);
 
   ~BArray();
-
+  
   // In principle, copy can be faster by using openmp on the rows
   // since those are independent.
   // BArray(BArray & A);
-
-  void set_data(Data_Type * data_, bool delete_data_ = false) {
-
-    if ((data != nullptr) && delete_data)
-      delete data;
-
-    data        = data_;
-    delete_data = delete_data_;
-
-    return;
-  }
-
+  
+  void set_data(Data_Type * data_, bool delete_data_ = false);
+  
   // Function to access the elements
   // bool check_cell
   void out_of_range(uint i, uint j) const;
-  Cell_Type get_cell(uint i, uint j, bool check_bounds = true) const;
+  Cell_Type get_cell(uint i, uint j, bool check_bounds = true) const; 
   const Row_type< Cell_Type > * get_row(uint i, bool check_bounds = true) const;
   const Col_type< Cell_Type > * get_col(uint i, bool check_bounds = true) const;
   std::vector< Cell_Type >      get_col_vec(uint i, bool check_bounds = true) const;
@@ -110,12 +103,12 @@ public:
 
   /**
    * @brief Get the edgelist
-   *
+   * 
    * `Entries` is a class with three objects: Two `std::vector` with the row and
    * column coordinates respectively, and one `std::vector` with the corresponding
    * value of the cell.
-   *
-   * @return Entries<Cell_Type>
+   * 
+   * @return Entries<Cell_Type> 
    */
   Entries<Cell_Type> get_entries() const;
 
@@ -141,38 +134,38 @@ public:
    * delete/add), or, in the case of `swap_cells`, check if either of both
    * cells exists/don't exist.
    */
-  ///@{
+  ///@{  
   BArray<Cell_Type,Data_Type> & operator+=(const std::pair<uint, uint> & coords);
   BArray<Cell_Type,Data_Type> & operator-=(const std::pair<uint, uint> & coords);
   BArrayCell<Cell_Type,Data_Type> operator()(uint row, uint col);
-
+  
   void rm_cell(uint i, uint j, bool check_bounds = true, bool check_exists = true);
-
+  
   void insert_cell(uint i, uint j, const Cell< Cell_Type > & v, bool check_bounds, bool check_exists);
   void insert_cell(uint i, uint j, Cell_Type v, bool check_bounds, bool check_exists);
-
+  
   void insert_cell_row_maj(uint i, const Cell< Cell_Type > & v, bool check_bounds, bool check_exists);
   void insert_cell_row_maj(uint i, Cell_Type v, bool check_bounds, bool check_exists);
-
+  
   void swap_cells(
       uint i0, uint j0, uint i1, uint j1, bool check_bounds = true,
       int check_exists = CHECK::BOTH,
       int * report     = nullptr
       );
-
+  
   void toggle_cell(uint i, uint j, bool check_bounds = true, int check_exists = EXISTS::UKNOWN);
   void toggle_lock(uint i, uint j, bool check_bounds = true);
   ///@}
-
+  
   /**@name Column/row wise interchange*/
   ///@{
   void swap_rows(uint i0, uint i1, bool check_bounds = true);
   void swap_cols(uint j0, uint j1, bool check_bounds = true);
-
+  
   void zero_row(uint i, bool check_bounds = true);
   void zero_col(uint j, bool check_bounds = true);
   ///@}
-
+  
   void transpose();
   void clear(bool hard = true);
   void resize(uint N_, uint M_);
@@ -180,13 +173,13 @@ public:
 
   // Advances operators
   // void toggle_iterator
-
+  
   // Misc
   void print() const;
 
   /**
-   * @name Operators
-   *
+   * @name Arithmetic operators
+   * 
    */
   ///@{
   BArray<Cell_Type,Data_Type>& operator+=(const BArray<Cell_Type,Data_Type>& rhs);
@@ -194,11 +187,11 @@ public:
 
   BArray<Cell_Type,Data_Type>& operator-=(const BArray<Cell_Type,Data_Type>& rhs);
   BArray<Cell_Type,Data_Type>& operator-=(const Cell_Type & rhs);
-
+  
   BArray<Cell_Type,Data_Type>& operator/=(const Cell_Type & rhs);
   BArray<Cell_Type,Data_Type>& operator*=(const Cell_Type & rhs);
   ///@}
-
+  
   // /**
   //  * @name Casting between types
   //  */

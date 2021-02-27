@@ -295,7 +295,7 @@ inline uint Model<Array_Type,Data_Counter_Type,Data_Rule_Type>::add_array(
     normalizing_constants.push_back(0.0);
     first_calc_done.push_back(false);
     
-    return keys2support.size() - 1u;
+    return arrays2support.size() - 1u;
     
   }
   
@@ -305,7 +305,7 @@ inline uint Model<Array_Type,Data_Counter_Type,Data_Rule_Type>::add_array(
   // Adding the corresponding map
   arrays2support.push_back(locator->second);
   
-  return locator->second;
+  return arrays2support.size() - 1u;
 
 }
 
@@ -418,7 +418,7 @@ inline double Model<Array_Type,Data_Counter_Type,Data_Rule_Type>::likelihood_tot
   double res = 0.0;
   if (as_log) {
     for (uint i = 0; i < target_stats.size(); ++i) 
-      res += vec_inner_prod(target_stats[i], params);
+      res += vec_inner_prod(target_stats[i], params) BARRY_SAFE_EXP;
     
     for (uint i = 0u; i < params_last.size(); ++i) {
       res -= (std::log(normalizing_constants[i]) * this->n_arrays_per_stats[i]);
@@ -427,7 +427,7 @@ inline double Model<Array_Type,Data_Counter_Type,Data_Rule_Type>::likelihood_tot
     
     res = 1.0;
     for (uint i = 0; i < target_stats.size(); ++i)
-      res *= std::exp(vec_inner_prod(target_stats[i], params)) / 
+      res *= std::exp(vec_inner_prod(target_stats[i], params) BARRY_SAFE_EXP) / 
         normalizing_constants[arrays2support[i]];
     
   }

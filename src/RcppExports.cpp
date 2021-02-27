@@ -6,15 +6,16 @@
 using namespace Rcpp;
 
 // new_model
-SEXP new_model(std::vector< std::vector< unsigned int > >& annotations, std::vector< unsigned int >& geneid, std::vector< unsigned int >& parent);
-RcppExport SEXP _aphylo2_new_model(SEXP annotationsSEXP, SEXP geneidSEXP, SEXP parentSEXP) {
+SEXP new_model(std::vector< std::vector< unsigned int > >& annotations, std::vector< unsigned int >& geneid, std::vector< int >& parent, std::vector< bool >& duplication);
+RcppExport SEXP _aphylo2_new_model(SEXP annotationsSEXP, SEXP geneidSEXP, SEXP parentSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector< std::vector< unsigned int > >& >::type annotations(annotationsSEXP);
     Rcpp::traits::input_parameter< std::vector< unsigned int >& >::type geneid(geneidSEXP);
-    Rcpp::traits::input_parameter< std::vector< unsigned int >& >::type parent(parentSEXP);
-    rcpp_result_gen = Rcpp::wrap(new_model(annotations, geneid, parent));
+    Rcpp::traits::input_parameter< std::vector< int >& >::type parent(parentSEXP);
+    Rcpp::traits::input_parameter< std::vector< bool >& >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(new_model(annotations, geneid, parent, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -138,9 +139,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// term_maxfuns
+int term_maxfuns(SEXP p, unsigned int lb, unsigned int ub);
+RcppExport SEXP _aphylo2_term_maxfuns(SEXP pSEXP, SEXP lbSEXP, SEXP ubSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type lb(lbSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ub(ubSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_maxfuns(p, lb, ub));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_aphylo2_new_model", (DL_FUNC) &_aphylo2_new_model, 3},
+    {"_aphylo2_new_model", (DL_FUNC) &_aphylo2_new_model, 4},
     {"_aphylo2_init", (DL_FUNC) &_aphylo2_init, 1},
     {"_aphylo2_likelihood", (DL_FUNC) &_aphylo2_likelihood, 2},
     {"_aphylo2_get_probabilities", (DL_FUNC) &_aphylo2_get_probabilities, 1},
@@ -151,6 +165,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_term_cogain", (DL_FUNC) &_aphylo2_term_cogain, 3},
     {"_aphylo2_term_neofun", (DL_FUNC) &_aphylo2_term_neofun, 3},
     {"_aphylo2_term_subfun", (DL_FUNC) &_aphylo2_term_subfun, 3},
+    {"_aphylo2_term_maxfuns", (DL_FUNC) &_aphylo2_term_maxfuns, 3},
     {NULL, NULL, 0}
 };
 
