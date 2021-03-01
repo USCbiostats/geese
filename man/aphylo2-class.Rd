@@ -4,9 +4,13 @@
 \alias{aphylo2-class}
 \alias{new_model}
 \alias{init}
+\alias{nterms}
+\alias{nnodes}
+\alias{nleafs}
 \alias{likelihood}
 \alias{get_probabilities}
 \alias{get_sequence}
+\alias{set_seed}
 \alias{sim_aphylo2}
 \title{Aphylo2 model}
 \usage{
@@ -14,13 +18,21 @@ new_model(annotations, geneid, parent, duplication)
 
 init(p)
 
+nterms(p)
+
+nnodes(p)
+
+nleafs(p)
+
 likelihood(p, par)
 
 get_probabilities(p)
 
 get_sequence(p)
 
-sim_aphylo2(p, par)
+set_seed(p, s)
+
+sim_aphylo2(p, par, seed = -1L)
 }
 \arguments{
 \item{annotations}{Vector of integer vectors with annotations.}

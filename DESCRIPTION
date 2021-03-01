@@ -20,4 +20,5 @@ SystemRequirements: C++11
 LinkingTo: 
     Rcpp
 Imports: 
-    Rcpp
+    Rcpp,
+    fmcmc

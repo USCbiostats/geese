@@ -19,6 +19,24 @@ init <- function(p) {
 
 #' @rdname aphylo2-class
 #' @export
+nterms <- function(p) {
+    .Call(`_aphylo2_nterms`, p)
+}
+
+#' @rdname aphylo2-class
+#' @export
+nnodes <- function(p) {
+    .Call(`_aphylo2_nnodes`, p)
+}
+
+#' @rdname aphylo2-class
+#' @export
+nleafs <- function(p) {
+    .Call(`_aphylo2_nleafs`, p)
+}
+
+#' @rdname aphylo2-class
+#' @export
 likelihood <- function(p, par) {
     .Call(`_aphylo2_likelihood`, p, par)
 }
@@ -37,8 +55,14 @@ get_sequence <- function(p) {
 
 #' @rdname aphylo2-class
 #' @export
-sim_aphylo2 <- function(p, par) {
-    .Call(`_aphylo2_sim_aphylo2`, p, par)
+set_seed <- function(p, s) {
+    .Call(`_aphylo2_set_seed`, p, s)
+}
+
+#' @rdname aphylo2-class
+#' @export
+sim_aphylo2 <- function(p, par, seed = -1L) {
+    .Call(`_aphylo2_sim_aphylo2`, p, par, seed)
 }
 
 #' @title Evolutionary terms

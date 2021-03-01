@@ -10,7 +10,6 @@ SEXP new_model(std::vector< std::vector< unsigned int > >& annotations, std::vec
 RcppExport SEXP _aphylo2_new_model(SEXP annotationsSEXP, SEXP geneidSEXP, SEXP parentSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector< std::vector< unsigned int > >& >::type annotations(annotationsSEXP);
     Rcpp::traits::input_parameter< std::vector< unsigned int >& >::type geneid(geneidSEXP);
     Rcpp::traits::input_parameter< std::vector< int >& >::type parent(parentSEXP);
@@ -24,9 +23,38 @@ int init(SEXP p);
 RcppExport SEXP _aphylo2_init(SEXP pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     rcpp_result_gen = Rcpp::wrap(init(p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nterms
+int nterms(SEXP p);
+RcppExport SEXP _aphylo2_nterms(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(nterms(p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nnodes
+int nnodes(SEXP p);
+RcppExport SEXP _aphylo2_nnodes(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(nnodes(p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nleafs
+int nleafs(SEXP p);
+RcppExport SEXP _aphylo2_nleafs(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(nleafs(p));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -35,7 +63,6 @@ double likelihood(SEXP p, const std::vector< double >& par);
 RcppExport SEXP _aphylo2_likelihood(SEXP pSEXP, SEXP parSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< const std::vector< double >& >::type par(parSEXP);
     rcpp_result_gen = Rcpp::wrap(likelihood(p, par));
@@ -47,7 +74,6 @@ NumericMatrix get_probabilities(SEXP p);
 RcppExport SEXP _aphylo2_get_probabilities(SEXP pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     rcpp_result_gen = Rcpp::wrap(get_probabilities(p));
     return rcpp_result_gen;
@@ -58,21 +84,31 @@ std::vector< unsigned int > get_sequence(SEXP p);
 RcppExport SEXP _aphylo2_get_sequence(SEXP pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     rcpp_result_gen = Rcpp::wrap(get_sequence(p));
     return rcpp_result_gen;
 END_RCPP
 }
-// sim_aphylo2
-std::vector< std::vector< unsigned int > > sim_aphylo2(SEXP p, const std::vector<double>& par);
-RcppExport SEXP _aphylo2_sim_aphylo2(SEXP pSEXP, SEXP parSEXP) {
+// set_seed
+int set_seed(SEXP p, unsigned int s);
+RcppExport SEXP _aphylo2_set_seed(SEXP pSEXP, SEXP sSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type s(sSEXP);
+    rcpp_result_gen = Rcpp::wrap(set_seed(p, s));
+    return rcpp_result_gen;
+END_RCPP
+}
+// sim_aphylo2
+std::vector< std::vector< unsigned int > > sim_aphylo2(SEXP p, const std::vector<double>& par, int seed);
+RcppExport SEXP _aphylo2_sim_aphylo2(SEXP pSEXP, SEXP parSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< const std::vector<double>& >::type par(parSEXP);
-    rcpp_result_gen = Rcpp::wrap(sim_aphylo2(p, par));
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(sim_aphylo2(p, par, seed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -81,7 +117,6 @@ int term_gains(SEXP p, std::vector<unsigned int>& funs);
 RcppExport SEXP _aphylo2_term_gains(SEXP pSEXP, SEXP funsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< std::vector<unsigned int>& >::type funs(funsSEXP);
     rcpp_result_gen = Rcpp::wrap(term_gains(p, funs));
@@ -93,7 +128,6 @@ int term_loss(SEXP p, std::vector<unsigned int>& funs);
 RcppExport SEXP _aphylo2_term_loss(SEXP pSEXP, SEXP funsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< std::vector<unsigned int>& >::type funs(funsSEXP);
     rcpp_result_gen = Rcpp::wrap(term_loss(p, funs));
@@ -105,7 +139,6 @@ int term_cogain(SEXP p, unsigned int a, unsigned int b);
 RcppExport SEXP _aphylo2_term_cogain(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type a(aSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type b(bSEXP);
@@ -118,7 +151,6 @@ int term_neofun(SEXP p, unsigned int a, unsigned int b);
 RcppExport SEXP _aphylo2_term_neofun(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type a(aSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type b(bSEXP);
@@ -131,7 +163,6 @@ int term_subfun(SEXP p, unsigned int a, unsigned int b);
 RcppExport SEXP _aphylo2_term_subfun(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type a(aSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type b(bSEXP);
@@ -144,7 +175,6 @@ int term_maxfuns(SEXP p, unsigned int lb, unsigned int ub);
 RcppExport SEXP _aphylo2_term_maxfuns(SEXP pSEXP, SEXP lbSEXP, SEXP ubSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type lb(lbSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type ub(ubSEXP);
@@ -156,10 +186,14 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_new_model", (DL_FUNC) &_aphylo2_new_model, 4},
     {"_aphylo2_init", (DL_FUNC) &_aphylo2_init, 1},
+    {"_aphylo2_nterms", (DL_FUNC) &_aphylo2_nterms, 1},
+    {"_aphylo2_nnodes", (DL_FUNC) &_aphylo2_nnodes, 1},
+    {"_aphylo2_nleafs", (DL_FUNC) &_aphylo2_nleafs, 1},
     {"_aphylo2_likelihood", (DL_FUNC) &_aphylo2_likelihood, 2},
     {"_aphylo2_get_probabilities", (DL_FUNC) &_aphylo2_get_probabilities, 1},
     {"_aphylo2_get_sequence", (DL_FUNC) &_aphylo2_get_sequence, 1},
-    {"_aphylo2_sim_aphylo2", (DL_FUNC) &_aphylo2_sim_aphylo2, 2},
+    {"_aphylo2_set_seed", (DL_FUNC) &_aphylo2_set_seed, 2},
+    {"_aphylo2_sim_aphylo2", (DL_FUNC) &_aphylo2_sim_aphylo2, 3},
     {"_aphylo2_term_gains", (DL_FUNC) &_aphylo2_term_gains, 2},
     {"_aphylo2_term_loss", (DL_FUNC) &_aphylo2_term_loss, 2},
     {"_aphylo2_term_cogain", (DL_FUNC) &_aphylo2_term_cogain, 3},

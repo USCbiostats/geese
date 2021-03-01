@@ -3,7 +3,7 @@
 #include <string>
 #include <algorithm>
 #include "barry/barry.hpp"
-#include "aphylomodel.hpp"
+#include "barry/models/aphylomodel.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
 
@@ -13,7 +13,7 @@ using namespace Rcpp;
 //' @param geneid integer vector with gene ids
 //' @param parent integer vector with parent gene id
 //' @export
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 SEXP new_model(
     std::vector< std::vector< unsigned int > > & annotations,
     std::vector< unsigned int > & geneid,
@@ -31,7 +31,7 @@ SEXP new_model(
 
 //' @rdname aphylo2-class
 //' @export
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 int init(SEXP p) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
@@ -42,7 +42,37 @@ int init(SEXP p) {
 
 //' @rdname aphylo2-class
 //' @export
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
+int nterms(SEXP p) {
+
+  Rcpp::XPtr< APhyloModel >ptr(p);
+  return ptr->nterms();
+
+}
+
+//' @rdname aphylo2-class
+//' @export
+// [[Rcpp::export(rng = false)]]
+int nnodes(SEXP p) {
+
+  Rcpp::XPtr< APhyloModel >ptr(p);
+  return ptr->nnodes();
+
+}
+
+//' @rdname aphylo2-class
+//' @export
+// [[Rcpp::export(rng = false)]]
+int nleafs(SEXP p) {
+
+  Rcpp::XPtr< APhyloModel >ptr(p);
+  return ptr->nleafs();
+
+}
+
+//' @rdname aphylo2-class
+//' @export
+// [[Rcpp::export(rng = false)]]
 double likelihood(SEXP p, const std::vector< double > & par) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
@@ -52,7 +82,7 @@ double likelihood(SEXP p, const std::vector< double > & par) {
 
 //' @rdname aphylo2-class
 //' @export
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 NumericMatrix get_probabilities(SEXP p) {
   Rcpp::XPtr< APhyloModel >ptr(p);
   unsigned int N = ptr->nodes.size();
@@ -71,7 +101,7 @@ NumericMatrix get_probabilities(SEXP p) {
 
 //' @rdname aphylo2-class
 //' @export
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 std::vector< unsigned int > get_sequence(SEXP p) {
   Rcpp::XPtr< APhyloModel >ptr(p);
   return ptr->sequence;
@@ -79,11 +109,27 @@ std::vector< unsigned int > get_sequence(SEXP p) {
 
 //' @rdname aphylo2-class
 //' @export
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
+int set_seed(SEXP p, unsigned int s) {
+  Rcpp::XPtr< APhyloModel > ptr(p);
+  ptr->set_seed(s);
+  return 0;
+}
+
+//' @rdname aphylo2-class
+//' @export
+// [[Rcpp::export(rng = false)]]
 std::vector< std::vector< unsigned int > > sim_aphylo2(
-    SEXP p, const std::vector<double> & par) {
+    SEXP p,
+    const std::vector<double> & par,
+    int seed = -1
+  ) {
 
   Rcpp::XPtr< APhyloModel > ptr(p);
+
+  if (seed > 0)
+    ptr->set_seed(seed);
+
   return ptr->simulate(par);
 
 }
@@ -93,7 +139,7 @@ std::vector< std::vector< unsigned int > > sim_aphylo2(
 //' @title Evolutionary terms
 //' @export
 //' @name aphylo2-terms
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 int term_gains(SEXP p, std::vector<unsigned int> & funs) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
@@ -104,7 +150,7 @@ int term_gains(SEXP p, std::vector<unsigned int> & funs) {
 
 //' @export
 //' @rdname aphylo2-terms
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 int term_loss(SEXP p, std::vector<unsigned int> & funs) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
@@ -115,7 +161,7 @@ int term_loss(SEXP p, std::vector<unsigned int> & funs) {
 
 //' @export
 //' @rdname aphylo2-terms
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 int term_cogain(SEXP p, unsigned int a, unsigned int b) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
@@ -126,7 +172,7 @@ int term_cogain(SEXP p, unsigned int a, unsigned int b) {
 
 //' @export
 //' @rdname aphylo2-terms
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 int term_neofun(SEXP p, unsigned int a, unsigned int b) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
@@ -137,7 +183,7 @@ int term_neofun(SEXP p, unsigned int a, unsigned int b) {
 
 //' @export
 //' @rdname aphylo2-terms
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 int term_subfun(SEXP p, unsigned int a, unsigned int b) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
@@ -148,7 +194,7 @@ int term_subfun(SEXP p, unsigned int a, unsigned int b) {
 
 //' @export
 //' @rdname aphylo2-terms
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 int term_maxfuns(SEXP p, unsigned int lb, unsigned int ub) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);

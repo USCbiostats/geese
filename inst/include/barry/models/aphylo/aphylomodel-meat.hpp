@@ -18,11 +18,11 @@ APhyloModel::APhyloModel(
     if (annotations.size() == 0u)
         throw std::logic_error("Annotations is empty");
 
-    nfuns = annotations.at(0u).size();
+    nfunctions = annotations.at(0u).size();
 
     // unsigned int n = annotations.size();
     for (auto& iter : annotations) {
-        if (iter.size() != nfuns)
+        if (iter.size() != nfunctions)
             throw std::length_error("Not all the annotations have the same length");
     }
 
@@ -121,7 +121,7 @@ void APhyloModel::init() {
     model_full.set_keygen(keygen_full);
 
     model_const.add_rule(
-            rule_blocked<phylocounters::PhyloArray,phylocounters::PhyloRuleData>
+            rule_empty_free<phylocounters::PhyloArray,phylocounters::PhyloRuleData>
             );
 
     model_const.set_counters(&counters);
@@ -133,14 +133,14 @@ void APhyloModel::init() {
     model_full.set_rengine(&this->rengine, false);
 
     // All combinations of the function
-    phylocounters::PhyloPowerSet pset(nfuns, 1u);
+    phylocounters::PhyloPowerSet pset(nfunctions, 1u);
     pset.calc();
 
     states.reserve(pset.data.size());
     unsigned int i = 0u;
     for (auto& iter : pset.data) {
 
-        states.push_back(std::vector< bool >(nfuns, false));
+        states.push_back(std::vector< bool >(nfunctions, false));
 
         for (auto iter2 = iter.get_col(0u, false)->begin(); iter2 != iter.get_col(0u, false)->end(); ++iter2)
             states.at(i).at(iter2->first) = true;
@@ -157,12 +157,12 @@ void APhyloModel::init() {
         // Only parents get a node
         if (!iter.second.is_leaf()) {
 
-            // Creating the phyloarray, nfuns x noffspring
-            iter.second.array = phylocounters::PhyloArray(nfuns, iter.second.offspring.size());
+            // Creating the phyloarray, nfunctions x noffspring
+            iter.second.array = phylocounters::PhyloArray(nfunctions, iter.second.offspring.size());
             iter.second.probabilities.resize(pset.size(), 0.0);
 
             // Adding the data, first through functions
-            for (unsigned int k = 0u; k < nfuns; ++k) {
+            for (unsigned int k = 0u; k < nfunctions; ++k) {
 
                 // Then through the offspring
                 unsigned int j = 0;
@@ -227,6 +227,9 @@ void APhyloModel::init() {
         n.second.visited = false;
     }
 
+    // So that others now know it was initialized
+    initialized = true;
+
     return;
 }
 
@@ -287,6 +290,31 @@ std::vector< double > APhyloModel::get_probabilities() const {
 
     return res;
     
+}
+
+unsigned int APhyloModel::nfuns() const {
+    return this->nfunctions;
+}
+
+unsigned int APhyloModel::nnodes() const {
+    return this->nodes.size();
+}
+
+unsigned int APhyloModel::nleafs() const {
+
+    unsigned int n = 0u;
+    for (auto& iter : this->nodes)
+        if (iter.second.is_leaf())
+            n++;
+
+    return n;
+}
+
+unsigned int APhyloModel::nterms() const {
+
+    INITIALIZED()
+
+    return model_const.nterms();
 }
 
 #endif
