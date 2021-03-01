@@ -314,7 +314,7 @@ unsigned int APhyloModel::nterms() const {
 
     INITIALIZED()
 
-    return model_const.nterms();
+    return model_const.nterms() + this->nfuns();
 }
 
 #endif
