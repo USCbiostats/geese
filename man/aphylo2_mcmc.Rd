@@ -4,7 +4,12 @@
 \alias{aphylo2_mcmc}
 \title{MCMC for aphylo2}
 \usage{
-aphylo2_mcmc(amodel, initial = rep(0, nterms(amodel)), ...)
+aphylo2_mcmc(
+  amodel,
+  initial = rep(0, nterms(amodel)),
+  prior = function(p) {     stats::dlogis(p, log = TRUE) },
+  ...
+)
 }
 \arguments{
 \item{amodel}{an object of class \linkS4class{aphylo2}}

@@ -7,6 +7,9 @@
 aphylo2_mcmc <- function(
   amodel,
   initial = rep(0, nterms(amodel)),
+  prior   = function(p) {
+    stats::dlogis(p, log = TRUE)
+  },
   ...
   ) {
 
@@ -14,7 +17,7 @@ aphylo2_mcmc <- function(
   # Normalized Log-likelihood function
   fun <- function(p) {
 
-    ans <- -log(likelihood(amodel, p))
+    ans <- -log(likelihood(amodel, p)) - prior(p)
 
     if (!is.finite(ans))
       return(-.Machine$double.xmax * 1e-100)

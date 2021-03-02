@@ -1,23 +1,25 @@
 library(aphylo2)
 
-# Preparing data
-geneid   <- c(0, 1, 2, 3, 4, 5, 6)
-parentid <- c(4, 4, 5, 5, 6, 6, -1)
-duplication <- rep(TRUE, 7)
+n <- 20
 
 # Preparing data
-annotations <- list(
-  c(1, 1, 0),
-  c(9, 1, 0),
-  c(0, 9, 1),
-  c(1, 0, 9),
-  c(9, 9, 9),
-  c(9, 9, 9),
-  c(9, 9, 9)
+annotations <- replicate(n * 2 - 1, c(9, 9, 9), simplify = FALSE)
+
+# Random tree
+set.seed(31)
+tree <- aphylo::sim_tree(n)$edge - 1L
+
+duplication <- rep(TRUE, n * 2 - 1)
+
+# Reading the data in
+amodel <- new_model(
+  annotations = annotations,
+  geneid = c(tree[, 2]),
+  parent = c(tree[, 1]),
+  duplication = duplication
 )
 
-amodel <- new_model(annotations, geneid, parentid, duplication)
-
+# Preparing the model
 invisible({
 
   term_cogain(amodel, 0, 1)
@@ -32,15 +34,19 @@ invisible({
 # Testing
 params <- c(
   # Cogain
-  .1, .1, .1,
+  5, 5, -5,
   # max funs
-  .1,
+  10,
   # Root probabilities
-  .1, .1, .1
+  -10, -10, -10
 )
 
+likelihood(amodel, params*0)
+
+stop()
+
 # Simulating
-ans <- replicate(100, {
+ans <- replicate(500, {
   sim_aphylo2(amodel, c(10, 10, -10, 10, -100, -100, -100)/5)
 }, simplify = FALSE)
 
@@ -83,7 +89,7 @@ mles <- lapply(ans, function(a) {
   with(estimates, list(par = par, hessian = hessian, counts = counts))
 })
 
-estimates <- sapply(mles, "[[", "par")
+estimates <- lapply(mles, "[[", "par")
 estimates <- do.call(rbind, estimates[sapply(estimates, length) > 0])
 
 boxplot(estimates)

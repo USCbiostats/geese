@@ -40,23 +40,23 @@ devtools::install_github("USCbiostats/aphylo2")
 library(aphylo2)
 
 # Preparing data
-annotations <- list(
-  c(1, 1, 0),
-  c(9, 1, 0),
-  c(0, 9, 1),
-  c(1, 0, 9),
-  c(9, 9, 9),
-  c(9, 9, 9),
-  c(9, 9, 9)
-)
+annotations <- replicate(7L, c(9, 9, 9), simplify = FALSE)
 
-geneid   <- c(0, 1, 2, 3, 4, 5, 6)
-parentid <- c(4, 4, 5, 5, 6, 6, -1)
+# Random tree
+set.seed(31)
+tree <- aphylo::sim_tree(4)$edge - 1L
+
 duplication <- rep(TRUE, 7)
 
-# Building the model
-amodel <- new_model(annotations, geneid, parentid, duplication)
+# Reading the data in
+amodel <- new_model(
+  annotations = annotations,
+  geneid = c(tree[, 2], 4),
+  parent = c(tree[, 1], -1),
+  duplication = duplication
+  )
 
+# Preparing the model
 invisible({
   
   term_cogain(amodel, 0, 1)
@@ -71,15 +71,38 @@ invisible({
 # Testing
 params <- c(
   # Cogain
-  .1, .1, .1,
+  5, 5, -5,
   # max funs
-  .1, 
+  10, 
   # Root probabilities
-  .1, .1, .1
+  -10, -10, -10
 )
 
-# Testing the likelihood
 likelihood(amodel, params*0)
+
+# Simulating data
+fake <- sim_aphylo2(p = amodel, par = params, seed = 1)
+
+amodel <- new_model(
+  annotations = fake,
+  geneid = tree[, 2],
+  parent = tree[, 1],
+  duplication = duplication
+  )
+
+# Fitting the model
+
+invisible({
+  
+  term_cogain(amodel, 0, 1)
+  term_cogain(amodel, 0, 2)
+  term_cogain(amodel, 1, 2)
+  term_maxfuns(amodel, 2, 2)
+  
+  init(amodel)
+  
+})
+
 
 # Finding MLE
 ans <- optim(params*0, function(f) {
