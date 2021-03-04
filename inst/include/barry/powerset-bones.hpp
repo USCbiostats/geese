@@ -35,7 +35,11 @@ public:
    */
   PowerSet() : 
   EmptyArray(), data(0u), rules(new Rules<Array_Type,Data_Rule_Type>()), N(0u), M(0u) {};
-  PowerSet(uint N_, uint M_) : EmptyArray(N_, M_), data(0u), rules(new Rules<Array_Type,Data_Rule_Type>()), N(N_), M(M_) {};
+  PowerSet(uint N_, uint M_) :
+    EmptyArray(N_, M_), data(0u),
+    rules(new Rules<Array_Type,Data_Rule_Type>()), N(N_), M(M_) {};
+  PowerSet(const Array_Type & array);
+
   ~PowerSet();
   
   void init_support();
@@ -66,6 +70,7 @@ public:
   typename std::vector< Array_Type >::iterator begin() {return data.begin();};
   typename std::vector< Array_Type >::iterator end() {return data.end();};
   uint size() const {return data.size();};
+  const Array_Type& operator[](const unsigned int & i) const {return data.at(i);};
   ///@}
   
 };

@@ -4,6 +4,14 @@
 #define BARRY_POWERSET_MEAT_HPP 1
 
 template <typename Array_Type, typename Data_Rule_Type>
+inline PowerSet<Array_Type,Data_Rule_Type>::PowerSet(
+  const Array_Type & array
+) : EmptyArray(array), data(0u),
+    rules(new Rules<Array_Type,Data_Rule_Type>()), N(array.N), M(array.M) {
+
+}
+
+template <typename Array_Type, typename Data_Rule_Type>
 inline PowerSet<Array_Type,Data_Rule_Type>::~PowerSet() {
   if (!this->rules_deleted)
     delete rules;
@@ -19,12 +27,12 @@ inline void PowerSet<Array_Type,Data_Rule_Type>::init_support() {
   
   // Computing initial statistics
   if (EmptyArray.nnozero() > 0u) {
-    for (uint i = 0u; i < coordinates_locked.size(); ++i) 
-      EmptyArray.rm_cell(coordinates_locked[i].first, coordinates_locked[i].second, false, true);
+    for (uint i = 0u; i < coordinates_free.size(); ++i) 
+      EmptyArray.rm_cell(coordinates_free[i].first, coordinates_free[i].second, false, true);
   }
 
-  EmptyArray.clear(true);
-  EmptyArray.reserve();
+  // EmptyArray.clear(true);
+  // EmptyArray.reserve();
   
   // Resizing support
   data.reserve(pow(2.0, coordinates_free.size())); 

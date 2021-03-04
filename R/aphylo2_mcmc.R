@@ -17,7 +17,7 @@ aphylo2_mcmc <- function(
   # Normalized Log-likelihood function
   fun <- function(p) {
 
-    ans <- -log(likelihood(amodel, p)) - prior(p)
+    ans <- log(likelihood(amodel, p)) + sum(prior(p))
 
     if (!is.finite(ans))
       return(-.Machine$double.xmax * 1e-100)

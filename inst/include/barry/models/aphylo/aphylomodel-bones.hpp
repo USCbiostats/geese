@@ -20,8 +20,8 @@ std::vector< T1 > caster(const std::vector< T2 > & vec) {
     std::vector< T1 > ans;
     ans.reserve(vec.size());
 
-    for (auto &i : vec) {
-        ans.push_back(*i);
+    for (auto& i : vec) {
+        ans.push_back(static_cast< T1 >(i));
     }
 
     return ans;
@@ -67,6 +67,18 @@ inline std::vector< double > keygen_full(
     }
 
     return dat;
+}
+
+inline bool vec_diff(
+    const std::vector< unsigned int > & s,
+    const std::vector< unsigned int > & a
+) {
+
+    for (unsigned int i = 0u; i < a.size(); ++i)
+        if ((a.at(i) != 9u) && (a.at(i) != s.at(i)))
+            return true;
+
+    return false;
 }
 
 /**
@@ -159,7 +171,9 @@ public:
 
     double operator()(std::vector< double > & par, unsigned int & i);
     void calc_sequence(Node * n = nullptr);
+
     double likelihood(const std::vector< double > & par);
+    double likelihood_exact(const std::vector< double > & par);
 
     std::vector< double > get_probabilities() const;
 
