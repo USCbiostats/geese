@@ -92,7 +92,7 @@ out <- slurmR::Slurm_lapply(ans, function(a) {
     # Fitting the model
     ans_mcmc <- tryCatch(aphylo2_mcmc(
       amodel,
-      nsteps  = 20000,
+      nsteps  = 40000,
       kernel  = fmcmc::kernel_ram(warmup = 2000),
       prior   = function(p) dlogis(p, scale = 2, log = TRUE)
     ), error = function(e) e)
@@ -102,7 +102,7 @@ out <- slurmR::Slurm_lapply(ans, function(a) {
       return(ans_mcmc)
 
     # Thinning
-    ans_mcmc <- window(ans_mcmc, start = 15000)
+    ans_mcmc <- window(ans_mcmc, start = 30000)
 
     list(
       estimates = apply(ans_mcmc, 2, quantile, probs = c(.025, .5, 0.975)),

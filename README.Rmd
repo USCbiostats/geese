@@ -87,6 +87,16 @@ likelihood(amodel, params*0) # Equals 1 b/c all missings
 fake <- sim_aphylo2(p = amodel, par = params, seed = 1110)
 ```
 
+```{r viz-with-aphylo}
+library(aphylo)
+ap <- new_aphylo(
+  tree           = {set.seed(31);aphylo::sim_tree(n)},
+  tip.annotation = as.data.frame(do.call(rbind, fake[1:n]))
+)
+plot(ap)
+```
+
+
 ```{r mle}
 # Fitting the model
 fake[101:199] <- replicate(99, c(9L,9L), simplify = FALSE)
@@ -126,22 +136,26 @@ diag(MASS::ginv(-ans$hessian))
 set.seed(122)
 ans_mcmc <- aphylo2_mcmc(
   amodel,
-  nsteps  = 20000,
+  nsteps  = 40000,
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
   prior   = function(p) dlogis(p, scale = 2, log = TRUE)
   )
 ```
 
-```{r mcmc-analysis}
-op <- par(mfrow = c(4, 2))
+```{r mcmc-analysis, echo = FALSE}
+op <- par(
+  mfrow = c(4, 2), #tcl=.5,
+  las=1, mar = c(3,3,1,0),
+  bty = "n", oma = rep(1,4)
+  )
 for (i in 1:ncol(ans_mcmc)) {
-  tmpx <- window(ans_mcmc, start = 15000)[,i,drop=FALSE]
-  plot(
-    density(tmpx),
+  tmpx <- window(ans_mcmc, start = 20000)[,i,drop=FALSE]
+  
+  coda::traceplot(
+    tmpx, smooth = FALSE, ylim = c(-11,11), col = rgb(0, 128, 128, maxColorValue = 255), 
     main = names(params)[i]
     )
-  abline(v = quantile(tmpx, .5), lty = 2, lwd = 2, col = "tomato")
-  abline(v = params[i], lty=3, lwd=2, col = "steelblue")
+  abline(h = params[i], lty=3, lwd=4, col = "red")
 }
 par(op)
 summary(window(ans_mcmc, start = 15000))

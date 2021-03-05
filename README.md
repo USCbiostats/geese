@@ -4,7 +4,6 @@
 # aphylo2
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 The goal of aphylo2 is to …
@@ -80,6 +79,18 @@ fake <- sim_aphylo2(p = amodel, par = params, seed = 1110)
 ```
 
 ``` r
+library(aphylo)
+#> Loading required package: ape
+ap <- new_aphylo(
+  tree           = {set.seed(31);aphylo::sim_tree(n)},
+  tip.annotation = as.data.frame(do.call(rbind, fake[1:n]))
+)
+plot(ap)
+```
+
+<img src="man/figures/README-viz-with-aphylo-1.png" width="100%" />
+
+``` r
 # Fitting the model
 fake[101:199] <- replicate(99, c(9L,9L), simplify = FALSE)
 amodel <- new_model(
@@ -153,63 +164,42 @@ diag(MASS::ginv(-ans$hessian))
 set.seed(122)
 ans_mcmc <- aphylo2_mcmc(
   amodel,
-  nsteps  = 20000,
+  nsteps  = 40000,
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
   prior   = function(p) dlogis(p, scale = 2, log = TRUE)
   )
-#> 
-#> |0%                 |25%                |50%                |75%           100%|
-#> --------------------------------------------------------------------------------
-#> ////////////////////////////////////////////////////////////////////////////////
-```
-
-``` r
-op <- par(mfrow = c(4, 2))
-for (i in 1:ncol(ans_mcmc)) {
-  tmpx <- window(ans_mcmc, start = 15000)[,i,drop=FALSE]
-  plot(
-    density(tmpx),
-    main = names(params)[i]
-    )
-  abline(v = quantile(tmpx, .5), lty = 2, lwd = 2, col = "tomato")
-  abline(v = params[i], lty=3, lwd=2, col = "steelblue")
-}
-par(op)
 ```
 
 <img src="man/figures/README-mcmc-analysis-1.png" width="100%" />
 
-``` r
-summary(window(ans_mcmc, start = 15000))
-#> 
-#> Iterations = 15000:20000
-#> Thinning interval = 1 
-#> Number of chains = 1 
-#> Sample size per chain = 5001 
-#> 
-#> 1. Empirical mean and standard deviation for each variable,
-#>    plus standard error of the mean:
-#> 
-#>         Mean     SD Naive SE Time-series SE
-#> par1  3.4737 2.3279  0.03292        0.37906
-#> par2  2.8471 2.7343  0.03866        0.57655
-#> par3 -2.0180 0.9663  0.01366        0.10986
-#> par4 -2.2933 1.3051  0.01846        0.16502
-#> par5  2.5153 0.8131  0.01150        0.09235
-#> par6  0.5291 3.1101  0.04398        0.39694
-#> par7 -0.5479 3.1468  0.04450        0.42594
-#> 
-#> 2. Quantiles for each variable:
-#> 
-#>         2.5%     25%     50%    75%   97.5%
-#> par1  0.1964  2.1794  3.1351  4.276  9.9887
-#> par2 -0.6170  0.7377  2.4391  4.068 10.0958
-#> par3 -4.1523 -2.6471 -1.8872 -1.323 -0.4065
-#> par4 -4.8967 -3.2830 -2.1809 -1.295 -0.1173
-#> par5  1.2103  1.9248  2.4225  2.974  4.4613
-#> par6 -5.6624 -1.5766  0.5858  2.324  7.4192
-#> par7 -6.7773 -2.7457 -0.5531  1.516  5.7348
-```
+    #> 
+    #> Iterations = 15000:40000
+    #> Thinning interval = 1 
+    #> Number of chains = 1 
+    #> Sample size per chain = 25001 
+    #> 
+    #> 1. Empirical mean and standard deviation for each variable,
+    #>    plus standard error of the mean:
+    #> 
+    #>           Mean     SD Naive SE Time-series SE
+    #> par1  3.249064 1.9591 0.012390        0.10719
+    #> par2  2.081177 1.9647 0.012426        0.13206
+    #> par3 -1.999795 1.0003 0.006326        0.04588
+    #> par4 -2.401966 1.3356 0.008447        0.07514
+    #> par5  2.562228 0.8483 0.005365        0.03982
+    #> par6  0.007906 3.5372 0.022371        0.16822
+    #> par7 -0.017456 3.5727 0.022595        0.15159
+    #> 
+    #> 2. Quantiles for each variable:
+    #> 
+    #>         2.5%     25%      50%    75%   97.5%
+    #> par1  0.1628  1.9027  3.02451  4.313  8.0296
+    #> par2 -0.8047  0.5023  1.78413  3.484  6.2260
+    #> par3 -4.1927 -2.6005 -1.91258 -1.306 -0.2993
+    #> par4 -5.1704 -3.3077 -2.34491 -1.400 -0.1107
+    #> par5  1.2453  1.9455  2.44889  3.044  4.5671
+    #> par6 -6.9166 -2.1409  0.07747  2.228  7.2453
+    #> par7 -7.2802 -2.2749 -0.02967  2.200  7.2766
 
 ## Code of Conduct
 
