@@ -79,6 +79,7 @@ params <- c(
   # Root probabilities
   -10, -10
 )
+names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
 
 likelihood(amodel, params*0) # Equals 1 b/c all missings
 
@@ -123,10 +124,8 @@ diag(MASS::ginv(-ans$hessian))
 
 ```{r mcmc-fit, cache=TRUE}
 set.seed(122)
-names(mu) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
 ans_mcmc <- aphylo2_mcmc(
   amodel,
-  initial = mu * 0,
   nsteps  = 20000,
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
   prior   = function(p) dlogis(p, scale = 2, log = TRUE)
@@ -139,7 +138,7 @@ for (i in 1:ncol(ans_mcmc)) {
   tmpx <- window(ans_mcmc, start = 15000)[,i,drop=FALSE]
   plot(
     density(tmpx),
-    main = names(mu)[i]
+    main = names(params)[i]
     )
   abline(v = quantile(tmpx, .5), lty = 2, lwd = 2, col = "tomato")
   abline(v = params[i], lty=3, lwd=2, col = "steelblue")
