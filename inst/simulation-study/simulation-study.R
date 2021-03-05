@@ -1,15 +1,16 @@
 #!/bin/sh
-#SBATCH --account=pdthomas_136
-#SBATCH --partition=thomas
+#SBATCH --account=dconti_251
+#SBATCH --partition=conti
 #SBATCH --mail-user=vegayon@usc.edu
 #SBATCH --mail-type=END,FAIL
 #SBATCH --job-name=aphylo2-sim
+#SBATCH --mem=20G
 
 library(aphylo2)
 
 n     <- 30
 nsims <- 2e3
-NJOBS <- 100
+NJOBS <- 200
 
 # Testing
 params <- c(
@@ -89,32 +90,38 @@ out <- slurmR::Slurm_lapply(ans, function(a) {
     })
 
     # Fitting the model
-    names(mu) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
     ans_mcmc <- tryCatch(aphylo2_mcmc(
       amodel,
-      initial = mu * 0,
       nsteps  = 20000,
       kernel  = fmcmc::kernel_ram(warmup = 2000),
       prior   = function(p) dlogis(p, scale = 2, log = TRUE)
     ), error = function(e) e)
 
 
-    if (inherits(estimates, "error"))
-      return(estimates)
+    if (inherits(ans_mcmc, "error"))
+      return(ans_mcmc)
 
-    estimates
+    # Thinning
+    ans_mcmc <- window(ans_mcmc, start = 15000)
+
+    list(
+      estimates = apply(ans_mcmc, 2, quantile, probs = c(.025, .5, 0.975)),
+      vcov      = cov(ans_mcmc)
+    )
 
   },
   njobs = NJOBS,
   job_name = "aphylo2-lapply",
   tmp_path = "/scratch/vegayon/",
   sbatch_opt    = list(
-    account     = "pdthomas_136",
-    partition   = "thomas",
+    account     = "dconti_251",
+    partition   = "conti",
     "mail-user" = "vegayon@usc.edu",
     "mail-type" = "END,FAIL"
     ),
-  mc.cores = 1L
+  mc.cores = 1L,
+  export = c("tree", "duplication"),
+  overwrite = TRUE
 )
 
 # Saving the output
