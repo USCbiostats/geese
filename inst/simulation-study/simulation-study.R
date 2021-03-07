@@ -8,16 +8,16 @@
 
 library(aphylo2)
 
-n     <- 30
-nsims <- 2e3
+n     <- 50
+nsims <- 5e3
 NJOBS <- 200
 
 # Testing
 params <- c(
   # Gains
-  2, 1,
+  2, 1.5,
   # Loss
-  -2, -1,
+  -2, -1.5,
   # Maxfuns
   2,
   # Root probabilities
