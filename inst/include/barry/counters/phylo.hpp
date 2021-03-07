@@ -80,6 +80,11 @@ typedef PowerSet<PhyloArray, PhyloRuleData> PhyloPowerSet;
 #define PHYLO_COUNTER_LAMBDA(a) Counter_fun_type<PhyloArray, PhyloCounterData> a = \
   [](const PhyloArray * Array, uint i, uint j, PhyloCounterData * data)
 
+#define PHYLO_CHECK_MISSING() if (Array->data == nullptr) \
+  throw std::logic_error("The array data is nullptr."); \
+  if (data == nullptr) \
+  throw std::logic_error("The counter data is nullptr.")
+
 /**
  * @name Counters for phylogenetic modeling.
  * @param counters A pointer to a `PhyloCounters` object (`Counters`<`PhyloArray`, `PhyloCounterData`>).
@@ -92,6 +97,11 @@ typedef PowerSet<PhyloArray, PhyloRuleData> PhyloPowerSet;
  */
 inline void counter_overall_gains(PhyloCounters * counters, bool duplication = true) {
   
+  PHYLO_COUNTER_LAMBDA(tmp_init) {
+    PHYLO_CHECK_MISSING();
+    return 0.0;
+  };
+
   PHYLO_COUNTER_LAMBDA(tmp_count) {
     if ((data->at(0u) == 1u) & Array->data->duplication)
       return 1.0;
@@ -104,7 +114,7 @@ inline void counter_overall_gains(PhyloCounters * counters, bool duplication = t
   };
   
   counters->add_counter(
-    tmp_count, nullptr,
+    tmp_count, tmp_init,
     new PhyloCounterData({duplication ? 1u : 0u}),
     true
   );
@@ -119,6 +129,11 @@ inline void counter_overall_gains(PhyloCounters * counters, bool duplication = t
  */
 inline void counter_gains(PhyloCounters * counters, std::vector<uint> nfun, bool duplication = true) {
   
+  PHYLO_COUNTER_LAMBDA(tmp_init) {
+    PHYLO_CHECK_MISSING();
+    return 0.0;
+  };
+
   PHYLO_COUNTER_LAMBDA(tmp_count) {
 
     if (Array->data->duplication & (data->at(1u) == 0u))
@@ -132,7 +147,7 @@ inline void counter_gains(PhyloCounters * counters, std::vector<uint> nfun, bool
   
   for (auto i = nfun.begin(); i != nfun.end(); ++i) {
     counters->add_counter(
-        tmp_count, nullptr,
+        tmp_count, tmp_init,
         new PhyloCounterData({*i, duplication ? 1u : 0u}),
         true
     );
@@ -160,6 +175,8 @@ inline void counter_overall_loss(PhyloCounters * counters, bool duplication = tr
   };
   
   PHYLO_COUNTER_LAMBDA(tmp_init) {
+
+    PHYLO_CHECK_MISSING();
 
     if ((data->at(0u) == 1u) & Array->data->duplication)
       return static_cast<double>((Array->N * Array->M));
@@ -192,6 +209,9 @@ inline void counter_maxfuns(
   ) {
 
   PHYLO_COUNTER_LAMBDA(tmp_init) {
+
+    PHYLO_CHECK_MISSING();    
+
     if (data->at(0u) == 0u)
       return static_cast<double>(Array->ncol());
     else {
@@ -201,7 +221,7 @@ inline void counter_maxfuns(
 
         uint count = 0u;
         for (uint i = 0u; i < Array->nrow(); ++i) {
-          if (!Array->is_empty(i, j))
+          if (Array->get_cell(i, j) == 1u)
             ++count;
         }
 
@@ -222,19 +242,25 @@ inline void counter_maxfuns(
     else if (!Array->data->duplication & (data->at(2u) == 1u))
       return 0.0;
     
+    uint counts = 0u;
+    for (auto& k : Array->el_ij.at(j)) {
+      if (k.second.value == 1u)
+        counts++;
+    }
+
     // Does the focal gene has nfun in [lb,ub]?
     if (data->at(1u) == 0u) {
 
       return
-        Array->el_ji.at(j).size() <= data->at(0u) ?
+        counts <= data->at(0u) ?
         0.0 : -1.0;
 
     } else {
 
       // Right above the lb?
-      if (Array->el_ji.at(j).size() == data->at(0u))
+      if (counts == data->at(0u))
         return 1.0;
-      else if (Array->el_ji.at(j).size() == (data->at(1u) + 1u))
+      else if (counts == (data->at(1u) + 1u))
         return -1.0;
       else
         return 0.0;
@@ -271,6 +297,8 @@ inline void counter_loss(PhyloCounters * counters, std::vector<uint> nfun, bool 
   };
   
   PHYLO_COUNTER_LAMBDA(tmp_init) {
+
+    PHYLO_CHECK_MISSING();
 
     if ((data->at(1u) == 1u) & !Array->data->duplication)
       return 0.0;
@@ -321,7 +349,7 @@ inline void counter_subfun(PhyloCounters * counters, uint nfunA, uint nfunB, boo
     uint other = (i == data->at(0u))? data->at(1u) :data->at(0u);
     double res = 0.0;
     // There are 4 cases: (first x second) x (had the second function)
-    if (!Array->is_empty(other, j)) { 
+    if (Array->get_cell(other, j, false) == 1u) { 
       
       for (uint off = 0u; off < Array->M; ++off) {
         
@@ -329,7 +357,7 @@ inline void counter_subfun(PhyloCounters * counters, uint nfunA, uint nfunB, boo
         if (off == j)
           continue;
         
-        if (!(Array->is_empty(i, off)) && Array->is_empty(other, off))
+        if ((Array->get_cell(i, off, false) == 1u) && (Array->get_cell(other, off, false) == 0u))
           res -= 1.0;
         
       }
@@ -342,7 +370,7 @@ inline void counter_subfun(PhyloCounters * counters, uint nfunA, uint nfunB, boo
         if (off == j)
           continue;
         
-        if (Array->is_empty(i, off) && !(Array->is_empty(other, off)))
+        if ((Array->get_cell(i, off, false) == 0u) && (Array->get_cell(other, off, false) == 1u))
           res += 1.0;
         
       }
@@ -352,9 +380,14 @@ inline void counter_subfun(PhyloCounters * counters, uint nfunA, uint nfunB, boo
     
     return res;
   };
+
+  PHYLO_COUNTER_LAMBDA(tmp_init) {
+    PHYLO_CHECK_MISSING();
+    return 0.0;
+  };
   
   counters->add_counter(
-      tmp_count, nullptr,
+      tmp_count, tmp_init,
       new PhyloCounterData({nfunA, nfunB, duplication ? 1u : 0u}),
       true
   );
@@ -403,9 +436,14 @@ inline void counter_cogain(PhyloCounters * counters, uint nfunA, uint nfunB, boo
     }
 
   };
+
+  PHYLO_COUNTER_LAMBDA(tmp_init) {
+    PHYLO_CHECK_MISSING();
+    return 0.0;
+  };
   
   counters->add_counter(
-      tmp_count, nullptr,
+      tmp_count, tmp_init,
       new PhyloCounterData({nfunA, nfunB, duplication ? 1u : 0u}),
       true
   );
@@ -443,13 +481,8 @@ inline void counter_longest(PhyloCounters * counters) {
   };
   
   PHYLO_COUNTER_LAMBDA(tmp_init) {
-    if (Array->data == nullptr)
-      throw std::logic_error("longest needs to initialize the data.");
-    
-    if (data == nullptr)
-      throw std::logic_error(
-          "data should be initialized in the counter (nullptr right now)."
-      );
+
+    PHYLO_CHECK_MISSING();
     
     if (Array->data->blengths.size() != Array->M)
       throw std::logic_error(
@@ -557,8 +590,13 @@ inline void counter_neofun(PhyloCounters * counters, uint nfunA, uint nfunB, boo
     return res;
   };
   
+  PHYLO_COUNTER_LAMBDA(tmp_init) {
+    PHYLO_CHECK_MISSING();
+    return 0.0;
+  };
+
   counters->add_counter(
-      tmp_count, nullptr,
+      tmp_count, tmp_init,
       new PhyloCounterData({nfunA, nfunB, duplication ? 1u : 0u}),
       true
   );

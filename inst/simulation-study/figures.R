@@ -4,9 +4,9 @@ x <- readRDS("inst/simulation-study/simulation-study.rds")
 # DGP parameters
 params <- c(
   # Gains
-  2, 1,
+  2, 1.5,
   # Loss
-  -2, -1,
+  -2, -1.5,
   # Maxfuns
   2,
   # Root probabilities
@@ -27,12 +27,14 @@ bias <- sapply(estimates, function(e) {
 })
 
 rownames(bias) <- c(
-  "Gain0", "Gain1",
-  "Lose0", "Lose1",
-  "OnlyOne", "Root0", "Root1"
+  "gain0", "gain1",
+  "lose0", "lose1",
+  "onefun", "root0", "root1"
 )
 
 # Pretty plot
+graphics.off()
+svg("figures.svg")
 boxplot(t(bias), border = "darkgray", col = "steelblue", outline = FALSE,
         ylim = c(-6, 3), ylab = "Parameter Value", xlab = "Parameter")
 # grid()
@@ -46,4 +48,4 @@ text(
   y = params + .15,
   labels = sprintf("%.2f", params)
 )
-
+dev.off()

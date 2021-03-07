@@ -112,25 +112,47 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// observed_counts
+std::vector< std::vector< double > > observed_counts(SEXP p);
+RcppExport SEXP _aphylo2_observed_counts(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(observed_counts(p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// print_observed_counts
+int print_observed_counts(SEXP p);
+RcppExport SEXP _aphylo2_print_observed_counts(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(print_observed_counts(p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // term_gains
-int term_gains(SEXP p, std::vector<unsigned int>& funs);
-RcppExport SEXP _aphylo2_term_gains(SEXP pSEXP, SEXP funsSEXP) {
+int term_gains(SEXP p, std::vector<unsigned int>& funs, bool duplication);
+RcppExport SEXP _aphylo2_term_gains(SEXP pSEXP, SEXP funsSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< std::vector<unsigned int>& >::type funs(funsSEXP);
-    rcpp_result_gen = Rcpp::wrap(term_gains(p, funs));
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_gains(p, funs, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_loss
-int term_loss(SEXP p, std::vector<unsigned int>& funs);
-RcppExport SEXP _aphylo2_term_loss(SEXP pSEXP, SEXP funsSEXP) {
+int term_loss(SEXP p, std::vector<unsigned int>& funs, bool duplication);
+RcppExport SEXP _aphylo2_term_loss(SEXP pSEXP, SEXP funsSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< std::vector<unsigned int>& >::type funs(funsSEXP);
-    rcpp_result_gen = Rcpp::wrap(term_loss(p, funs));
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_loss(p, funs, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -194,8 +216,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_get_sequence", (DL_FUNC) &_aphylo2_get_sequence, 1},
     {"_aphylo2_set_seed", (DL_FUNC) &_aphylo2_set_seed, 2},
     {"_aphylo2_sim_aphylo2", (DL_FUNC) &_aphylo2_sim_aphylo2, 3},
-    {"_aphylo2_term_gains", (DL_FUNC) &_aphylo2_term_gains, 2},
-    {"_aphylo2_term_loss", (DL_FUNC) &_aphylo2_term_loss, 2},
+    {"_aphylo2_observed_counts", (DL_FUNC) &_aphylo2_observed_counts, 1},
+    {"_aphylo2_print_observed_counts", (DL_FUNC) &_aphylo2_print_observed_counts, 1},
+    {"_aphylo2_term_gains", (DL_FUNC) &_aphylo2_term_gains, 3},
+    {"_aphylo2_term_loss", (DL_FUNC) &_aphylo2_term_loss, 3},
     {"_aphylo2_term_cogain", (DL_FUNC) &_aphylo2_term_cogain, 3},
     {"_aphylo2_term_neofun", (DL_FUNC) &_aphylo2_term_neofun, 3},
     {"_aphylo2_term_subfun", (DL_FUNC) &_aphylo2_term_subfun, 3},

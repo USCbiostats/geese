@@ -134,16 +134,50 @@ std::vector< std::vector< unsigned int > > sim_aphylo2(
 
 }
 
+//' @rdname aphylo2-class
+//' @export
+// [[Rcpp::export(rng = false)]]
+std::vector< std::vector< double > > observed_counts(
+    SEXP p
+) {
+
+  Rcpp::XPtr< APhyloModel > ptr(p);
+
+  return ptr->observed_counts();
+
+}
+
+//' @rdname aphylo2-class
+//' @export
+// [[Rcpp::export(rng = false)]]
+int print_observed_counts(
+    SEXP p
+) {
+
+  Rcpp::XPtr< APhyloModel > ptr(p);
+
+  ptr->print_observed_counts();
+  return 0;
+
+}
+
+
+
+
 /******************************************************************************/
 
 //' @title Evolutionary terms
 //' @export
 //' @name aphylo2-terms
 // [[Rcpp::export(rng = false)]]
-int term_gains(SEXP p, std::vector<unsigned int> & funs) {
+int term_gains(
+    SEXP p,
+    std::vector<unsigned int> & funs,
+    bool duplication = true
+  ) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
-  phylocounters::counter_gains(&ptr->counters, funs);
+  phylocounters::counter_gains(&ptr->counters, funs, duplication);
   return 0;
 
 }
@@ -151,10 +185,11 @@ int term_gains(SEXP p, std::vector<unsigned int> & funs) {
 //' @export
 //' @rdname aphylo2-terms
 // [[Rcpp::export(rng = false)]]
-int term_loss(SEXP p, std::vector<unsigned int> & funs) {
+int term_loss(SEXP p, std::vector<unsigned int> & funs,
+              bool duplication = true) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
-  phylocounters::counter_loss(&ptr->counters, funs);
+  phylocounters::counter_loss(&ptr->counters, funs, duplication);
   return 0;
 
 }

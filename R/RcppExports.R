@@ -65,17 +65,29 @@ sim_aphylo2 <- function(p, par, seed = -1L) {
     .Call(`_aphylo2_sim_aphylo2`, p, par, seed)
 }
 
+#' @rdname aphylo2-class
+#' @export
+observed_counts <- function(p) {
+    .Call(`_aphylo2_observed_counts`, p)
+}
+
+#' @rdname aphylo2-class
+#' @export
+print_observed_counts <- function(p) {
+    .Call(`_aphylo2_print_observed_counts`, p)
+}
+
 #' @title Evolutionary terms
 #' @export
 #' @name aphylo2-terms
-term_gains <- function(p, funs) {
-    .Call(`_aphylo2_term_gains`, p, funs)
+term_gains <- function(p, funs, duplication = TRUE) {
+    .Call(`_aphylo2_term_gains`, p, funs, duplication)
 }
 
 #' @export
 #' @rdname aphylo2-terms
-term_loss <- function(p, funs) {
-    .Call(`_aphylo2_term_loss`, p, funs)
+term_loss <- function(p, funs, duplication = TRUE) {
+    .Call(`_aphylo2_term_loss`, p, funs, duplication)
 }
 
 #' @export

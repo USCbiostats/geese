@@ -10,9 +10,9 @@
 \alias{term_maxfuns}
 \title{Evolutionary terms}
 \usage{
-term_gains(p, funs)
+term_gains(p, funs, duplication = TRUE)
 
-term_loss(p, funs)
+term_loss(p, funs, duplication = TRUE)
 
 term_cogain(p, a, b)
 
