@@ -114,3 +114,15 @@ term_maxfuns <- function(p, lb, ub) {
     .Call(`_aphylo2_term_maxfuns`, p, lb, ub)
 }
 
+#' @export
+#' @rdname aphylo2-terms
+term_overall_changes <- function(p, duplication = TRUE) {
+    .Call(`_aphylo2_term_overall_changes`, p, duplication)
+}
+
+#' @export
+#' @rdname aphylo2-terms
+term_kgains <- function(p, funs, k = 1L, duplication = TRUE) {
+    .Call(`_aphylo2_term_kgains`, p, funs, k, duplication)
+}
+

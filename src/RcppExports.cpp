@@ -204,6 +204,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// term_overall_changes
+int term_overall_changes(SEXP p, bool duplication);
+RcppExport SEXP _aphylo2_term_overall_changes(SEXP pSEXP, SEXP duplicationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_overall_changes(p, duplication));
+    return rcpp_result_gen;
+END_RCPP
+}
+// term_kgains
+int term_kgains(SEXP p, std::vector<unsigned int>& funs, int k, bool duplication);
+RcppExport SEXP _aphylo2_term_kgains(SEXP pSEXP, SEXP funsSEXP, SEXP kSEXP, SEXP duplicationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< std::vector<unsigned int>& >::type funs(funsSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_kgains(p, funs, k, duplication));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_new_model", (DL_FUNC) &_aphylo2_new_model, 4},
@@ -224,6 +248,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_term_neofun", (DL_FUNC) &_aphylo2_term_neofun, 3},
     {"_aphylo2_term_subfun", (DL_FUNC) &_aphylo2_term_subfun, 3},
     {"_aphylo2_term_maxfuns", (DL_FUNC) &_aphylo2_term_maxfuns, 3},
+    {"_aphylo2_term_overall_changes", (DL_FUNC) &_aphylo2_term_overall_changes, 2},
+    {"_aphylo2_term_kgains", (DL_FUNC) &_aphylo2_term_kgains, 4},
     {NULL, NULL, 0}
 };
 

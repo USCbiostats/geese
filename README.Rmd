@@ -99,11 +99,12 @@ plot(ap)
 
 ```{r mle}
 # Fitting the model
-fake[101:199] <- replicate(99, c(9L,9L), simplify = FALSE)
+
+# Figuring out order
 amodel <- new_model(
-  annotations = fake,
-  geneid = tree[, 2],
-  parent = tree[, 1],
+  annotations = fake[c(tree[, 2], n) + 1],
+  geneid      = c(tree[, 2], n),
+  parent      = c(tree[, 1],-1),
   duplication = duplication
   )
 
