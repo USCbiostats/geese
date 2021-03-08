@@ -14,14 +14,17 @@ NJOBS <- 200
 
 # Testing
 params <- c(
-  # Gains
-  2, 1.5,
-  # Loss
-  -2, -1.5,
-  # Maxfuns
-  2,
+  # Gaining function 0, and 0->1
+  2.5, 1.5,
+  # Overall changes
+  1.5, -2,
   # Root probabilities
-  -5, -5
+  -10, -10
+)
+
+names(params) <- c(
+  "gain0", "neofun01", "changes_dpl", "changes_sp",
+  "root0", "root1"
 )
 
 # Preparing data
@@ -36,17 +39,18 @@ duplication <- rep(TRUE, n * 2 - 1)
 # Reading the data in
 amodel <- new_model(
   annotations = annotations,
-  geneid = c(tree[, 2]),
-  parent = c(tree[, 1]),
+  geneid = c(tree[, 2], n),
+  parent = c(tree[, 1], -1L),
   duplication = duplication
 )
 
 # Preparing the model
 invisible({
 
-  term_gains(amodel, 0:1)
-  term_loss(amodel, 0:1)
-  term_maxfuns(amodel, 1, 1)
+  term_kgains(amodel, 0, 1, TRUE)
+  term_neofun_a2b(amodel, 0, 1, TRUE)
+  term_overall_changes(amodel, TRUE)
+  term_overall_changes(amodel, FALSE)
 
   init(amodel)
 
@@ -62,28 +66,24 @@ ans <- replicate(nsims, {
   sim_aphylo2(amodel, params)
 }, simplify = FALSE)
 
-# Computing transition probabilities
-
-# Checking distribution
-idx <- tree[which(tree[,1] == n),2] + 1
-
-last2 <- lapply(ans, `[`, idx)
-last2 <- unlist(last2, recursive = FALSE)
-last2 <- do.call(rbind, last2)
-colMeans(last2) # It should be something like c(1, .5, .5)
-
 # Finding MLE in each one of them
 library(slurmR)
 out <- slurmR::Slurm_lapply(ans, function(a) {
+
     # Building the model
     amodel <- new_model(
-      a, geneid = tree[,2], parent = tree[,1], duplication)
+      annotations = a[c(tree[, 2], n) + 1],
+      geneid      = c(tree[,2], n),
+      parent      = c(tree[,1], -1),
+      duplication
+      )
 
     invisible({
 
-      term_gains(amodel, 0:1)
-      term_loss(amodel, 0:1)
-      term_maxfuns(amodel, 1, 1)
+      term_kgains(amodel, 0, 1, TRUE)
+      term_neofun_a2b(amodel, 0, 1, TRUE)
+      term_overall_changes(amodel, TRUE)
+      term_overall_changes(amodel, FALSE)
 
       init(amodel)
 
@@ -120,7 +120,7 @@ out <- slurmR::Slurm_lapply(ans, function(a) {
     "mail-type" = "END,FAIL"
     ),
   mc.cores = 1L,
-  export = c("tree", "duplication"),
+  export = c("tree", "duplication", "n"),
   overwrite = TRUE
 )
 

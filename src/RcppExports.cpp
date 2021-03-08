@@ -193,14 +193,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // term_maxfuns
-int term_maxfuns(SEXP p, unsigned int lb, unsigned int ub);
-RcppExport SEXP _aphylo2_term_maxfuns(SEXP pSEXP, SEXP lbSEXP, SEXP ubSEXP) {
+int term_maxfuns(SEXP p, unsigned int lb, unsigned int ub, bool duplication);
+RcppExport SEXP _aphylo2_term_maxfuns(SEXP pSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type lb(lbSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type ub(ubSEXP);
-    rcpp_result_gen = Rcpp::wrap(term_maxfuns(p, lb, ub));
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_maxfuns(p, lb, ub, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -228,6 +229,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// term_neofun_a2b
+int term_neofun_a2b(SEXP p, int a, int b, bool duplication);
+RcppExport SEXP _aphylo2_term_neofun_a2b(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP, SEXP duplicationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< int >::type a(aSEXP);
+    Rcpp::traits::input_parameter< int >::type b(bSEXP);
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_neofun_a2b(p, a, b, duplication));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_new_model", (DL_FUNC) &_aphylo2_new_model, 4},
@@ -247,9 +261,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_term_cogain", (DL_FUNC) &_aphylo2_term_cogain, 3},
     {"_aphylo2_term_neofun", (DL_FUNC) &_aphylo2_term_neofun, 3},
     {"_aphylo2_term_subfun", (DL_FUNC) &_aphylo2_term_subfun, 3},
-    {"_aphylo2_term_maxfuns", (DL_FUNC) &_aphylo2_term_maxfuns, 3},
+    {"_aphylo2_term_maxfuns", (DL_FUNC) &_aphylo2_term_maxfuns, 4},
     {"_aphylo2_term_overall_changes", (DL_FUNC) &_aphylo2_term_overall_changes, 2},
     {"_aphylo2_term_kgains", (DL_FUNC) &_aphylo2_term_kgains, 4},
+    {"_aphylo2_term_neofun_a2b", (DL_FUNC) &_aphylo2_term_neofun_a2b, 4},
     {NULL, NULL, 0}
 };
 

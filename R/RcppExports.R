@@ -110,8 +110,8 @@ term_subfun <- function(p, a, b) {
 
 #' @export
 #' @rdname aphylo2-terms
-term_maxfuns <- function(p, lb, ub) {
-    .Call(`_aphylo2_term_maxfuns`, p, lb, ub)
+term_maxfuns <- function(p, lb, ub, duplication = TRUE) {
+    .Call(`_aphylo2_term_maxfuns`, p, lb, ub, duplication)
 }
 
 #' @export
@@ -124,5 +124,11 @@ term_overall_changes <- function(p, duplication = TRUE) {
 #' @rdname aphylo2-terms
 term_kgains <- function(p, funs, k = 1L, duplication = TRUE) {
     .Call(`_aphylo2_term_kgains`, p, funs, k, duplication)
+}
+
+#' @export
+#' @rdname aphylo2-terms
+term_neofun_a2b <- function(p, a, b, duplication = TRUE) {
+    .Call(`_aphylo2_term_neofun_a2b`, p, a, b, duplication)
 }
 

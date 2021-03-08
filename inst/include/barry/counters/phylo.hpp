@@ -629,7 +629,8 @@ inline void counter_longest(PhyloCounters * counters) {
 }
 
 //------------------------------------------------------------------------------
-/**@brief Total number of neofunctionalization events 
+/**
+ * @brief Total number of neofunctionalization events 
  * @details Needs to specify pairs of function.
  */
 inline void counter_neofun(PhyloCounters * counters, uint nfunA, uint nfunB, bool duplication = true) {
@@ -682,6 +683,71 @@ inline void counter_neofun(PhyloCounters * counters, uint nfunA, uint nfunB, boo
     }
     
     return res;
+  };
+  
+  PHYLO_COUNTER_LAMBDA(tmp_init) {
+    PHYLO_CHECK_MISSING();
+    return 0.0;
+  };
+
+  counters->add_counter(
+      tmp_count, tmp_init,
+      new PhyloCounterData({nfunA, nfunB, duplication ? 1u : 0u}),
+      true
+  );
+  
+  return;
+  
+}
+
+//------------------------------------------------------------------------------
+/**
+ * @brief Total number of neofunctionalization events 
+ * @details Needs to specify pairs of function.
+ */
+inline void counter_neofun_a2b(
+  PhyloCounters * counters, uint nfunA, uint nfunB, bool duplication = true) {
+  
+  PHYLO_COUNTER_LAMBDA(tmp_count) {
+
+    // Is this node duplication?
+    if ((data->at(2u) == 1u) & !Array->data->duplication)
+      return 0.0;
+    else if ((data->at(2u) == 0u) & Array->data->duplication)  
+      return 0.0;
+
+    const uint & funA = data->at(0u);
+    const uint & funB = data->at(1u);
+
+    // Is the function in scope relevant?
+    if (i != funB)
+      return 0.0;
+    
+    // Checking the parent has a but not b
+    if (!Array->data->states[funA] | Array->data->states[funB]) 
+      return 0.0;
+  
+    // Current gene shouldn't have function A
+    if (Array->get_cell(funA, j, false) == 1u)
+      return 0.0;
+    
+    // Any other offspring with the same?
+    uint counts = 0u;
+    for (uint k = 0u; k < Array->ncol(); ++k) {
+      if (k != j)
+        if (Array->get_cell(funA, k, false) == 0u)
+          if (Array->get_cell(funB, k, false) == 1u)
+            ++counts;
+    }
+
+    // Yes, this is the first neofun
+    if (counts == 0u)
+      return 1.0;
+    else if (counts == 1u) // There was a gene!
+      return -1.0;
+    
+    return 0.0;
+    
   };
   
   PHYLO_COUNTER_LAMBDA(tmp_init) {

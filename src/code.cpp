@@ -230,10 +230,16 @@ int term_subfun(SEXP p, unsigned int a, unsigned int b) {
 //' @export
 //' @rdname aphylo2-terms
 // [[Rcpp::export(rng = false)]]
-int term_maxfuns(SEXP p, unsigned int lb, unsigned int ub) {
+int term_maxfuns(
+    SEXP p, unsigned int lb, unsigned int ub,
+    bool duplication = true) {
 
   Rcpp::XPtr< APhyloModel >ptr(p);
-  phylocounters::counter_maxfuns(&ptr->counters, lb, ub);
+  phylocounters::counter_maxfuns(
+    &ptr->counters, lb, ub,
+    duplication
+  );
+
   return 0;
 
 }
@@ -267,3 +273,19 @@ int term_kgains(
 
 }
 
+//' @export
+//' @rdname aphylo2-terms
+// [[Rcpp::export(rng = false)]]
+int term_neofun_a2b(
+    SEXP p,
+    int a,
+    int b,
+    bool duplication = true
+  ) {
+
+  Rcpp::XPtr< APhyloModel >ptr(p);
+  phylocounters::counter_neofun_a2b(
+    &ptr->counters, a, b, duplication);
+  return 0;
+
+}

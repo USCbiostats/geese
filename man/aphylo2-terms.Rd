@@ -10,6 +10,7 @@
 \alias{term_maxfuns}
 \alias{term_overall_changes}
 \alias{term_kgains}
+\alias{term_neofun_a2b}
 \title{Evolutionary terms}
 \usage{
 term_gains(p, funs, duplication = TRUE)
@@ -22,11 +23,13 @@ term_neofun(p, a, b)
 
 term_subfun(p, a, b)
 
-term_maxfuns(p, lb, ub)
+term_maxfuns(p, lb, ub, duplication = TRUE)
 
 term_overall_changes(p, duplication = TRUE)
 
 term_kgains(p, funs, k = 1L, duplication = TRUE)
+
+term_neofun_a2b(p, a, b, duplication = TRUE)
 }
 \description{
 Evolutionary terms
