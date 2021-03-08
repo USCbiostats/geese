@@ -1,17 +1,21 @@
 # Reading the MCMC estimates
 x <- readRDS("inst/simulation-study/simulation-study.rds")
 
-# DGP parameters
+# Testing
 params <- c(
-  # Gains
-  2, 1.5,
-  # Loss
-  -2, -1.5,
-  # Maxfuns
-  2,
+  # Gaining function 0, and 0->1
+  2.5, 1.5,
+  # Overall changes
+  1.5, -2,
   # Root probabilities
-  -5, -5
+  -10, -10
 )
+
+names(params) <- c(
+  "gain0", "neofun01", "changes_dpl", "changes_sp",
+  "root0", "root1"
+)
+
 
 # Checking coverage
 estimates <- lapply(x, "[[", "estimates")
@@ -27,24 +31,24 @@ bias <- sapply(estimates, function(e) {
 })
 
 rownames(bias) <- c(
-  "gain0", "gain1",
-  "lose0", "lose1",
-  "onefun", "root0", "root1"
+  "gain0", "neofun01", "changes_dpl", "changes_sp",
+  "root0", "root1"
 )
 
 # Pretty plot
 graphics.off()
 svg("figures.svg")
 boxplot(t(bias), border = "darkgray", col = "steelblue", outline = FALSE,
-        ylim = c(-6, 3), ylab = "Parameter Value", xlab = "Parameter")
+        ylab = "Parameter Value", xlab = "Parameter",
+        ylim = c(-10,6))
 # grid()
 abline(h = 0, lty = 2, lwd = 2, col = "gray")
 points(
-  x = 1:7, lwd = 2,
+  x = 1:length(params), lwd = 2,
   y = params, cex = 2, pch=23, col = "black", bg = "tomato"
 )
 text(
-  x = 1:7 + .3,
+  x = 1:length(params) + .3,
   y = params + .15,
   labels = sprintf("%.2f", params)
 )

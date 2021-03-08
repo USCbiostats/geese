@@ -34,7 +34,7 @@ annotations <- replicate(n * 2 - 1, c(9, 9), simplify = FALSE)
 set.seed(31)
 tree <- aphylo::sim_tree(n)$edge - 1L
 
-duplication <- rep(TRUE, n * 2 - 1)
+duplication <- runif(n * 2 - 1) > .9
 
 # Reading the data in
 amodel <- new_model(
