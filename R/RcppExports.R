@@ -132,3 +132,9 @@ term_neofun_a2b <- function(p, a, b, duplication = TRUE) {
     .Call(`_aphylo2_term_neofun_a2b`, p, a, b, duplication)
 }
 
+#' @export
+#' @rdname aphylo2-terms
+term_genes_changing <- function(p, duplication = TRUE) {
+    .Call(`_aphylo2_term_genes_changing`, p, duplication)
+}
+

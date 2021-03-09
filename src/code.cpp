@@ -289,3 +289,19 @@ int term_neofun_a2b(
   return 0;
 
 }
+
+
+
+//' @export
+//' @rdname aphylo2-terms
+// [[Rcpp::export(rng = false)]]
+int term_genes_changing(
+    SEXP p,
+    bool duplication = true
+) {
+
+  Rcpp::XPtr< APhyloModel >ptr(p);
+  phylocounters::counter_genes_changing(&ptr->counters, duplication);
+  return 0;
+
+}
