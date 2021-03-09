@@ -242,6 +242,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// term_genes_changing
+int term_genes_changing(SEXP p, bool duplication);
+RcppExport SEXP _aphylo2_term_genes_changing(SEXP pSEXP, SEXP duplicationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_genes_changing(p, duplication));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_new_model", (DL_FUNC) &_aphylo2_new_model, 4},
@@ -265,6 +276,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_term_overall_changes", (DL_FUNC) &_aphylo2_term_overall_changes, 2},
     {"_aphylo2_term_kgains", (DL_FUNC) &_aphylo2_term_kgains, 4},
     {"_aphylo2_term_neofun_a2b", (DL_FUNC) &_aphylo2_term_neofun_a2b, 4},
+    {"_aphylo2_term_genes_changing", (DL_FUNC) &_aphylo2_term_genes_changing, 2},
     {NULL, NULL, 0}
 };
 

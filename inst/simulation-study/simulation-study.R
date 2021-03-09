@@ -10,7 +10,7 @@ library(aphylo2)
 
 n     <- 100
 nsims <- 5e3
-NJOBS <- 200
+NJOBS <- 2555550
 
 # Testing
 params <- c(
