@@ -8,9 +8,9 @@
 
 library(aphylo2)
 
-n     <- 50
+n     <- 100
 nsims <- 5e3
-NJOBS <- 200
+NJOBS <- 2555550
 
 # Testing
 params <- c(
@@ -34,7 +34,7 @@ annotations <- replicate(n * 2 - 1, c(9, 9), simplify = FALSE)
 set.seed(31)
 tree <- aphylo::sim_tree(n)$edge - 1L
 
-duplication <- runif(n * 2 - 1) > .9
+duplication <- runif(n * 2 - 1) > .8
 
 # Reading the data in
 amodel <- new_model(
