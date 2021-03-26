@@ -77,6 +77,12 @@ print_observed_counts <- function(p) {
     .Call(`_aphylo2_print_observed_counts`, p)
 }
 
+#' @export
+#' @rdname aphylo2-class
+predictions <- function(p, par, leave_one_out = FALSE) {
+    .Call(`_aphylo2_predictions`, p, par, leave_one_out)
+}
+
 #' @title Evolutionary terms
 #' @export
 #' @name aphylo2-terms

@@ -4,7 +4,7 @@
 #include "../../barry.hpp"
 #include "aphylomodel-bones.hpp" 
 
-double APhyloModel::likelihood_exact(const std::vector< double > & par) {
+inline double APhyloModel::likelihood_exact(const std::vector< double > & par) {
 
     INITIALIZED()
 
@@ -75,7 +75,7 @@ double APhyloModel::likelihood_exact(const std::vector< double > & par) {
             // Computing the transition
             phylocounters::PhyloArray transition(nfuns(), node->offspring.size());
             std::vector< double > bl(node->offspring.size(), 1.0);
-            std::vector< bool > sl = caster<bool,unsigned int>(tmpstates);
+            std::vector< bool > sl =vector_caster<bool,unsigned int>(tmpstates);
             transition.set_data(
                 new phylocounters::NodeData(bl, sl, node->duplication),
                 true
@@ -93,7 +93,7 @@ double APhyloModel::likelihood_exact(const std::vector< double > & par) {
 
             prob *= this->model.likelihood(
                 par0, transition,
-                node->idx_full[this->map_to_nodes[tmpstates]],
+                node->narray[this->map_to_nodes[tmpstates]],
                 false);
 
         }

@@ -14,6 +14,7 @@
 \alias{sim_aphylo2}
 \alias{observed_counts}
 \alias{print_observed_counts}
+\alias{predictions}
 \title{Aphylo2 model}
 \usage{
 new_model(annotations, geneid, parent, duplication)
@@ -39,6 +40,8 @@ sim_aphylo2(p, par, seed = -1L)
 observed_counts(p)
 
 print_observed_counts(p)
+
+predictions(p, par, leave_one_out = FALSE)
 }
 \arguments{
 \item{annotations}{Vector of integer vectors with annotations.}

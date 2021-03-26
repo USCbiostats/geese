@@ -132,6 +132,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// predictions
+std::vector< std::vector< double > > predictions(SEXP p, const std::vector< double >& par, bool leave_one_out);
+RcppExport SEXP _aphylo2_predictions(SEXP pSEXP, SEXP parSEXP, SEXP leave_one_outSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const std::vector< double >& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< bool >::type leave_one_out(leave_one_outSEXP);
+    rcpp_result_gen = Rcpp::wrap(predictions(p, par, leave_one_out));
+    return rcpp_result_gen;
+END_RCPP
+}
 // term_gains
 int term_gains(SEXP p, std::vector<unsigned int>& funs, bool duplication);
 RcppExport SEXP _aphylo2_term_gains(SEXP pSEXP, SEXP funsSEXP, SEXP duplicationSEXP) {
@@ -267,6 +279,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_aphylo2_sim_aphylo2", (DL_FUNC) &_aphylo2_sim_aphylo2, 3},
     {"_aphylo2_observed_counts", (DL_FUNC) &_aphylo2_observed_counts, 1},
     {"_aphylo2_print_observed_counts", (DL_FUNC) &_aphylo2_print_observed_counts, 1},
+    {"_aphylo2_predictions", (DL_FUNC) &_aphylo2_predictions, 3},
     {"_aphylo2_term_gains", (DL_FUNC) &_aphylo2_term_gains, 3},
     {"_aphylo2_term_loss", (DL_FUNC) &_aphylo2_term_loss, 3},
     {"_aphylo2_term_cogain", (DL_FUNC) &_aphylo2_term_cogain, 3},
