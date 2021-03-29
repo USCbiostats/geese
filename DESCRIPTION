@@ -1,7 +1,11 @@
-Package: aphylo2
+Package: geese
 Version: 0.0.0.9000
-Title: What the Package Does (One Line, Title Case)
-Description: What the package does (one paragraph).
+Title: GEne Evolutionary model using SufficiEnsy
+Description: Discrete Exponential Markov Models are a
+  family of statistical models that can be used to describe dynamic transitions
+  of phenomena with multivariate bernoulli distributed features. What the package
+  does (one paragraph). These models include GEESE (GEne Evolutionary model
+  using SufficiEnsy) (Vega Yon et al. 2021).
 Authors@R: c(
   person(
     "George", "Vega Yon", role=c("aut","cre"), email="g.vegayon@gmail.com",

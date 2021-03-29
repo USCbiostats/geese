@@ -4,6 +4,6 @@
 NULL
 
 ## usethis namespace: start
-#' @useDynLib aphylo2, .registration = TRUE
+#' @useDynLib geese, .registration = TRUE
 ## usethis namespace: end
 NULL

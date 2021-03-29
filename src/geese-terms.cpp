@@ -3,7 +3,7 @@
 #include <string>
 #include <algorithm>
 #include "barry/barry.hpp"
-#include "barry/models/aphylomodel.hpp"
+#include "barry/models/geese.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
 
@@ -11,7 +11,7 @@ using namespace Rcpp;
 
 //' @title Evolutionary terms
 //' @export
-//' @name aphylo2-terms
+//' @name geese-terms
 // [[Rcpp::export(rng = false)]]
 int term_gains(
     SEXP p,
@@ -26,7 +26,7 @@ int term_gains(
 }
 
 //' @export
-//' @rdname aphylo2-terms
+//' @rdname geese-terms
 // [[Rcpp::export(rng = false)]]
 int term_loss(SEXP p, std::vector<unsigned int> & funs,
               bool duplication = true) {
@@ -38,7 +38,7 @@ int term_loss(SEXP p, std::vector<unsigned int> & funs,
 }
 
 //' @export
-//' @rdname aphylo2-terms
+//' @rdname geese-terms
 // [[Rcpp::export(rng = false)]]
 int term_cogain(SEXP p, unsigned int a, unsigned int b) {
 
@@ -49,7 +49,7 @@ int term_cogain(SEXP p, unsigned int a, unsigned int b) {
 }
 
 //' @export
-//' @rdname aphylo2-terms
+//' @rdname geese-terms
 // [[Rcpp::export(rng = false)]]
 int term_neofun(SEXP p, unsigned int a, unsigned int b) {
 
@@ -60,7 +60,7 @@ int term_neofun(SEXP p, unsigned int a, unsigned int b) {
 }
 
 //' @export
-//' @rdname aphylo2-terms
+//' @rdname geese-terms
 // [[Rcpp::export(rng = false)]]
 int term_subfun(SEXP p, unsigned int a, unsigned int b) {
 
@@ -71,7 +71,7 @@ int term_subfun(SEXP p, unsigned int a, unsigned int b) {
 }
 
 //' @export
-//' @rdname aphylo2-terms
+//' @rdname geese-terms
 // [[Rcpp::export(rng = false)]]
 int term_maxfuns(
     SEXP p, unsigned int lb, unsigned int ub,
@@ -89,7 +89,7 @@ int term_maxfuns(
 
 
 //' @export
-//' @rdname aphylo2-terms
+//' @rdname geese-terms
 // [[Rcpp::export(rng = false)]]
 int term_overall_changes(SEXP p, bool duplication = true) {
 
@@ -100,7 +100,7 @@ int term_overall_changes(SEXP p, bool duplication = true) {
 }
 
 //' @export
-//' @rdname aphylo2-terms
+//' @rdname geese-terms
 // [[Rcpp::export(rng = false)]]
 int term_kgains(
     SEXP p,
@@ -117,7 +117,7 @@ int term_kgains(
 }
 
 //' @export
-//' @rdname aphylo2-terms
+//' @rdname geese-terms
 // [[Rcpp::export(rng = false)]]
 int term_neofun_a2b(
     SEXP p,
@@ -136,7 +136,7 @@ int term_neofun_a2b(
 
 
 //' @export
-//' @rdname aphylo2-terms
+//' @rdname geese-terms
 // [[Rcpp::export(rng = false)]]
 int term_genes_changing(
     SEXP p,

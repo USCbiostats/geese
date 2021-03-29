@@ -1,10 +1,10 @@
-#' MLE for aphylo2
-#' @param amodel an object of class [aphylo2-class]
+#' MLE for geese
+#' @param amodel an object of class [geese-class]
 #' @param initial Vector of initial parameters
 #' @param ... Passed to [stats:optim]
 #' @export
 #' @importFrom stats optim
-aphylo2_mle <- function(
+geese_mle <- function(
   amodel,
   initial = rep(0, nterms(amodel)),
   control = list(maxit = 1e3L, fnscale = -1),

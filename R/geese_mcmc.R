@@ -1,10 +1,10 @@
-#' MCMC for aphylo2
-#' @param amodel an object of class [aphylo2-class]
+#' MCMC for geese
+#' @param amodel an object of class [geese-class]
 #' @param initial Vector of initial parameters
 #' @param ... Passed to [fmcmc::MCMC]
 #' @export
 #' @importFrom fmcmc MCMC
-aphylo2_mcmc <- function(
+geese_mcmc <- function(
   amodel,
   initial = rep(0, nterms(amodel)),
   prior   = function(p) {

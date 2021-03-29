@@ -3,12 +3,12 @@
 #include <string>
 #include <algorithm>
 #include "barry/barry.hpp"
-#include "barry/models/aphylomodel.hpp"
+#include "barry/models/geese.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
 
-//' @title Aphylo2 model
-//' @name aphylo2-class
+//' @title GEne Evolutionary model using SufficiEncy (GEESE)
+//' @name geese-class
 //' @param annotations Vector of integer vectors with annotations.
 //' @param geneid integer vector with gene ids
 //' @param parent integer vector with parent gene id
@@ -29,7 +29,7 @@ SEXP new_model(
 
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
 int init(SEXP p) {
@@ -40,7 +40,7 @@ int init(SEXP p) {
 
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
 int nterms(SEXP p) {
@@ -50,7 +50,7 @@ int nterms(SEXP p) {
 
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
 int nnodes(SEXP p) {
@@ -60,7 +60,7 @@ int nnodes(SEXP p) {
 
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
 int nleafs(SEXP p) {
@@ -70,7 +70,7 @@ int nleafs(SEXP p) {
 
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
 double likelihood(SEXP p, const std::vector< double > & par) {
@@ -80,7 +80,7 @@ double likelihood(SEXP p, const std::vector< double > & par) {
 
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
 NumericMatrix get_probabilities(SEXP p) {
@@ -99,7 +99,7 @@ NumericMatrix get_probabilities(SEXP p) {
   return m;
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
 std::vector< unsigned int > get_sequence(SEXP p) {
@@ -107,7 +107,7 @@ std::vector< unsigned int > get_sequence(SEXP p) {
   return ptr->sequence;
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
 int set_seed(SEXP p, unsigned int s) {
@@ -116,10 +116,10 @@ int set_seed(SEXP p, unsigned int s) {
   return 0;
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
-std::vector< std::vector< unsigned int > > sim_aphylo2(
+std::vector< std::vector< unsigned int > > sim_geese(
     SEXP p,
     const std::vector<double> & par,
     int seed = -1
@@ -134,7 +134,7 @@ std::vector< std::vector< unsigned int > > sim_aphylo2(
 
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
 std::vector< std::vector< double > > observed_counts(
@@ -147,7 +147,7 @@ std::vector< std::vector< double > > observed_counts(
 
 }
 
-//' @rdname aphylo2-class
+//' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
 int print_observed_counts(
@@ -162,7 +162,7 @@ int print_observed_counts(
 }
 
 //' @export
-//' @rdname aphylo2-class
+//' @rdname geese-class
 // [[Rcpp::export(rng = false)]]
 std::vector< std::vector< double > > predictions(
     SEXP p,

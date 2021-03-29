@@ -13,31 +13,31 @@ knitr::opts_chunk$set(
 )
 ```
 
-# aphylo2
+# geese
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of aphylo2 is to ...
+The goal of geese is to ...
 
 ## Installation
 
-You can install the released version of aphylo2 from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of geese from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
-install.packages("aphylo2")
+install.packages("geese")
 ```
 
 And the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("USCbiostats/aphylo2")
+devtools::install_github("USCbiostats/geese")
 ```
 ## Example
 
 ```{r simulating-data}
-library(aphylo2)
+library(geese)
 
 # Preparing data
 n <- 100L
@@ -84,7 +84,7 @@ names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1
 likelihood(amodel, params*0) # Equals 1 b/c all missings
 
 # Simulating data
-fake <- sim_aphylo2(p = amodel, par = params, seed = 1110)
+fake <- sim_geese(p = amodel, par = params, seed = 1110)
 ```
 
 ```{r viz-with-aphylo}
@@ -119,7 +119,7 @@ invisible({
 })
 
 # Finding MLE
-ans <- aphylo2_mle(amodel, hessian = TRUE)
+ans <- geese_mle(amodel, hessian = TRUE)
 ans
 # [1]  0.6881464  1.0305919 -0.9295311 -1.1126288  1.4606278 -0.1944617 -1.0264741
 # Root node probabilities and odds ratios
@@ -135,7 +135,7 @@ diag(MASS::ginv(-ans$hessian))
 
 ```{r mcmc-fit, cache=TRUE}
 set.seed(122)
-ans_mcmc <- aphylo2_mcmc(
+ans_mcmc <- geese_mcmc(
   amodel,
   nsteps  = 40000,
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
