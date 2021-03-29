@@ -21,8 +21,8 @@ SEXP new_model(
     std::vector< bool > & duplication
 ) {
 
-  Rcpp::XPtr< APhyloModel > dat(
-      new APhyloModel(annotations, geneid, parent, duplication
+  Rcpp::XPtr< Geese > dat(
+      new Geese(annotations, geneid, parent, duplication
       ));
 
   return dat;
@@ -34,7 +34,7 @@ SEXP new_model(
 // [[Rcpp::export(rng = false)]]
 int init(SEXP p) {
 
-  Rcpp::XPtr< APhyloModel >ptr(p);
+  Rcpp::XPtr< Geese >ptr(p);
   ptr->init();
   return 0;
 
@@ -45,7 +45,7 @@ int init(SEXP p) {
 // [[Rcpp::export(rng = false)]]
 int nterms(SEXP p) {
 
-  Rcpp::XPtr< APhyloModel >ptr(p);
+  Rcpp::XPtr< Geese >ptr(p);
   return ptr->nterms();
 
 }
@@ -55,7 +55,7 @@ int nterms(SEXP p) {
 // [[Rcpp::export(rng = false)]]
 int nnodes(SEXP p) {
 
-  Rcpp::XPtr< APhyloModel >ptr(p);
+  Rcpp::XPtr< Geese >ptr(p);
   return ptr->nnodes();
 
 }
@@ -65,7 +65,7 @@ int nnodes(SEXP p) {
 // [[Rcpp::export(rng = false)]]
 int nleafs(SEXP p) {
 
-  Rcpp::XPtr< APhyloModel >ptr(p);
+  Rcpp::XPtr< Geese >ptr(p);
   return ptr->nleafs();
 
 }
@@ -75,7 +75,7 @@ int nleafs(SEXP p) {
 // [[Rcpp::export(rng = false)]]
 double likelihood(SEXP p, const std::vector< double > & par) {
 
-  Rcpp::XPtr< APhyloModel >ptr(p);
+  Rcpp::XPtr< Geese >ptr(p);
   return ptr->likelihood(par);
 
 }
@@ -84,7 +84,7 @@ double likelihood(SEXP p, const std::vector< double > & par) {
 //' @export
 // [[Rcpp::export(rng = false)]]
 NumericMatrix get_probabilities(SEXP p) {
-  Rcpp::XPtr< APhyloModel >ptr(p);
+  Rcpp::XPtr< Geese >ptr(p);
   unsigned int N = ptr->nodes.size();
   unsigned int M = ptr->states.size();
   NumericMatrix m(N, M);
@@ -103,7 +103,7 @@ NumericMatrix get_probabilities(SEXP p) {
 //' @export
 // [[Rcpp::export(rng = false)]]
 std::vector< unsigned int > get_sequence(SEXP p) {
-  Rcpp::XPtr< APhyloModel >ptr(p);
+  Rcpp::XPtr< Geese >ptr(p);
   return ptr->sequence;
 }
 
@@ -111,7 +111,7 @@ std::vector< unsigned int > get_sequence(SEXP p) {
 //' @export
 // [[Rcpp::export(rng = false)]]
 int set_seed(SEXP p, unsigned int s) {
-  Rcpp::XPtr< APhyloModel > ptr(p);
+  Rcpp::XPtr< Geese > ptr(p);
   ptr->set_seed(s);
   return 0;
 }
@@ -125,7 +125,7 @@ std::vector< std::vector< unsigned int > > sim_geese(
     int seed = -1
   ) {
 
-  Rcpp::XPtr< APhyloModel > ptr(p);
+  Rcpp::XPtr< Geese > ptr(p);
 
   if (seed > 0)
     ptr->set_seed(seed);
@@ -141,7 +141,7 @@ std::vector< std::vector< double > > observed_counts(
     SEXP p
 ) {
 
-  Rcpp::XPtr< APhyloModel > ptr(p);
+  Rcpp::XPtr< Geese > ptr(p);
 
   return ptr->observed_counts();
 
@@ -154,7 +154,7 @@ int print_observed_counts(
     SEXP p
 ) {
 
-  Rcpp::XPtr< APhyloModel > ptr(p);
+  Rcpp::XPtr< Geese > ptr(p);
 
   ptr->print_observed_counts();
   return 0;
@@ -170,7 +170,7 @@ std::vector< std::vector< double > > predictions(
     bool leave_one_out = false
   ) {
 
-  Rcpp::XPtr< APhyloModel >ptr(p);
+  Rcpp::XPtr< Geese >ptr(p);
 
   // Baseline predictions
   std::vector< std::vector< double > > res = ptr->predict(par);
