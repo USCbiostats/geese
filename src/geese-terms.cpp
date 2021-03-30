@@ -20,7 +20,7 @@ int term_gains(
 ) {
 
   Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_gains(&ptr->counters, funs, duplication);
+  phylocounters::counter_gains(ptr->counters, funs, duplication);
   return 0;
 
 }
@@ -32,7 +32,7 @@ int term_loss(SEXP p, std::vector<unsigned int> & funs,
               bool duplication = true) {
 
   Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_loss(&ptr->counters, funs, duplication);
+  phylocounters::counter_loss(ptr->counters, funs, duplication);
   return 0;
 
 }
@@ -43,7 +43,7 @@ int term_loss(SEXP p, std::vector<unsigned int> & funs,
 int term_cogain(SEXP p, unsigned int a, unsigned int b) {
 
   Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_cogain(&ptr->counters, a, b);
+  phylocounters::counter_cogain(ptr->counters, a, b);
   return 0;
 
 }
@@ -54,7 +54,7 @@ int term_cogain(SEXP p, unsigned int a, unsigned int b) {
 int term_neofun(SEXP p, unsigned int a, unsigned int b) {
 
   Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_neofun(&ptr->counters, a, b);
+  phylocounters::counter_neofun(ptr->counters, a, b);
   return 0;
 
 }
@@ -65,7 +65,7 @@ int term_neofun(SEXP p, unsigned int a, unsigned int b) {
 int term_subfun(SEXP p, unsigned int a, unsigned int b) {
 
   Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_subfun(&ptr->counters, a, b);
+  phylocounters::counter_subfun(ptr->counters, a, b);
   return 0;
 
 }
@@ -79,7 +79,7 @@ int term_maxfuns(
 
   Rcpp::XPtr< Geese >ptr(p);
   phylocounters::counter_maxfuns(
-    &ptr->counters, lb, ub,
+    ptr->counters, lb, ub,
     duplication
   );
 
@@ -94,7 +94,7 @@ int term_maxfuns(
 int term_overall_changes(SEXP p, bool duplication = true) {
 
   Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_overall_changes(&ptr->counters, duplication);
+  phylocounters::counter_overall_changes(ptr->counters, duplication);
   return 0;
 
 }
@@ -110,7 +110,7 @@ int term_kgains(
 
   Rcpp::XPtr< Geese >ptr(p);
   phylocounters::counter_gains_k_offspring(
-    &ptr->counters, funs,
+    ptr->counters, funs,
     static_cast<unsigned int>(k), duplication);
   return 0;
 
@@ -128,7 +128,7 @@ int term_neofun_a2b(
 
   Rcpp::XPtr< Geese >ptr(p);
   phylocounters::counter_neofun_a2b(
-    &ptr->counters, a, b, duplication);
+    ptr->counters, a, b, duplication);
   return 0;
 
 }
@@ -144,7 +144,7 @@ int term_genes_changing(
 ) {
 
   Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_genes_changing(&ptr->counters, duplication);
+  phylocounters::counter_genes_changing(ptr->counters, duplication);
   return 0;
 
 }

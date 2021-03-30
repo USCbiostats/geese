@@ -6,7 +6,7 @@
 #define GEESE_MEAT_SIMULATE_HPP 1
 
 inline void Geese::set_seed(const unsigned int & s) {
-    rengine.seed(s);
+    rengine->seed(s);
 }
 
 inline std::vector< std::vector< unsigned int > > Geese::simulate(
@@ -41,7 +41,7 @@ inline std::vector< std::vector< unsigned int > > Geese::simulate(
 
     // Preparing the random number generator
     std::uniform_real_distribution<> urand(0, 1);
-    double r = urand(rengine);
+    double r = urand(*rengine);
     unsigned int idx = 0u;
     double cumprob = rootp[idx];
     while ((idx < rootp.size()) && (cumprob < r)) {
@@ -63,7 +63,7 @@ inline std::vector< std::vector< unsigned int > > Geese::simulate(
 
         // Given the state of the current node, sample the state of the
         // offspring, all based on the current state
-        auto tmp = model->sample(nodes[i].narray[n], par0);
+        auto tmp = support->sample(nodes[i].narray[n], par0);
 
         // Iterating through the offspring to assign the state
         for (unsigned int j = 0u; j < nodes[i].offspring.size(); ++j) {
