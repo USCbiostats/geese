@@ -20,7 +20,7 @@ inline std::vector< Ta > vector_caster(const std::vector< Tb > & x) {
 
 // The same need to be locked
 RULE_FUNCTION(rule_empty_free) {
-    if (Array->get_cell(i, j) == 9u)
+    if (Array.get_cell(i, j) == 9u)
         return false;
     return true;
 }
@@ -61,59 +61,28 @@ inline bool vec_diff(
 }
 
 /**
- * @brief A single node for the model
- *
- * Each node contains all the information to compute the conditional probability
- * of the pruning algorithm at that node.
- *
- */
-class Node {
-public:
-    unsigned int                 id;
-    phylocounters::PhyloArray array;
-    std::vector< unsigned int >              annotations;         ///< Observed annotations (only defined for Geese)
-    bool                                     duplication;
-
-    std::vector< phylocounters::PhyloArray > arrays    = {};      ///< Arrays given all possible states
-    Node *                                   parent    = nullptr; ///< Parent node
-    std::vector< Node* >                     offspring = {};      ///< Offspring nodes
-    std::vector< unsigned int >              narray    = {};      ///< ID of the array in the model
-    bool                                     visited   = false;
-
-    std::vector< double >                    subtree_prob;        ///< Induced subtree probabilities
-    std::vector< double >                    probability;         ///< The probability of observing each state
-    
-    Node() {};
-    Node(unsigned int id_, bool duplication_) : id(id_), duplication(duplication_) {};
-    Node(unsigned int id_, std::vector< unsigned int > annotations_, bool duplication_) :
-        id(id_), annotations(annotations_), duplication(duplication_) {};
-    ~Node() {};
-
-    int get_parent() const {
-        if (parent == nullptr)
-            return -1;
-        else
-            return static_cast<int>(parent->id);
-    };
-
-    bool is_leaf() const {
-        return offspring.size() == 0u;
-    };
-
-};
-
-/**
  * @brief Annotated Phylo Model
  *
  */
 class Geese {
 public:
 
-    // Common components
+    /**
+     * @name Shared objects within a `Geese`
+     * @details
+     * Since users may start adding counters before initializing the PhyloModel
+     * object, the object `counter` is initialized first.
+     * 
+     * While the member `support` has an `rengine`, since `Geese` can sample trees,
+     * we have the option to keep it separate.
+     * 
+     */
+    ///@{
     std::mt19937 *                     rengine  = nullptr;
     phylocounters::PhyloCounters *     counters = nullptr;
-    phylocounters::PhyloModel *        support;
+    phylocounters::PhyloModel *        support  = nullptr;
     std::vector< std::vector< bool > > states;
+    ///@}
 
     // Data
     unsigned int                       nfunctions;
@@ -121,7 +90,8 @@ public:
     barry::MapVec_type< unsigned int > map_to_nodes;
 
     // Tree-traversal sequence
-    std::vector< unsigned int >        sequence;  
+    std::vector< unsigned int > sequence;
+    std::vector< unsigned int > likelihood_sequence;  
 
     // Admin-related objects
     bool initialized     = false;
@@ -129,10 +99,8 @@ public:
     bool delete_counters = false;
     bool delete_support  = false;
 
-    Geese();
-
     /**
-     * @brief Construct a new Geese object
+     * @name Construct a new Geese object
      *
      * The model includes a total of `N + 1` nodes, the `+ 1` beign
      * the root node.
@@ -144,6 +112,9 @@ public:
      * @param geneid Id of the gene. It should be of length `N`.
      * @param parent Id of the parent gene. Also of length `N`
      */
+    ///@{
+    Geese();
+
     Geese(
         std::vector< std::vector<unsigned int> > & annotations,
         std::vector< unsigned int > &              geneid,
@@ -151,17 +122,31 @@ public:
         std::vector< bool > &                      duplication
         );
 
+    // Copy constructor
+    Geese(const Geese & model_, bool copy_data = true);
+    
+    // Constructor move
+    Geese(Geese && x) noexcept;
+
+    // Copy assignment
+    Geese & operator=(const Geese & model_) = delete;
+
+    // // Move assignment
+    Geese & operator=(Geese && model_) noexcept = delete;
+
+    ///@}
+
     ~Geese();
 
     void init();
 
-    void inherit_support(Geese & model_, bool delete_support_ = false);
-    void set_support(phylocounters::PhyloModel * model_, bool delete_support_ = false);
+    void inherit_support(const Geese & model_, bool delete_support_ = false);
 
     // Node * operator()(unsigned int & nodeid);
     void calc_sequence(Node * n = nullptr);
+    void calc_likelihood_sequence();
 
-    double likelihood(const std::vector< double > & par);
+    double likelihood(const std::vector< double > & par, bool use_likelihood_sequence = true);
     double likelihood_exhaust(const std::vector< double > & par);
 
     std::vector< double > get_probabilities() const;

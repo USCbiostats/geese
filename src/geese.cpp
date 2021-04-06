@@ -7,6 +7,11 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+#ifndef CHECK_GEESE
+#define CHECK_GEESE(a) if (!Rf_inherits((a), "geese")) \
+  stop("The passed object is not of class 'geese'");
+#endif
+
 //' @title GEne Evolutionary model using SufficiEncy (GEESE)
 //' @name geese-class
 //' @param annotations Vector of integer vectors with annotations.
@@ -14,7 +19,7 @@ using namespace Rcpp;
 //' @param parent integer vector with parent gene id
 //' @export
 // [[Rcpp::export(rng = false)]]
-SEXP new_model(
+SEXP new_geese(
     std::vector< std::vector< unsigned int > > & annotations,
     std::vector< unsigned int > & geneid,
     std::vector< int > & parent,
@@ -25,6 +30,8 @@ SEXP new_model(
       new Geese(annotations, geneid, parent, duplication
       ));
 
+  dat.attr("class") = "geese";
+
   return dat;
 
 }
@@ -32,7 +39,9 @@ SEXP new_model(
 //' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
-int init(SEXP p) {
+int init_geese(SEXP p) {
+
+  CHECK_GEESE(p)
 
   Rcpp::XPtr< Geese >ptr(p);
   ptr->init();
@@ -42,8 +51,10 @@ int init(SEXP p) {
 
 //' @rdname geese-class
 //' @export
-// [[Rcpp::export(rng = false)]]
-int nterms(SEXP p) {
+// [[Rcpp::export(rng = false, name = "nterms.geese")]]
+int nterms_geese(SEXP p) {
+
+  CHECK_GEESE(p)
 
   Rcpp::XPtr< Geese >ptr(p);
   return ptr->nterms();
@@ -52,8 +63,10 @@ int nterms(SEXP p) {
 
 //' @rdname geese-class
 //' @export
-// [[Rcpp::export(rng = false)]]
-int nnodes(SEXP p) {
+// [[Rcpp::export(rng = false, name = "nnodes.geese")]]
+int nnodes_geese(SEXP p) {
+
+  CHECK_GEESE(p)
 
   Rcpp::XPtr< Geese >ptr(p);
   return ptr->nnodes();
@@ -62,8 +75,10 @@ int nnodes(SEXP p) {
 
 //' @rdname geese-class
 //' @export
-// [[Rcpp::export(rng = false)]]
-int nleafs(SEXP p) {
+// [[Rcpp::export(rng = false, name = "nleafs.geese")]]
+int nleafs_geese(SEXP p) {
+
+  CHECK_GEESE(p)
 
   Rcpp::XPtr< Geese >ptr(p);
   return ptr->nleafs();
@@ -73,7 +88,9 @@ int nleafs(SEXP p) {
 //' @rdname geese-class
 //' @export
 // [[Rcpp::export(rng = false)]]
-double likelihood(SEXP p, const std::vector< double > & par) {
+double likelihood_geese(SEXP p, const std::vector< double > & par) {
+
+  CHECK_GEESE(p)
 
   Rcpp::XPtr< Geese >ptr(p);
   return ptr->likelihood(par);
@@ -84,6 +101,9 @@ double likelihood(SEXP p, const std::vector< double > & par) {
 //' @export
 // [[Rcpp::export(rng = false)]]
 NumericMatrix get_probabilities(SEXP p) {
+
+  CHECK_GEESE(p)
+
   Rcpp::XPtr< Geese >ptr(p);
   unsigned int N = ptr->nodes.size();
   unsigned int M = ptr->states.size();
@@ -103,14 +123,20 @@ NumericMatrix get_probabilities(SEXP p) {
 //' @export
 // [[Rcpp::export(rng = false)]]
 std::vector< unsigned int > get_sequence(SEXP p) {
+
+  CHECK_GEESE(p)
+
   Rcpp::XPtr< Geese >ptr(p);
   return ptr->sequence;
 }
 
 //' @rdname geese-class
 //' @export
-// [[Rcpp::export(rng = false)]]
-int set_seed(SEXP p, unsigned int s) {
+// [[Rcpp::export(rng = false, name = "set_seed.geese")]]
+int set_seed_geese(SEXP p, unsigned int s) {
+
+  CHECK_GEESE(p)
+
   Rcpp::XPtr< Geese > ptr(p);
   ptr->set_seed(s);
   return 0;
@@ -124,6 +150,8 @@ std::vector< std::vector< unsigned int > > sim_geese(
     const std::vector<double> & par,
     int seed = -1
   ) {
+
+  CHECK_GEESE(p)
 
   Rcpp::XPtr< Geese > ptr(p);
 
@@ -141,6 +169,8 @@ std::vector< std::vector< double > > observed_counts(
     SEXP p
 ) {
 
+  CHECK_GEESE(p)
+
   Rcpp::XPtr< Geese > ptr(p);
 
   return ptr->observed_counts();
@@ -154,6 +184,8 @@ int print_observed_counts(
     SEXP p
 ) {
 
+  CHECK_GEESE(p)
+
   Rcpp::XPtr< Geese > ptr(p);
 
   ptr->print_observed_counts();
@@ -164,11 +196,13 @@ int print_observed_counts(
 //' @export
 //' @rdname geese-class
 // [[Rcpp::export(rng = false)]]
-std::vector< std::vector< double > > predictions(
+std::vector< std::vector< double > > predict_geese(
     SEXP p,
     const std::vector< double > & par,
     bool leave_one_out = false
   ) {
+
+  CHECK_GEESE(p)
 
   Rcpp::XPtr< Geese >ptr(p);
 

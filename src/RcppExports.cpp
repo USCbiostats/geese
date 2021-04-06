@@ -5,6 +5,29 @@
 
 using namespace Rcpp;
 
+// new_flock
+SEXP new_flock();
+RcppExport SEXP _geese_new_flock() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    rcpp_result_gen = Rcpp::wrap(new_flock());
+    return rcpp_result_gen;
+END_RCPP
+}
+// add_geese
+int add_geese(SEXP p, std::vector< std::vector< unsigned int > >& annotations, std::vector< unsigned int >& geneid, std::vector< int >& parent, std::vector< bool >& duplication);
+RcppExport SEXP _geese_add_geese(SEXP pSEXP, SEXP annotationsSEXP, SEXP geneidSEXP, SEXP parentSEXP, SEXP duplicationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< std::vector< std::vector< unsigned int > >& >::type annotations(annotationsSEXP);
+    Rcpp::traits::input_parameter< std::vector< unsigned int >& >::type geneid(geneidSEXP);
+    Rcpp::traits::input_parameter< std::vector< int >& >::type parent(parentSEXP);
+    Rcpp::traits::input_parameter< std::vector< bool >& >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(add_geese(p, annotations, geneid, parent, duplication));
+    return rcpp_result_gen;
+END_RCPP
+}
 // term_gains
 int term_gains(SEXP p, std::vector<unsigned int>& funs, bool duplication);
 RcppExport SEXP _geese_term_gains(SEXP pSEXP, SEXP funsSEXP, SEXP duplicationSEXP) {
@@ -267,6 +290,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_geese_new_flock", (DL_FUNC) &_geese_new_flock, 0},
+    {"_geese_add_geese", (DL_FUNC) &_geese_add_geese, 5},
     {"_geese_term_gains", (DL_FUNC) &_geese_term_gains, 3},
     {"_geese_term_loss", (DL_FUNC) &_geese_term_loss, 3},
     {"_geese_term_cogain", (DL_FUNC) &_geese_term_cogain, 3},

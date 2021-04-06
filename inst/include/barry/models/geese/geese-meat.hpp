@@ -3,135 +3,6 @@
 #ifndef GEESE_MEAT_HPP
 #define GEESE_MEAT_HPP 1
 
-inline Geese::Geese() : support(nullptr), nodes() {
-
-    // In order to start...
-    this->counters        = new phylocounters::PhyloCounters();
-    this->delete_counters = true;
-    this->rengine         = new std::mt19937;
-    this->delete_rengine  = true;
-
-    return;
-}
-
-inline Geese::Geese(
-    std::vector< std::vector<unsigned int> > & annotations,
-    std::vector< unsigned int > & geneid,
-    std::vector< int > &          parent,
-    std::vector< bool > &         duplication
-) : support(nullptr), nodes() {
-
-    // In order to start...
-    this->counters        = new phylocounters::PhyloCounters();
-    this->delete_counters = true;
-    this->rengine         = new std::mt19937;
-    this->delete_rengine  = true;
-
-    // Check the lengths
-    if (annotations.size() == 0u)
-        throw std::logic_error("Annotations is empty");
-
-    nfunctions = annotations.at(0u).size();
-
-    // unsigned int n = annotations.size();
-    for (auto& iter : annotations) {
-        if (iter.size() != nfunctions)
-            throw std::length_error("Not all the annotations have the same length");
-    }
-
-    // Grouping up the data by parents -----------------------------------------
-    for (unsigned int i = 0u; i < geneid.size(); ++i) {
-
-        // Temp vector with the annotations
-        std::vector< unsigned int > funs(annotations.at(i));
-
-        if ((parent.at(i) >= 0) && (nodes.find(parent.at(i)) == nodes.end())) {
-
-            // Adding parent
-            auto key_par = nodes.insert({
-                parent.at(i),
-                Node(parent.at(i), true)
-            });
-
-            // Adding offspring
-            if (nodes.find(geneid.at(i)) == nodes.end()) {
-
-                auto key_off = nodes.insert({
-                    geneid.at(i),
-                    Node(geneid.at(i), funs, duplication.at(i))
-                    });
-
-                // Adding the offspring to the parent
-                key_par.first->second.offspring.push_back(
-                    &key_off.first->second
-                );
-
-                // Adding the parent to the offspring
-                key_off.first->second.parent = &key_par.first->second;
-                key_off.first->second.annotations = funs;
-                key_off.first->second.duplication = duplication.at(i);
-
-            } else {
-
-                // We just need to make sure that we update it!
-                nodes[geneid.at(i)].duplication = duplication.at(i);
-                nodes[geneid.at(i)].annotations = funs;
-                nodes[geneid.at(i)].parent      = &nodes[parent.at(i)];
-
-                nodes[parent.at(i)].offspring.push_back(
-                    &nodes[geneid.at(i)]
-                );
-
-            }
-
-        } else {
-            // In this case, the parent exists, so we only need to assing the
-            // offspring
-            // Adding offspring
-
-            // Does the offspring exist?
-            if (nodes.find(geneid.at(i)) == nodes.end()) {
-
-                auto key_off = nodes.insert({
-                    geneid.at(i),
-                    Node(geneid.at(i), funs, duplication.at(i))
-                    });
-
-                // Adding the offspring to the parent
-                if (parent.at(i) >= 0) {
-                    nodes[parent.at(i)].offspring.push_back(
-                        &key_off.first->second
-                    );
-
-                    // Adding the parent to the offspring
-                    key_off.first->second.parent = &nodes[parent.at(i)];
-                }
-
-                key_off.first->second.annotations = funs;
-                key_off.first->second.duplication = duplication.at(i);
-
-            } else {
-
-                // We just need to make sure that we update it!
-                nodes[geneid.at(i)].duplication = duplication.at(i);
-                nodes[geneid.at(i)].annotations = funs;
-
-                if (parent.at(i) >= 0) {
-                    nodes[geneid.at(i)].parent = &nodes[parent.at(i)];
-                    nodes[parent.at(i)].offspring.push_back(
-                        &nodes[geneid.at(i)]
-                    );
-                }
-
-            }
-        }
-
-    }
-
-    return;
-
-}
-
 inline void Geese::init_node(Node & n) {
 
     // Creating the phyloarray, nfunctions x noffspring
@@ -143,7 +14,9 @@ inline void Geese::init_node(Node & n) {
         true
     );
 
-    n.subtree_prob.resize(states.size(), 0.0);
+    // We initialize all with a zero since, if excluded from the pruning process,
+    // We need to set it to one (as the result of the full integration).
+    n.subtree_prob.resize(states.size(), 1.0);
 
     // Adding the data, first through functions
     for (unsigned int k = 0u; k < nfunctions; ++k) {
@@ -210,17 +83,20 @@ inline Geese::~Geese() {
 inline void Geese::init() {
 
     // Initializing the model, if it is null
-    if (this->support == nullptr) 
-        this->set_support(new phylocounters::PhyloModel(), true);
+    if (this->support == nullptr) {
+
+        this->support = new phylocounters::PhyloModel();
+        this->delete_support = true;
+        this->support->set_keygen(keygen_full);
+        this->support->set_counters(this->counters);
+        this->support->store_psets();
+
+    }
 
     // Checking rseed, this is relevant when dealing with a flock. In the case of
     // flock, both support and rengine are shared.
-    if (this->rengine == nullptr) {
-
-        this->rengine = new std::mt19937;
-        this->delete_rengine = true;
-
-    }
+    if (this->support->rengine == nullptr) 
+        this->support->set_rengine(this->rengine, false);
 
     // All combinations of the function
     phylocounters::PhyloPowerSet pset(nfunctions, 1u);
@@ -250,9 +126,6 @@ inline void Geese::init() {
             
     }
 
-    // Computing the pruning sequence.
-    calc_sequence();
-
     // Resetting the sequence
     for (auto& n: this->nodes) {
         n.second.visited = false;
@@ -264,7 +137,7 @@ inline void Geese::init() {
     return;
 }
 
-inline void Geese::inherit_support(Geese & model_, bool delete_support_) {
+inline void Geese::inherit_support(const Geese & model_, bool delete_support_) {
     
     if (this->support != nullptr)
         throw std::logic_error("There is already a -support- in this Geese. Cannot set a -support- after one is present.");
@@ -288,24 +161,6 @@ inline void Geese::inherit_support(Geese & model_, bool delete_support_) {
     
     this->rengine = model_.rengine;
     
-    return;
-
-}
-
-inline void Geese::set_support(phylocounters::PhyloModel * support_, bool delete_support_) {
-
-    if (this->support != nullptr)
-        throw std::logic_error("There is already a -support- in this Geese. Cannot set a -support- after one is present.");
-
-    this->support        = support_;
-    this->delete_support = delete_support_;
-
-    // Setting the keygen, counters, psets, and rand engine.
-    support->set_keygen(keygen_full);
-    support->set_counters(counters);
-    support->store_psets();
-    support->set_rengine(this->rengine, false);
-
     return;
 
 }
@@ -376,6 +231,43 @@ inline void Geese::calc_sequence(Node * n) {
 
 }
 
+inline void Geese::calc_likelihood_sequence() {
+
+    // The criteria, if none of its decendants is annotated, then we can remove
+    // the node from the model
+    std::vector< bool > includeit(nodes.size(), false);
+    for (auto& i : sequence) {
+
+        Node & n = nodes[i];
+
+        // We will count this at the end
+        if (n.is_leaf()) {
+
+            for (unsigned int k = 0u; k < nfuns(); ++k) {
+                if (n.annotations[k] != 9u) {
+                    includeit[i] = true;
+                    likelihood_sequence.push_back(i);
+                    break;
+                }
+            }
+
+        } else {
+
+            // Checking, am I including any of my offspring?
+            for (auto& o : n.offspring) {
+                if (includeit[o->id]) {
+                    includeit[i] = true;
+                    likelihood_sequence.push_back(i);
+                    break;
+                }
+            }
+
+        }
+
+    }
+
+}
+
 inline std::vector< double > Geese::get_probabilities() const {
 
     std::vector< double > res;
@@ -413,8 +305,8 @@ inline unsigned int Geese::nleafs() const {
 inline unsigned int Geese::nterms() const {
 
     INITIALIZED()
-
     return support->nterms() + this->nfuns();
+
 }
 
 inline std::vector< std::vector<double> > Geese::observed_counts() {
