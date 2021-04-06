@@ -8,15 +8,15 @@
 using namespace Rcpp;
 
 // Useful macros
-#ifndef GEESE_FLOCK_CASES
-#define GEESE_FLOCK_CASES 1
-#define IF_GEESE(a) if (Rf_inherits((a), "geese"))
-#define IF_FLOCK(a) else if (Rf_inherits((a), "flock"))
-#define IF_NEITHER() else stop("The passed object is neither a 'geese' nor a 'flock'.");
-#endif
+#include "geese-utils.hpp"
 
 //' @title Evolutionary terms
+//' @description Model terms for both [geese] and [flock] objects.
 //' @export
+//' @param p An object of class [geese] or [flock].
+//' @param funs Vector of function indices (starting from zero).
+//' @param duplication When `TRUE` indicates that this term is only valid for
+//' duplication events.
 //' @name geese-terms
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_gains(
@@ -65,6 +65,7 @@ int term_loss(SEXP p, std::vector<unsigned int> & funs,
 
 //' @export
 //' @rdname geese-terms
+//' @param a,b Indices of functions (starting from zero)
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_cogain(SEXP p, unsigned int a, unsigned int b) {
 
@@ -129,6 +130,7 @@ int term_subfun(SEXP p, unsigned int a, unsigned int b) {
 
 //' @export
 //' @rdname geese-terms
+//' @oarams lb,ub Integers, minimum and maximum number of changes.
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_maxfuns(
     SEXP p, unsigned int lb, unsigned int ub,
@@ -160,32 +162,58 @@ int term_maxfuns(
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_overall_changes(SEXP p, bool duplication = true) {
 
-  Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_overall_changes(ptr->counters, duplication);
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylocounters::counter_overall_changes(ptr->counters, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylocounters::counter_overall_changes(&ptr->support.counters, duplication);
+
+  } IF_NEITHER()
+
+
   return 0;
 
 }
 
 //' @export
 //' @rdname geese-terms
-// [[Rcpp::export(rng = false)]]
+// [[Rcpp::export(rng = false, invisible = true)]]
 int term_kgains(
-    SEXP p,
-    std::vector<unsigned int> & funs,
-    int k = 1,
-    bool duplication = true) {
+  SEXP p,
+  std::vector<unsigned int> & funs,
+  int k = 1,
+  bool duplication = true
+) {
 
-  Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_gains_k_offspring(
-    ptr->counters, funs,
-    static_cast<unsigned int>(k), duplication);
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylocounters::counter_gains_k_offspring(
+      ptr->counters, funs,
+      static_cast<unsigned int>(k), duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylocounters::counter_gains_k_offspring(
+      &ptr->support.counters, funs,
+      static_cast<unsigned int>(k), duplication);
+
+  } IF_NEITHER()
+
   return 0;
 
 }
 
 //' @export
 //' @rdname geese-terms
-// [[Rcpp::export(rng = false)]]
+//' @details In the case of `term_neofun_a2b`, `a` represents the origin function
+//' from which `b` is originated.
+// [[Rcpp::export(rng = false, invisible = true)]]
 int term_neofun_a2b(
     SEXP p,
     int a,
@@ -193,9 +221,18 @@ int term_neofun_a2b(
     bool duplication = true
 ) {
 
-  Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_neofun_a2b(
-    ptr->counters, a, b, duplication);
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylocounters::counter_neofun_a2b(ptr->counters, a, b, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylocounters::counter_neofun_a2b(&ptr->support.counters, a, b, duplication);
+
+  } IF_NEITHER()
+
   return 0;
 
 }
@@ -204,14 +241,51 @@ int term_neofun_a2b(
 
 //' @export
 //' @rdname geese-terms
-// [[Rcpp::export(rng = false)]]
+// [[Rcpp::export(rng = false, invisible = true)]]
 int term_genes_changing(
     SEXP p,
     bool duplication = true
 ) {
 
-  Rcpp::XPtr< Geese >ptr(p);
-  phylocounters::counter_genes_changing(ptr->counters, duplication);
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylocounters::counter_genes_changing(ptr->counters, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylocounters::counter_genes_changing(&ptr->support.counters, duplication);
+
+  } IF_NEITHER()
+
   return 0;
 
 }
+
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_coopt(
+    SEXP p,
+    unsigned int a,
+    unsigned int b,
+    bool duplication = true
+) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylocounters::counter_co_opt(ptr->counters, a, b, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylocounters::counter_co_opt(&ptr->support.counters, a, b, duplication);
+
+  } IF_NEITHER()
+
+  return 0;
+
+}
+

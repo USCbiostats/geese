@@ -12,6 +12,7 @@
 \alias{term_kgains}
 \alias{term_neofun_a2b}
 \alias{term_genes_changing}
+\alias{term_coopt}
 \title{Evolutionary terms}
 \usage{
 term_gains(p, funs, duplication = TRUE)
@@ -33,7 +34,23 @@ term_kgains(p, funs, k = 1L, duplication = TRUE)
 term_neofun_a2b(p, a, b, duplication = TRUE)
 
 term_genes_changing(p, duplication = TRUE)
+
+term_coopt(p, a, b, duplication = TRUE)
+}
+\arguments{
+\item{p}{An object of class \link{geese} or \link{flock}.}
+
+\item{funs}{Vector of function indices (starting from zero).}
+
+\item{duplication}{When \code{TRUE} indicates that this term is only valid for
+duplication events.}
+
+\item{a, b}{Indices of functions (starting from zero)}
 }
 \description{
-Evolutionary terms
+Model terms for both \link{geese} and \link{flock} objects.
+}
+\details{
+In the case of \code{term_neofun_a2b}, \code{a} represents the origin function
+from which \code{b} is originated.
 }

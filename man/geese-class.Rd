@@ -2,46 +2,11 @@
 % Please edit documentation in R/RcppExports.R
 \name{geese-class}
 \alias{geese-class}
-\alias{new_model}
-\alias{init}
-\alias{nterms}
-\alias{nnodes}
-\alias{nleafs}
-\alias{likelihood}
-\alias{get_probabilities}
-\alias{get_sequence}
-\alias{set_seed}
-\alias{sim_geese}
-\alias{observed_counts}
-\alias{print_observed_counts}
-\alias{predictions}
+\alias{new_geese}
+\alias{geese}
 \title{GEne Evolutionary model using SufficiEncy (GEESE)}
 \usage{
-new_model(annotations, geneid, parent, duplication)
-
-init(p)
-
-nterms(p)
-
-nnodes(p)
-
-nleafs(p)
-
-likelihood(p, par)
-
-get_probabilities(p)
-
-get_sequence(p)
-
-set_seed(p, s)
-
-sim_geese(p, par, seed = -1L)
-
-observed_counts(p)
-
-print_observed_counts(p)
-
-predictions(p, par, leave_one_out = FALSE)
+new_geese(annotations, geneid, parent, duplication)
 }
 \arguments{
 \item{annotations}{Vector of integer vectors with annotations.}
@@ -49,6 +14,8 @@ predictions(p, par, leave_one_out = FALSE)
 \item{geneid}{integer vector with gene ids}
 
 \item{parent}{integer vector with parent gene id}
+
+\item{p}{An object of class \code{geese}.}
 }
 \description{
 GEne Evolutionary model using SufficiEncy (GEESE)

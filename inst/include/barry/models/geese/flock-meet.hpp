@@ -34,6 +34,10 @@ inline unsigned int Flock::add_data(
 
 }
 
+inline void Flock::set_seed(const unsigned int & s) {
+    this->rengine.seed(s);
+}
+
 inline void Flock::init() {
 
     // For some strange reason, pointing to support during
@@ -125,7 +129,7 @@ inline std::vector< unsigned int > Flock::nnodes() const {
     return res;
 }
 
-inline unsigned int Flock::nleafs() const {
+inline std::vector< unsigned int > Flock::nleafs() const {
 
     std::vector< unsigned int > res;
     res.reserve(this->ntrees());

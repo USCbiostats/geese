@@ -30,6 +30,8 @@ public:
         std::vector< bool > &                      duplication
     );
 
+    void set_seed(const unsigned int & s);
+
     void init();
     
     // void add_geese(Geese x);

@@ -52,7 +52,7 @@ tree <- aphylo::sim_tree(n)$edge - 1L
 duplication <- rep(TRUE, n * 2 - 1)
 
 # Reading the data in
-amodel <- new_model(
+amodel <- new_geese(
   annotations = annotations,
   geneid = c(tree[, 2], n),
   parent = c(tree[, 1], -1),
@@ -60,15 +60,10 @@ amodel <- new_model(
   )
 
 # Preparing the model
-invisible({
-  
-  term_gains(amodel, 0:1)
-  term_loss(amodel, 0:1)
-  term_maxfuns(amodel, 1, 1)
-  
-  init(amodel)
-  
-})
+term_gains(amodel, 0:1)
+term_loss(amodel, 0:1)
+term_maxfuns(amodel, 1, 1)
+init_model(amodel)
 
 # Testing
 params <- c(
@@ -103,22 +98,18 @@ plot(ap)
 # Fitting the model
 
 # Figuring out order
-amodel <- new_model(
+amodel <- new_geese(
   annotations = fake[c(tree[, 2], n) + 1],
   geneid      = c(tree[, 2], n),
   parent      = c(tree[, 1],-1),
   duplication = duplication
   )
 
-invisible({
-  
-  term_gains(amodel, 0:1)
-  term_loss(amodel, 0:1)
-  term_maxfuns(amodel, 1, 1)
-  
-  init(amodel)
-  
-})
+term_gains(amodel, 0:1)
+term_loss(amodel, 0:1)
+term_maxfuns(amodel, 1, 1)
+
+init_model(amodel)
 
 # Finding MLE
 ans <- geese_mle(amodel, hessian = TRUE)
