@@ -17,7 +17,7 @@ geese_mcmc <- function(
   # Normalized Log-likelihood function
   fun <- function(p) {
 
-    ans <- log(likelihood(amodel, p)) + sum(prior(p))
+    ans <- likelihood(p = amodel, par = p, as_log = TRUE) + sum(prior(p)) * ntrees(amodel)
 
     if (!is.finite(ans))
       return(-.Machine$double.xmax * 1e-100)

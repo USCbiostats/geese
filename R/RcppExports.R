@@ -71,8 +71,8 @@ nleafs <- function(p) {
 #' @details Using the truncated pruning sequence (`trunc_seq = TRUE`) involves
 #' traversing the trees throught the induced subtree. This is relevant in the case
 #' that not all the leafs are annotated.
-likelihood <- function(p, par, trunc_seq = TRUE) {
-    .Call(`_geese_likelihood`, p, par, trunc_seq)
+likelihood <- function(p, par, as_log = FALSE, trunc_seq = TRUE) {
+    .Call(`_geese_likelihood`, p, par, as_log, trunc_seq)
 }
 
 #' @rdname geese-common

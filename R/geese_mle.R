@@ -15,7 +15,7 @@ geese_mle <- function(
   # Normalized Log-likelihood function
   fun <- function(p) {
 
-    ans <- log(likelihood(amodel, p))
+    ans <- likelihood(p = amodel, par = p, as_log = TRUE)
 
     if (!is.finite(ans))
       return(-.Machine$double.xmax * 1e-100)

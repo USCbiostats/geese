@@ -4,7 +4,7 @@
 [![Integrative Methods of Analysis for Genetic
 Epidemiology](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
 
-# geese: **GE**ne-functional **E**volution using **S**uffici**E**ncy <img src="man/figures/logo.svg" align="right" width="180px"/>
+# geese: *GE*ne-functional *E*volution using *S*uffici*E*ncy <img src="man/figures/logo.svg" align="right" width="180px"/>
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -13,21 +13,21 @@ The goal of geese is to …
 
 ## Installation
 
-You can install the released version of geese from
-[CRAN](https://CRAN.R-project.org) with:
+<!-- You can install the released version of geese from [CRAN](https://CRAN.R-project.org) with: -->
+<!-- ``` r -->
+<!-- install.packages("geese") -->
+<!-- ``` -->
 
-``` r
-install.packages("geese")
-```
-
-And the development version from [GitHub](https://github.com/) with:
+The development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("USCbiostats/geese")
 ```
 
-## Example
+# Examples
+
+## Simulating annotations (two different sets)
 
 ``` r
 library(geese)
@@ -43,7 +43,7 @@ tree <- aphylo::sim_tree(n)$edge - 1L
 duplication <- rep(TRUE, n * 2 - 1)
 
 # Reading the data in
-amodel <- new_model(
+amodel <- new_geese(
   annotations = annotations,
   geneid = c(tree[, 2], n),
   parent = c(tree[, 1], -1),
@@ -51,15 +51,10 @@ amodel <- new_model(
   )
 
 # Preparing the model
-invisible({
-  
-  term_gains(amodel, 0:1)
-  term_loss(amodel, 0:1)
-  term_maxfuns(amodel, 1, 1)
-  
-  init(amodel)
-  
-})
+term_gains(amodel, 0:1)
+term_loss(amodel, 0:1)
+term_maxfuns(amodel, 1, 1)
+init_model(amodel)
 
 # Testing
 params <- c(
@@ -75,48 +70,49 @@ params <- c(
 names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
 
 likelihood(amodel, params*0) # Equals 1 b/c all missings
-#> [1] 1
+#> [1] 0
 
 # Simulating data
-fake <- sim_geese(p = amodel, par = params, seed = 1110)
+fake1 <- sim_geese(p = amodel, par = params, seed = 1110)
+fake2 <- sim_geese(p = amodel, par = params)
 ```
+
+We can now visualize either of the annotations using the
+[aphylo](https://github.com/USCbiostats/aphylo) package.
 
 ``` r
 library(aphylo)
 #> Loading required package: ape
 ap <- new_aphylo(
   tree           = {set.seed(31);aphylo::sim_tree(n)},
-  tip.annotation = as.data.frame(do.call(rbind, fake[1:n]))
+  tip.annotation = as.data.frame(do.call(rbind, fake1[1:n]))
 )
 plot(ap)
 ```
 
 <img src="man/figures/README-viz-with-aphylo-1.png" width="100%" />
 
-``` r
-# Fitting the model
+## Model fitting MLE
 
-# Figuring out order
-amodel <- new_model(
-  annotations = fake[c(tree[, 2], n) + 1],
+``` r
+# Creating the object
+amodel <- new_geese(
+  annotations = fake1[c(tree[, 2], n) + 1],
   geneid      = c(tree[, 2], n),
   parent      = c(tree[, 1],-1),
   duplication = duplication
   )
 
-invisible({
-  
-  term_gains(amodel, 0:1)
-  term_loss(amodel, 0:1)
-  term_maxfuns(amodel, 1, 1)
-  
-  init(amodel)
-  
-})
+# Adding the model terms
+term_gains(amodel, 0:1)
+term_loss(amodel, 0:1)
+term_maxfuns(amodel, 1, 1)
+
+# We need to initialize to do all the accountintg
+init_model(amodel)
 
 # Finding MLE
-ans <- geese_mle(amodel, hessian = TRUE)
-ans
+geese_mle(amodel, hessian = TRUE)
 #> $par
 #> [1]  1.3024291  1.4904183 -1.4668169 -0.9165704  1.8952822 -0.1918496 -0.5043625
 #> 
@@ -150,19 +146,9 @@ ans
 #> [5,] -4.565237e-07  1.888232e-04
 #> [6,]  4.440892e-08  6.750156e-08
 #> [7,]  6.750156e-08 -2.657963e-05
-# [1]  0.6881464  1.0305919 -0.9295311 -1.1126288  1.4606278 -0.1944617 -1.0264741
-# Root node probabilities and odds ratios
-plogis(tail(ans$par, 2))
-#> [1] 0.4521842 0.3765160
-exp(ans$par[1:5])
-#> [1] 3.6782206 4.4389521 0.2306585 0.3998881 6.6544260
-
-# Is it invertible?
-diag(MASS::ginv(-ans$hessian))
-#> [1] 5.723131e-01 7.826033e-01 7.015644e-01 2.741636e-01 5.230241e-02
-#> [6] 2.447072e-01 3.893722e+04
-# diag(solve(-ans$hessian, tol = 1e-100))
 ```
+
+## Model fitting MCMC
 
 ``` r
 set.seed(122)
@@ -173,6 +159,8 @@ ans_mcmc <- geese_mcmc(
   prior   = function(p) dlogis(p, scale = 2, log = TRUE)
   )
 ```
+
+We can take a look at the results like this:
 
 <img src="man/figures/README-mcmc-analysis-1.png" width="100%" />
 
@@ -204,6 +192,104 @@ ans_mcmc <- geese_mcmc(
     #> par5  1.5569  1.8305  1.98664  2.1502 2.51727
     #> par6 -7.7258 -2.4187 -0.12163  2.0795 6.98715
     #> par7 -7.8283 -2.2335 -0.01834  2.2817 7.28420
+
+## Using a flock
+
+GEESE models can be grouped (pooled) into a flock.
+
+``` r
+flock <- new_flock()
+
+# Adding first set of annotations
+add_geese(
+  flock,
+  annotations = fake1[c(tree[, 2], n) + 1],
+  geneid      = c(tree[, 2], n),
+  parent      = c(tree[, 1],-1),
+  duplication = duplication  
+)
+
+# Now the second set
+add_geese(
+  flock,
+  annotations = fake2[c(tree[, 2], n) + 1],
+  geneid      = c(tree[, 2], n),
+  parent      = c(tree[, 1],-1),
+  duplication = duplication  
+)
+
+# Adding the model terms
+term_gains(flock, 0:1)
+term_loss(flock, 0:1)
+term_maxfuns(flock, 1, 1)
+
+# We need to initialize to do all the accountintg
+init_model(flock)
+```
+
+We can use the same program to fit the MCMC
+
+``` r
+set.seed(122)
+ans_mcmc2 <- geese_mcmc(
+  flock,
+  nsteps  = 20000,
+  kernel  = fmcmc::kernel_ram(warmup = 2000), 
+  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
+  )
+```
+
+``` r
+op <- par(
+  mfrow = c(4, 2), #tcl=.5,
+  las=1, mar = c(3,3,1,0),
+  bty = "n", oma = rep(1,4)
+  )
+for (i in 1:ncol(ans_mcmc2)) {
+  tmpx <- window(ans_mcmc2, start = 10000)[,i,drop=FALSE]
+  
+  coda::traceplot(
+    tmpx, smooth = FALSE, ylim = c(-11,11), col = rgb(0, 128, 128, maxColorValue = 255), 
+    main = names(params)[i]
+    )
+  abline(h = params[i], lty=3, lwd=4, col = "red")
+}
+par(op)
+```
+
+<img src="man/figures/README-viz-flock-1.png" width="100%" />
+
+``` r
+summary(window(ans_mcmc2, start = 10000))
+#> 
+#> Iterations = 10000:20000
+#> Thinning interval = 1 
+#> Number of chains = 1 
+#> Sample size per chain = 10001 
+#> 
+#> 1. Empirical mean and standard deviation for each variable,
+#>    plus standard error of the mean:
+#> 
+#>          Mean     SD Naive SE Time-series SE
+#> par1  1.75029 0.5658 0.005658       0.031031
+#> par2  1.15245 0.6418 0.006418       0.031898
+#> par3 -1.27191 0.5489 0.005488       0.026757
+#> par4 -1.37351 0.3635 0.003635       0.015714
+#> par5  1.81130 0.1630 0.001630       0.007164
+#> par6  0.20264 2.6196 0.026195       0.304291
+#> par7 -0.09525 1.9988 0.019987       0.192587
+#> 
+#> 2. Quantiles for each variable:
+#> 
+#>          2.5%     25%     50%     75%   97.5%
+#> par1  0.72459  1.3498  1.7308  2.1272  2.8592
+#> par2  0.03824  0.7103  1.1054  1.5305  2.5470
+#> par3 -2.37365 -1.6300 -1.2692 -0.9166 -0.1438
+#> par4 -2.09160 -1.6242 -1.3736 -1.1207 -0.6764
+#> par5  1.49584  1.6992  1.8025  1.9109  2.1439
+#> par6 -4.78636 -1.4981  0.1150  1.8273  5.1856
+#> par7 -4.12554 -1.3982 -0.1091  1.1896  4.0561
+```
 
 ## Code of Conduct
 

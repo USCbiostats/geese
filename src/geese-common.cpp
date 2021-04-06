@@ -130,17 +130,21 @@ IntegerVector nleafs(SEXP p) {
 //' traversing the trees throught the induced subtree. This is relevant in the case
 //' that not all the leafs are annotated.
 // [[Rcpp::export(rng = false)]]
-double likelihood(SEXP p, const std::vector< double > & par, bool trunc_seq = true) {
+double likelihood(
+    SEXP p, const std::vector< double > & par,
+    bool as_log    = false,
+    bool trunc_seq = true
+  ) {
 
   IF_GEESE(p) {
 
     Rcpp::XPtr< Geese >ptr(p);
-    return ptr->likelihood(par, trunc_seq);
+    return ptr->likelihood(par, as_log, trunc_seq);
 
   } IF_FLOCK(p) {
 
     Rcpp::XPtr< Flock >ptr(p);
-    return ptr->likelihood_joint(par, trunc_seq);
+    return ptr->likelihood_joint(par, as_log, trunc_seq);
 
   } IF_NEITHER()
 

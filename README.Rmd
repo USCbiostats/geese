@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 
 [![Integrative Methods of Analysis for Genetic Epidemiology](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
 
-# geese: **GE**ne-functional **E**volution using **S**uffici**E**ncy <img src="man/figures/logo.svg" align="right" width="180px"/>
+# geese: *GE*ne-functional *E*volution using *S*uffici*E*ncy <img src="man/figures/logo.svg" align="right" width="180px"/>
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -24,19 +24,21 @@ The goal of geese is to ...
 
 ## Installation
 
-You can install the released version of geese from [CRAN](https://CRAN.R-project.org) with:
+<!-- You can install the released version of geese from [CRAN](https://CRAN.R-project.org) with: -->
 
-``` r
-install.packages("geese")
-```
+<!-- ``` r -->
+<!-- install.packages("geese") -->
+<!-- ``` -->
 
-And the development version from [GitHub](https://github.com/) with:
+The development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("USCbiostats/geese")
 ```
-## Example
+# Examples
+
+## Simulating annotations (two different sets)
 
 ```{r simulating-data}
 library(geese)
@@ -81,50 +83,45 @@ names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1
 likelihood(amodel, params*0) # Equals 1 b/c all missings
 
 # Simulating data
-fake <- sim_geese(p = amodel, par = params, seed = 1110)
+fake1 <- sim_geese(p = amodel, par = params, seed = 1110)
+fake2 <- sim_geese(p = amodel, par = params)
 ```
+
+We can now visualize either of the annotations using the [aphylo](https://github.com/USCbiostats/aphylo) package.
 
 ```{r viz-with-aphylo}
 library(aphylo)
 ap <- new_aphylo(
   tree           = {set.seed(31);aphylo::sim_tree(n)},
-  tip.annotation = as.data.frame(do.call(rbind, fake[1:n]))
+  tip.annotation = as.data.frame(do.call(rbind, fake1[1:n]))
 )
 plot(ap)
 ```
 
+## Model fitting MLE
 
 ```{r mle}
-# Fitting the model
-
-# Figuring out order
+# Creating the object
 amodel <- new_geese(
-  annotations = fake[c(tree[, 2], n) + 1],
+  annotations = fake1[c(tree[, 2], n) + 1],
   geneid      = c(tree[, 2], n),
   parent      = c(tree[, 1],-1),
   duplication = duplication
   )
 
+# Adding the model terms
 term_gains(amodel, 0:1)
 term_loss(amodel, 0:1)
 term_maxfuns(amodel, 1, 1)
 
+# We need to initialize to do all the accountintg
 init_model(amodel)
 
 # Finding MLE
-ans <- geese_mle(amodel, hessian = TRUE)
-ans
-# [1]  0.6881464  1.0305919 -0.9295311 -1.1126288  1.4606278 -0.1944617 -1.0264741
-# Root node probabilities and odds ratios
-plogis(tail(ans$par, 2))
-exp(ans$par[1:5])
-
-# Is it invertible?
-diag(MASS::ginv(-ans$hessian))
-# diag(solve(-ans$hessian, tol = 1e-100))
-
+geese_mle(amodel, hessian = TRUE)
 ```
 
+## Model fitting MCMC
 
 ```{r mcmc-fit, cache=TRUE}
 set.seed(122)
@@ -135,6 +132,8 @@ ans_mcmc <- geese_mcmc(
   prior   = function(p) dlogis(p, scale = 2, log = TRUE)
   )
 ```
+
+We can take a look at the results like this:
 
 ```{r mcmc-analysis, echo = FALSE}
 op <- par(
@@ -155,6 +154,70 @@ par(op)
 summary(window(ans_mcmc, start = 15000))
 ```
 
+## Using a flock
+
+GEESE models can be grouped (pooled) into a flock.
+
+```{r new-flock}
+flock <- new_flock()
+
+# Adding first set of annotations
+add_geese(
+  flock,
+  annotations = fake1[c(tree[, 2], n) + 1],
+  geneid      = c(tree[, 2], n),
+  parent      = c(tree[, 1],-1),
+  duplication = duplication  
+)
+
+# Now the second set
+add_geese(
+  flock,
+  annotations = fake2[c(tree[, 2], n) + 1],
+  geneid      = c(tree[, 2], n),
+  parent      = c(tree[, 1],-1),
+  duplication = duplication  
+)
+
+# Adding the model terms
+term_gains(flock, 0:1)
+term_loss(flock, 0:1)
+term_maxfuns(flock, 1, 1)
+
+# We need to initialize to do all the accountintg
+init_model(flock)
+```
+
+We can use the same program to fit the MCMC
+
+```{r flock-mcmc, cache=TRUE}
+set.seed(122)
+ans_mcmc2 <- geese_mcmc(
+  flock,
+  nsteps  = 20000,
+  kernel  = fmcmc::kernel_ram(warmup = 2000), 
+  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
+  )
+```
+
+```{r viz-flock}
+op <- par(
+  mfrow = c(4, 2), #tcl=.5,
+  las=1, mar = c(3,3,1,0),
+  bty = "n", oma = rep(1,4)
+  )
+for (i in 1:ncol(ans_mcmc2)) {
+  tmpx <- window(ans_mcmc2, start = 10000)[,i,drop=FALSE]
+  
+  coda::traceplot(
+    tmpx, smooth = FALSE, ylim = c(-11,11), col = rgb(0, 128, 128, maxColorValue = 255), 
+    main = names(params)[i]
+    )
+  abline(h = params[i], lty=3, lwd=4, col = "red")
+}
+par(op)
+summary(window(ans_mcmc2, start = 10000))
+```
 
 
 ## Code of Conduct
