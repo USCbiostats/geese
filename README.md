@@ -83,9 +83,12 @@ We can now visualize either of the annotations using the
 ``` r
 library(aphylo)
 #> Loading required package: ape
-ap <- new_aphylo(
-  tree           = {set.seed(31);aphylo::sim_tree(n)},
-  tip.annotation = as.data.frame(do.call(rbind, fake1[1:n]))
+ap <- aphylo_from_data_frame(
+  tree        = as.phylo(tree), 
+  annotations = data.frame(
+    id = c(tree[, 2], n),
+    do.call(rbind, fake1)
+    )
 )
 plot(ap)
 ```
@@ -97,7 +100,7 @@ plot(ap)
 ``` r
 # Creating the object
 amodel <- new_geese(
-  annotations = fake1[c(tree[, 2], n) + 1],
+  annotations = fake1,
   geneid      = c(tree[, 2], n),
   parent      = c(tree[, 1],-1),
   duplication = duplication
@@ -203,7 +206,7 @@ flock <- new_flock()
 # Adding first set of annotations
 add_geese(
   flock,
-  annotations = fake1[c(tree[, 2], n) + 1],
+  annotations = fake1,
   geneid      = c(tree[, 2], n),
   parent      = c(tree[, 1],-1),
   duplication = duplication  
@@ -212,7 +215,7 @@ add_geese(
 # Now the second set
 add_geese(
   flock,
-  annotations = fake2[c(tree[, 2], n) + 1],
+  annotations = fake2,
   geneid      = c(tree[, 2], n),
   parent      = c(tree[, 1],-1),
   duplication = duplication  
