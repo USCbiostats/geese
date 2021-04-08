@@ -69,8 +69,6 @@ inline Geese::Geese(
 
                 // Adding the parent to the offspring
                 key_off.first->second.parent = &key_par.first->second;
-                // key_off.first->second.annotations = funs;
-                // key_off.first->second.duplication = duplication.at(i);
 
             } else { // Case 1b: i does exists (we saw it earlier)
 
@@ -109,9 +107,6 @@ inline Geese::Geese(
 
                 }
 
-                // key_off.first->second.annotations = funs;
-                // key_off.first->second.duplication = duplication.at(i);
-
             } else { // Case 2b: i does exists (and so does its parent)
 
                 // We just need to make sure that we update it!
@@ -135,14 +130,25 @@ inline Geese::Geese(
 
     // Verifying that all have the variable ord
     for (auto& n : nodes) {
-        if (n.second.ord == UINT_MAX)
-            throw std::logic_error("One of the nodes was passed along.");
+        if (n.second.ord == UINT_MAX) {
+
+            const char *fmt = "Node id %i was not included in geneid.";
+            int sz = std::snprintf(nullptr, 0, fmt, n.second.id);
+            std::vector<char> buf(sz + 1);
+            std::snprintf(&buf[0], buf.size(), fmt, n.second.id);
+            throw std::logic_error(&buf[0]);
+
+        }
     }
 
 
     // Computing the pruning sequence.
     calc_sequence();
     calc_likelihood_sequence();
+
+    // Are the sequences OK?
+    if (this->sequence.size() != this->nnodes())
+        throw std::logic_error("The pruning sequence's length is different from nnodes(). This should not happen! (contact the developers).");
 
     return;
 
