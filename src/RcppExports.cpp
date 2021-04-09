@@ -102,12 +102,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_sequence
-std::vector< unsigned int > get_sequence(SEXP p);
-RcppExport SEXP _geese_get_sequence(SEXP pSEXP) {
+std::vector< unsigned int > get_sequence(SEXP p, bool reduced_sequence);
+RcppExport SEXP _geese_get_sequence(SEXP pSEXP, SEXP reduced_sequenceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    rcpp_result_gen = Rcpp::wrap(get_sequence(p));
+    Rcpp::traits::input_parameter< bool >::type reduced_sequence(reduced_sequenceSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_sequence(p, reduced_sequence));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -155,14 +156,30 @@ BEGIN_RCPP
 END_RCPP
 }
 // predict_geese
-std::vector< std::vector< double > > predict_geese(SEXP p, const std::vector< double >& par, bool leave_one_out);
-RcppExport SEXP _geese_predict_geese(SEXP pSEXP, SEXP parSEXP, SEXP leave_one_outSEXP) {
+std::vector< std::vector< double > > predict_geese(SEXP p, const std::vector< double >& par, bool leave_one_out, bool use_reduced_sequence, bool only_annotated);
+RcppExport SEXP _geese_predict_geese(SEXP pSEXP, SEXP parSEXP, SEXP leave_one_outSEXP, SEXP use_reduced_sequenceSEXP, SEXP only_annotatedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< const std::vector< double >& >::type par(parSEXP);
     Rcpp::traits::input_parameter< bool >::type leave_one_out(leave_one_outSEXP);
-    rcpp_result_gen = Rcpp::wrap(predict_geese(p, par, leave_one_out));
+    Rcpp::traits::input_parameter< bool >::type use_reduced_sequence(use_reduced_sequenceSEXP);
+    Rcpp::traits::input_parameter< bool >::type only_annotated(only_annotatedSEXP);
+    rcpp_result_gen = Rcpp::wrap(predict_geese(p, par, leave_one_out, use_reduced_sequence, only_annotated));
+    return rcpp_result_gen;
+END_RCPP
+}
+// predict_flock
+std::vector< std::vector< std::vector< double > > > predict_flock(SEXP p, const std::vector< double >& par, bool leave_one_out, bool use_reduced_sequence, bool only_annotated);
+RcppExport SEXP _geese_predict_flock(SEXP pSEXP, SEXP parSEXP, SEXP leave_one_outSEXP, SEXP use_reduced_sequenceSEXP, SEXP only_annotatedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const std::vector< double >& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< bool >::type leave_one_out(leave_one_outSEXP);
+    Rcpp::traits::input_parameter< bool >::type use_reduced_sequence(use_reduced_sequenceSEXP);
+    Rcpp::traits::input_parameter< bool >::type only_annotated(only_annotatedSEXP);
+    rcpp_result_gen = Rcpp::wrap(predict_flock(p, par, leave_one_out, use_reduced_sequence, only_annotated));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -324,12 +341,13 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_nleafs", (DL_FUNC) &_geese_nleafs, 1},
     {"_geese_likelihood", (DL_FUNC) &_geese_likelihood, 4},
     {"_geese_get_probabilities", (DL_FUNC) &_geese_get_probabilities, 1},
-    {"_geese_get_sequence", (DL_FUNC) &_geese_get_sequence, 1},
+    {"_geese_get_sequence", (DL_FUNC) &_geese_get_sequence, 2},
     {"_geese_set_seed", (DL_FUNC) &_geese_set_seed, 2},
     {"_geese_sim_geese", (DL_FUNC) &_geese_sim_geese, 3},
     {"_geese_observed_counts", (DL_FUNC) &_geese_observed_counts, 1},
     {"_geese_print_observed_counts", (DL_FUNC) &_geese_print_observed_counts, 1},
-    {"_geese_predict_geese", (DL_FUNC) &_geese_predict_geese, 3},
+    {"_geese_predict_geese", (DL_FUNC) &_geese_predict_geese, 5},
+    {"_geese_predict_flock", (DL_FUNC) &_geese_predict_flock, 5},
     {"_geese_term_gains", (DL_FUNC) &_geese_term_gains, 3},
     {"_geese_term_loss", (DL_FUNC) &_geese_term_loss, 3},
     {"_geese_term_cogain", (DL_FUNC) &_geese_term_cogain, 3},

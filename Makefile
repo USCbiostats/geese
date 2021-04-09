@@ -1,5 +1,5 @@
 build:
-	Rscript -e 'Rcpp::compileAttributes();roxygen2::roxygenize()' && \
+	rm src/*.o ; Rscript -e 'Rcpp::compileAttributes();roxygen2::roxygenize()' && \
 		cd .. && R CMD build geese/
 install:
 	$(MAKE) build && R CMD INSTALL ../geese_*
@@ -10,3 +10,5 @@ check:
 # and then type 'run'
 debug:
 	R -d gdb switch
+update:
+	rsync -av ../barry/include/barry inst/include

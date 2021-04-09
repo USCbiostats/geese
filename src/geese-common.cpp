@@ -176,12 +176,15 @@ NumericMatrix get_probabilities(SEXP p) {
 //' @rdname geese-common
 //' @export
 // [[Rcpp::export(rng = false)]]
-std::vector< unsigned int > get_sequence(SEXP p) {
+std::vector< unsigned int > get_sequence(
+    SEXP p,
+    bool reduced_sequence = true
+) {
 
   CHECK_GEESE(p)
 
   Rcpp::XPtr< Geese >ptr(p);
-  return ptr->sequence;
+  return reduced_sequence ? ptr->reduced_sequence : ptr->sequence;
 }
 
 //' @rdname geese-common
@@ -255,51 +258,3 @@ int print_observed_counts(
 
 }
 
-//' @export
-//' @rdname geese-common
-// [[Rcpp::export(rng = false)]]
-std::vector< std::vector< double > > predict_geese(
-    SEXP p,
-    const std::vector< double > & par,
-    bool leave_one_out = false
-  ) {
-
-  CHECK_GEESE(p)
-
-  Rcpp::XPtr< Geese >ptr(p);
-
-  // Baseline predictions
-  std::vector< std::vector< double > > res = ptr->predict(par);
-
-  if (!leave_one_out)
-    return res;
-
-  // In the case of leave one out, we need to update the predictions
-  // accordingly
-  std::vector< unsigned int > default_empty(ptr->nfuns(), 9u);
-  for (auto& n : ptr->nodes) {
-
-    if (n.second.is_leaf()) {
-
-      Node & ntmp = n.second;
-
-      // Recording the original annotation
-      auto old_ann = ntmp.annotations;
-
-      // Removing the entire gene
-      ptr->update_annotations(ntmp.id, default_empty);
-
-      // Making the prediction
-      res[ntmp.id] = (ptr->predict(par))[ntmp.id];
-
-      // Restoring the gene
-      ptr->update_annotations(ntmp.id, old_ann);
-
-
-    }
-
-  }
-
-  return res;
-
-}

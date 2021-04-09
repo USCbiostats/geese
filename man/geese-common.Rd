@@ -16,6 +16,7 @@
 \alias{observed_counts}
 \alias{print_observed_counts}
 \alias{predict_geese}
+\alias{predict_flock}
 \title{Common functions for \code{geese} and \code{flock}.}
 \usage{
 init_model(p)
@@ -32,7 +33,7 @@ likelihood(p, par, as_log = FALSE, trunc_seq = TRUE)
 
 get_probabilities(p)
 
-get_sequence(p)
+get_sequence(p, reduced_sequence = TRUE)
 
 set_seed(p, s)
 
@@ -42,7 +43,21 @@ observed_counts(p)
 
 print_observed_counts(p)
 
-predict_geese(p, par, leave_one_out = FALSE)
+predict_geese(
+  p,
+  par,
+  leave_one_out = FALSE,
+  use_reduced_sequence = TRUE,
+  only_annotated = FALSE
+)
+
+predict_flock(
+  p,
+  par,
+  leave_one_out = FALSE,
+  use_reduced_sequence = TRUE,
+  only_annotated = FALSE
+)
 }
 \arguments{
 \item{p}{An object of class \link{geese} or \link{flock}.}

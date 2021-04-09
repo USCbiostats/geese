@@ -84,7 +84,7 @@ inline phylocounters::PhyloCounters * Flock::counters_ptr() {
 inline double Flock::likelihood_joint(
     const std::vector< double > & par,
     bool as_log,
-    bool use_likelihood_sequence
+    bool use_reduced_sequence
 ) {
 
     INITIALIZED()
@@ -93,12 +93,12 @@ inline double Flock::likelihood_joint(
     if (as_log) {
 
         for (auto& d : this->dat) 
-            ans += d.likelihood(par, as_log, use_likelihood_sequence);
+            ans += d.likelihood(par, as_log, use_reduced_sequence);
 
     } else {
 
         for (auto& d : this->dat) 
-            ans *= d.likelihood(par, as_log, use_likelihood_sequence);
+            ans *= d.likelihood(par, as_log, use_reduced_sequence);
             
     }
     
@@ -145,6 +145,16 @@ inline unsigned int Flock::nterms() const {
 
     INITIALIZED()
     return support.nterms() + this->nfuns();
+
+}
+
+inline Geese* Flock::operator()(unsigned int i, bool check_bounds)
+{
+
+    if (check_bounds && i >= ntrees())
+        throw std::logic_error("Geese not found in the flock (out of range).");
+
+    return &dat[i];
 
 }
 

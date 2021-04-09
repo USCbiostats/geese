@@ -117,7 +117,7 @@ term_gains(amodel, 0:1)
 term_loss(amodel, 0:1)
 term_maxfuns(amodel, 1, 1)
 
-# We need to initialize to do all the accountintg
+# We need to initialize to do all the accounting
 init_model(amodel)
 
 # Finding MLE

@@ -83,8 +83,8 @@ get_probabilities <- function(p) {
 
 #' @rdname geese-common
 #' @export
-get_sequence <- function(p) {
-    .Call(`_geese_get_sequence`, p)
+get_sequence <- function(p, reduced_sequence = TRUE) {
+    .Call(`_geese_get_sequence`, p, reduced_sequence)
 }
 
 #' @rdname geese-common
@@ -113,8 +113,14 @@ print_observed_counts <- function(p) {
 
 #' @export
 #' @rdname geese-common
-predict_geese <- function(p, par, leave_one_out = FALSE) {
-    .Call(`_geese_predict_geese`, p, par, leave_one_out)
+predict_geese <- function(p, par, leave_one_out = FALSE, use_reduced_sequence = TRUE, only_annotated = FALSE) {
+    .Call(`_geese_predict_geese`, p, par, leave_one_out, use_reduced_sequence, only_annotated)
+}
+
+#' @export
+#' @rdname geese-common
+predict_flock <- function(p, par, leave_one_out = FALSE, use_reduced_sequence = TRUE, only_annotated = FALSE) {
+    .Call(`_geese_predict_flock`, p, par, leave_one_out, use_reduced_sequence, only_annotated)
 }
 
 #' @title Evolutionary terms

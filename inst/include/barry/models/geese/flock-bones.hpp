@@ -58,14 +58,14 @@ public:
      * 
      * @param par Vector of model parameters.
      * @param as_log When `true` it will return the value as log.
-     * @param use_likelihood_sequence When `true` (default) will compute the
+     * @param use_reduced_sequence When `true` (default) will compute the
      * likelihood using the reduced sequence, which is faster.
      * @return double 
      */
     double likelihood_joint(
         const std::vector< double > & par,
         bool as_log = false,
-        bool use_likelihood_sequence = true
+        bool use_reduced_sequence = true
     );
 
     /**
@@ -78,6 +78,15 @@ public:
     std::vector< unsigned int > nleafs() const noexcept;
     unsigned int nterms() const;
     ///@}
+
+    /**
+     * @brief Access the i-th geese element
+     * 
+     * @param i Element to access
+     * @param check_bounds When true, it will check bounds.
+     * @return Geese*
+     */
+    Geese * operator()(unsigned int i, bool check_bounds = true);
 
 };
 
