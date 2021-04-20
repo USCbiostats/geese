@@ -1,7 +1,3 @@
-#include <random>
-#include <iostream>
-#include <string>
-#include <algorithm>
 #include "barry/barry.hpp"
 #include "barry/models/geese.hpp"
 #include <Rcpp.h>
@@ -160,7 +156,7 @@ NumericMatrix get_probabilities(SEXP p) {
 
   Rcpp::XPtr< Geese >ptr(p);
   unsigned int N = ptr->nodes.size();
-  unsigned int M = ptr->states.size();
+  unsigned int M = ptr->get_states().size();
   NumericMatrix m(N, M);
   std::fill(m.begin(), m.end(), 0.0);
 

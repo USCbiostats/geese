@@ -1,4 +1,4 @@
-#include "geese-bones.hpp"
+// #include "geese-bones.hpp"
 
 #ifndef GEESE_MEAT_PREDICT_HPP
 #define GEESE_MEAT_PREDICT_HPP 1
@@ -82,6 +82,7 @@ inline std::vector< std::vector<double> > Geese::predict_backend(
                 break;
             
             ++n_pos;
+            
         }
 
         // Iterating through the offspring state P(x_n^p | D)
@@ -182,7 +183,8 @@ inline std::vector< std::vector<double> > Geese::predict(
 
     std::reverse(preorder.begin(), preorder.end());
 
-    // Full prediction (first run)
+    // Full prediction (first run, right now I am doing this
+    // twice. Need to fix in the future)
     std::vector< std::vector<double> > res = predict_backend(
         par, use_reduced_sequence, preorder
         );

@@ -6,3 +6,4 @@
 ^README_cache$
 vignettes
 Makefile
+inst/simulation-study/

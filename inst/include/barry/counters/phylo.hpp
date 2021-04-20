@@ -52,9 +52,7 @@ public:
 
 typedef std::vector< uint > PhyloCounterData;
 typedef std::vector< std::pair< uint, uint > > PhyloRuleData;
-
-#define PHYLO_C_DATA_IDX(i) (data.operator[](i))
-// #define PHYLO_C_DATA_NUM(i) (data->numbers[i])
+class PhyloRuleDynData;
 
 /**
  * @name Convenient typedefs for Node objects.
@@ -63,11 +61,16 @@ typedef std::vector< std::pair< uint, uint > > PhyloRuleData;
 typedef BArray<uint, NodeData> PhyloArray;
 typedef Counter<PhyloArray, PhyloCounterData > PhyloCounter;
 typedef Counters< PhyloArray, PhyloCounterData> PhyloCounters;
+
 typedef Rule<PhyloArray,PhyloRuleData> PhyloRule;
 typedef Rules<PhyloArray,PhyloRuleData> PhyloRules;
-typedef Support<PhyloArray, PhyloCounterData, PhyloRuleData> PhyloSupport;
+
+typedef Rule<PhyloArray,PhyloRuleDynData> PhyloRuleDyn;
+typedef Rules<PhyloArray,PhyloRuleDynData> PhyloRulesDyn;
+
+typedef Support<PhyloArray, PhyloCounterData, PhyloRuleData, PhyloRuleDynData > PhyloSupport;
 typedef StatsCounter<PhyloArray, PhyloCounterData> PhyloStatsCounter;
-typedef Model<PhyloArray, PhyloCounterData, PhyloRuleData> PhyloModel;
+typedef Model<PhyloArray, PhyloCounterData, PhyloRuleData, PhyloRuleDynData > PhyloModel;
 typedef PowerSet<PhyloArray, PhyloRuleData> PhyloPowerSet;
 ///@}
 
@@ -82,16 +85,16 @@ typedef PowerSet<PhyloArray, PhyloRuleData> PhyloPowerSet;
  * 
  * 
  */
-#define PHYLO_COUNTER(a) inline double (a) (const PhyloArray & Array, uint i, \
-    uint j, PhyloCounterData * data)
-
 #define PHYLO_COUNTER_LAMBDA(a) Counter_fun_type<PhyloArray, PhyloCounterData> a = \
     [](const PhyloArray & Array, uint i, uint j, PhyloCounterData * data)
 
-#define PHYLO_CHECK_MISSING() if (Array.data == nullptr) \
+#define PHYLO_RULE_DYN_LAMBDA(a) Rule_fun_type<PhyloArray, PhyloRuleDynData> a = \
+    [](const PhyloArray & Array, uint i, uint j, PhyloRuleDynData * data)
+
+#define PHYLO_CHECK_MISSING() if (Array.D() == nullptr) \
     throw std::logic_error("The array data is nullptr."); \
     if (data == nullptr) \
-    throw std::logic_error("The counter data is nullptr.")
+    throw std::logic_error("The counter/rule data is nullptr.")
 
 inline std::string get_last_name(bool d) {return ((d)? " at duplication" : "");}
 
@@ -122,9 +125,9 @@ inline void counter_overall_gains(
     PHYLO_COUNTER_LAMBDA(tmp_count)
     {
 
-        if ((data->at(0u) == 1u) & Array.data->duplication)
+        if ((data->at(0u) == 1u) & Array.D()->duplication)
           return 1.0;
-        else if ((data->at(0u) == 0u) & !Array.data->duplication)
+        else if ((data->at(0u) == 0u) & !Array.D()->duplication)
           return 1.0;
         
         return 0.0;
@@ -162,12 +165,12 @@ inline void counter_gains(
     PHYLO_COUNTER_LAMBDA(tmp_count)
     {
 
-        if (Array.data->duplication & (data->at(1u) == 0u))
+        if (Array.D()->duplication & (data->at(1u) == 0u))
             return 0.0;
-        else if (!Array.data->duplication & (data->at(1u) == 1u))
+        else if (!Array.D()->duplication & (data->at(1u) == 1u))
             return 0.0;
         
-        return (!Array.data->states[i]) && (i == data->at(0u)) ? 1.0 : 0.0;
+        return (!Array.D()->states[i]) && (i == data->at(0u)) ? 1.0 : 0.0;
 
     };
     
@@ -212,13 +215,13 @@ inline void counter_gains_k_offspring(
             return 0.0;
 
         // Checking the type of event
-        if (Array.data->duplication & (data->at(2u) == 0u))
+        if (Array.D()->duplication & (data->at(2u) == 0u))
             return 0.0;
-        else if (!Array.data->duplication & (data->at(2u) == 1u))
+        else if (!Array.D()->duplication & (data->at(2u) == 1u))
             return 0.0;
 
         // Is there any gain?
-        if (Array.data->states[i])
+        if (Array.D()->states[i])
             return 0.0;
 
         // Making the counts
@@ -272,9 +275,9 @@ inline void counter_genes_changing(
         
         PHYLO_CHECK_MISSING();
 
-        if (Array.data->duplication & (data->at(0u) == 0))
+        if (Array.D()->duplication & (data->at(0u) == 0))
             return 0.0;
-        else if (!Array.data->duplication & (data->at(0u) == 1))
+        else if (!Array.D()->duplication & (data->at(0u) == 1))
             return 0.0;
 
         // At the beginning, all offspring are zero, so we need to
@@ -283,7 +286,7 @@ inline void counter_genes_changing(
         for (uint j0 = 0u; j0 < Array.nrow(); ++j0)
         {
 
-            if (Array.data->states[j0]) 
+            if (Array.D()->states[j0]) 
                 // Yup, we are loosing a function, so break
                 return static_cast<double>(Array.ncol());
             
@@ -298,13 +301,13 @@ inline void counter_genes_changing(
     {
 
         // Checking the type of event
-        if (Array.data->duplication & (data->at(0u) == 0u))
+        if (Array.D()->duplication & (data->at(0u) == 0u))
             return 0.0;
-        else if (!Array.data->duplication & (data->at(0u) == 1u))
+        else if (!Array.D()->duplication & (data->at(0u) == 1u))
             return 0.0;
 
         // Case 1: The parent had the function (then probably need to substract one)
-        if (Array.data->states[i]) {
+        if (Array.D()->states[i]) {
 
             // Need to check the other functions
             for (uint k = 0u; k < Array.nrow(); ++k)
@@ -314,9 +317,9 @@ inline void counter_genes_changing(
                 {
 
                     // Nah, this gene was already different.
-                    if (Array.data->states[k] && (Array(k, j, false) == 0u))
+                    if (Array.D()->states[k] && (Array(k, j, false) == 0u))
                         return 0.0;
-                    else if ((!Array.data->states[k]) && (Array(k, j, false) == 1u))
+                    else if ((!Array.D()->states[k]) && (Array(k, j, false) == 1u))
                         return 0.0;
 
                 }
@@ -328,7 +331,7 @@ inline void counter_genes_changing(
             return -1.0;
 
         }
-        else if (!Array.data->states[i])
+        else if (!Array.D()->states[i])
         {
             // Case 2: The parent didn't had the function. Probably need to increase
             // by one.
@@ -342,9 +345,9 @@ inline void counter_genes_changing(
                   if (k != i)
                   {
                       // Nah, this gene was already different.
-                      if (Array.data->states[k] && (Array(k, j, false) == 0u))
+                      if (Array.D()->states[k] && (Array(k, j, false) == 0u))
                           return 0.0;
-                      else if ((!Array.data->states[k]) && (Array(k, j, false) == 1u))
+                      else if ((!Array.D()->states[k]) && (Array(k, j, false) == 1u))
                           return 0.0;
                   }
                   
@@ -387,9 +390,9 @@ inline void counter_overall_loss(
     PHYLO_COUNTER_LAMBDA(tmp_count)
     {
         
-        if ((data->at(0u) == 1u) & Array.data->duplication)
+        if ((data->at(0u) == 1u) & Array.D()->duplication)
             return -1.0;
-        else if ((data->at(0u) == 0u) & !Array.data->duplication)
+        else if ((data->at(0u) == 0u) & !Array.D()->duplication)
             return -1.0;
         else 
             return 0.0;
@@ -401,10 +404,10 @@ inline void counter_overall_loss(
 
       PHYLO_CHECK_MISSING();
 
-      if ((data->at(0u) == 1u) & Array.data->duplication)
-          return static_cast<double>((Array.N * Array.ncol()));
-      else if ((data->at(0u) == 0u) & !Array.data->duplication)
-          return static_cast<double>((Array.N * Array.ncol()));
+      if ((data->at(0u) == 1u) & Array.D()->duplication)
+          return static_cast<double>((Array.nrow() * Array.ncol()));
+      else if ((data->at(0u) == 0u) & !Array.D()->duplication)
+          return static_cast<double>((Array.nrow() * Array.ncol()));
       else 
           return 0.0;
 
@@ -471,9 +474,9 @@ inline void counter_maxfuns(
     PHYLO_COUNTER_LAMBDA(tmp_count)
     {
 
-        if (Array.data->duplication & (data->at(2u) == 0u))
+        if (Array.D()->duplication & (data->at(2u) == 0u))
             return 0.0;
-        else if (!Array.data->duplication & (data->at(2u) == 1u))
+        else if (!Array.D()->duplication & (data->at(2u) == 1u))
             return 0.0;
         
         uint counts = 1u;
@@ -517,12 +520,12 @@ inline void counter_loss(
     PHYLO_COUNTER_LAMBDA(tmp_count)
     {
 
-        if ((data->at(1u) == 1u) & !Array.data->duplication)
+        if ((data->at(1u) == 1u) & !Array.D()->duplication)
             return 0.0;
-        else if ((data->at(1u) == 0u) & Array.data->duplication)
+        else if ((data->at(1u) == 0u) & Array.D()->duplication)
             return 0.0;
         else
-            return (Array.data->states[i]) && (i == data->at(0u)) ? -1.0 : 0.0;
+            return (Array.D()->states[i]) && (i == data->at(0u)) ? -1.0 : 0.0;
 
     };
     
@@ -531,12 +534,12 @@ inline void counter_loss(
 
         PHYLO_CHECK_MISSING();
 
-        if ((data->at(1u) == 1u) & !Array.data->duplication)
+        if ((data->at(1u) == 1u) & !Array.D()->duplication)
             return 0.0;
-        else if ((data->at(1u) == 0u) & Array.data->duplication)
+        else if ((data->at(1u) == 0u) & Array.D()->duplication)
             return 0.0;
         else
-            return Array.data->states[data->at(0u)]? Array.ncol() : 0.0;
+            return Array.D()->states[data->at(0u)]? Array.ncol() : 0.0;
 
     };
     
@@ -564,13 +567,13 @@ inline void counter_overall_changes(
     PHYLO_COUNTER_LAMBDA(tmp_count)
     {
 
-      if ((data->at(0u) == 0u) & Array.data->duplication)
+      if ((data->at(0u) == 0u) & Array.D()->duplication)
         return 0.0;
-      else if ((data->at(0u) == 1u) & !Array.data->duplication)
+      else if ((data->at(0u) == 1u) & !Array.D()->duplication)
         return 0.0;
       else {
 
-        if (Array.data->states[i])
+        if (Array.D()->states[i])
           return -1.0;
         else 
           return 1.0;
@@ -584,9 +587,9 @@ inline void counter_overall_changes(
 
         PHYLO_CHECK_MISSING();
 
-        if ((data->at(0u) == 0u) & Array.data->duplication)
+        if ((data->at(0u) == 0u) & Array.D()->duplication)
             return 0.0;
-        else if ((data->at(0u) == 1u) & !Array.data->duplication)
+        else if ((data->at(0u) == 1u) & !Array.D()->duplication)
             return 0.0;
         else
         {
@@ -595,7 +598,7 @@ inline void counter_overall_changes(
             double noff   = static_cast<double> (Array.ncol());
             double counts = 0.0;
             for (uint k = 0u; k < Array.ncol(); ++k)
-                if (Array.data->states[k])
+                if (Array.D()->states[k])
                     counts += noff;
 
             return counts;
@@ -631,9 +634,9 @@ inline void counter_subfun(
     {
 
         // Is this node duplication?
-        if ((data->at(2u) == 1u) & !Array.data->duplication)
+        if ((data->at(2u) == 1u) & !Array.D()->duplication)
             return 0.0;
-        else if ((data->at(2u) == 0u) & Array.data->duplication)  
+        else if ((data->at(2u) == 0u) & Array.D()->duplication)  
             return 0.0;
 
         // Are we looking at either of the relevant functions?
@@ -641,7 +644,7 @@ inline void counter_subfun(
             return 0.0;
         
         // Are A and B existant? if not, no change
-        if (!Array.data->states[data->at(0u)] | !Array.data->states[data->at(1u)])
+        if (!Array.D()->states[data->at(0u)] | !Array.D()->states[data->at(1u)])
             return 0.0;
         
         // Figuring out which is the first (reference) function
@@ -721,9 +724,9 @@ inline void counter_cogain(
         auto d2 = data->at(2u);
       
         // Is this node duplication?
-        if ((d2 == 1u) & !Array.data->duplication)
+        if ((d2 == 1u) & !Array.D()->duplication)
             return 0.0;
-        else if ((d2 == 0u) & Array.data->duplication)  
+        else if ((d2 == 0u) & Array.D()->duplication)  
             return 0.0;
 
         // Is the function in scope relevant?
@@ -731,7 +734,7 @@ inline void counter_cogain(
             return 0.0;
         
         // None should have it
-        if (!Array.data->states[d0] && !Array.data->states[d1])
+        if (!Array.D()->states[d0] && !Array.D()->states[d1])
         {
 
             uint other = (i == d0)? d1 : d0;
@@ -775,7 +778,7 @@ inline void counter_longest(PhyloCounters * counters)
 
         // Only relevant if the 
         double res = 0.0;
-        if (Array.data->states[i])
+        if (Array.D()->states[i])
         {
             
             for (auto& off : *data)
@@ -809,7 +812,7 @@ inline void counter_longest(PhyloCounters * counters)
 
         PHYLO_CHECK_MISSING();
         
-        if (Array.data->blengths.size() != Array.ncol())
+        if (Array.D()->blengths.size() != Array.ncol())
             throw std::logic_error(
                 "longest should be initialized with a vec of size Array.ncol()."
             );
@@ -822,7 +825,7 @@ inline void counter_longest(PhyloCounters * counters)
         for (uint ii = 1u; ii < Array.ncol(); ++ii)
         {
             
-            diff = Array.data->blengths[longest_idx] - Array.data->blengths[ii];
+            diff = Array.D()->blengths[longest_idx] - Array.D()->blengths[ii];
             if (diff > 0.0)
                 continue;
             else if (diff < 0.0)
@@ -846,9 +849,9 @@ inline void counter_longest(PhyloCounters * counters)
         // Starting the counter, since all in zero, then this will be equal to
         // the number of functions in 1 x number of longest branches
         double res = 0.0;
-        for (uint ii = 0u; ii < Array.N; ++ii) {
+        for (uint ii = 0u; ii < Array.nrow(); ++ii) {
             
-            if (Array.data->states[ii])
+            if (Array.D()->states[ii])
                 res += (1.0 * data->size());
 
         }
@@ -881,9 +884,9 @@ inline void counter_neofun(
     {
 
         // Is this node duplication?
-        if ((data->at(2u) == 1u) & !Array.data->duplication)
+        if ((data->at(2u) == 1u) & !Array.D()->duplication)
             return 0.0;
-        else if ((data->at(2u) == 0u) & Array.data->duplication)  
+        else if ((data->at(2u) == 0u) & Array.D()->duplication)  
             return 0.0;
 
         // Is the function in scope relevant?
@@ -891,9 +894,9 @@ inline void counter_neofun(
             return 0.0;
         
         // Checking if the parent has both functions
-        if (!Array.data->states[data->at(0u)] && !Array.data->states[data->at(1u)]) 
+        if (!Array.D()->states[data->at(0u)] && !Array.D()->states[data->at(1u)]) 
             return 0.0;
-        else if (Array.data->states[data->at(0u)] && Array.data->states[data->at(1u)])
+        else if (Array.D()->states[data->at(0u)] && Array.D()->states[data->at(1u)])
             return 0.0;
         
         // Figuring out which is the first (reference) function
@@ -969,16 +972,16 @@ inline void counter_neofun_a2b(
     {
 
         // Is this node duplication?
-        if ((data->at(2u) == 1u) & !Array.data->duplication)
+        if ((data->at(2u) == 1u) & !Array.D()->duplication)
             return 0.0;
-        else if ((data->at(2u) == 0u) & Array.data->duplication)  
+        else if ((data->at(2u) == 0u) & Array.D()->duplication)  
             return 0.0;
 
         const uint & funA = data->at(0u);
         const uint & funB = data->at(1u);
         
         // Checking the parent has funA but not funb
-        if ((!Array.data->states[funA]) | Array.data->states[funB]) 
+        if ((!Array.D()->states[funA]) | Array.D()->states[funB]) 
             return 0.0;
       
         double res = 0.0;
@@ -1089,9 +1092,9 @@ inline void counter_co_opt(
     { 
 
         // Checking whether this is for duplication or not
-        if ((data->at(2u) == 0u) & Array.data->duplication)
+        if ((data->at(2u) == 0u) & Array.D()->duplication)
             return 0.0;
-        else if ((data->at(2u) == 1u) & !Array.data->duplication)
+        else if ((data->at(2u) == 1u) & !Array.D()->duplication)
             return 0.0;
         else {
 
@@ -1103,7 +1106,7 @@ inline void counter_co_opt(
                 return 0.0;
 
             // If the parent does not have the initial state, then it makes no sense
-            if ((!Array.data->states[funA]) | Array.data->states[funB])
+            if ((!Array.D()->states[funA]) | Array.D()->states[funB])
                 return 0.0;
 
             // Checking whether function A or function B changed
@@ -1175,6 +1178,80 @@ inline void counter_co_opt(
   
 }
 ///@}
+
+/**
+ * @weakgroup rules-phylo Phylo rules
+ * @brief Rules for phylogenetic modeling
+ * @param rules A pointer to a `PhyloRules` object (`Rules`<`PhyloArray`, `PhyloRuleData`>).
+ */
+///@{
+
+class PhyloRuleDynData {
+public:
+    const std::vector< double > * counts;
+    uint pos;
+    uint lb;
+    uint ub;
+    bool duplication;
+    PhyloRuleDynData(
+        const std::vector< double > * counts_,
+        uint pos_,
+        uint lb_,
+        uint ub_,
+        bool duplication_
+        ) :
+        counts(counts_), pos(pos_), lb(lb_), ub(ub_), duplication(duplication_) {};
+    
+    ~PhyloRuleDynData() {};
+};
+
+/**
+ * @brief Overall functional gains
+ * @param support Support of a model.
+ * @param pos Position of the focal statistic.
+ * @param lb Lower bound
+ * @param ub Upper bound
+ * @details 
+ * @return (void) adds a rule limiting the support of the model.
+ */
+inline void rule_dyn_limit_changes(
+    PhyloSupport * support,
+    uint pos,
+    uint lb,
+    uint ub,
+    bool duplication = true
+)
+{
+  
+    PHYLO_RULE_DYN_LAMBDA(tmp_rule)
+    {
+
+        if (data->duplication != Array.D()->duplication)
+            return true;
+        
+        if (data->counts->operator[](data->pos) < data->lb)
+            return false;
+        else if (data->counts->operator[](data->pos) > data->ub)
+            return false;
+        else
+            return true;
+      
+    };
+    
+    support->get_rules_dyn()->add_rule(
+        tmp_rule,
+        new PhyloRuleDynData(
+            &support->get_current_stats(),
+            pos, lb, ub, duplication
+            ),
+        true //,
+        //"Overall gains" + get_last_name(duplication)
+    );
+
+    return;
+  
+}
+
 ///@}
 
 #endif

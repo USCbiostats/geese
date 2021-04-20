@@ -1,16 +1,6 @@
 #ifndef BARRY_TYPEDEFS_HPP
 #define BARRY_TYPEDEFS_HPP 1
 
-#include <vector>
-#include <unordered_map>
-#include <functional>
-#include <stdexcept>
-#include <cmath>
-#include <map>
-#include <random>
-#include <climits>
-#include <string>
-
 // Configuration ---------------------------------------------------------------
 #include "barry-configuration.hpp"
 
@@ -20,8 +10,6 @@
 typedef unsigned int uint;
 
 // Mostly relevant for the BArray definition -----------------------------------
-#define ROW(a) this->el_ij[a]
-#define COL(a) this->el_ji[a]
 
 // Constants
 /**
@@ -120,8 +108,6 @@ using MapVec_type = std::unordered_map< std::vector< Ta >, Tb, vecHasher<Ta>>;
 // Mostly relevant in the case of the stats count functions -------------------
 template <typename Cell_Type, typename Data_Type> class BArray;
 template <typename Array_Type, typename Counter_Type> class Counter;
-#define A_ROW(a) Array.el_ij[a]
-#define A_COL(a) Array.el_ji[a]
 
 /**
  * @brief Counter and rule functions

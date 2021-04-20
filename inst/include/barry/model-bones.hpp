@@ -67,7 +67,7 @@ inline double likelihood_(
  */
 template<typename Array_Type>
 inline std::vector< double > keygen_default(const Array_Type & Array_) {
-    return {static_cast<double>(Array_.N), static_cast<double>(Array_.M)};
+    return {static_cast<double>(Array_.nrow()), static_cast<double>(Array_.ncol())};
 }
 
 
@@ -96,13 +96,14 @@ inline std::vector< double > keygen_default(const Array_Type & Array_) {
   * @tparam Data_Rule_Type Any type.
   */
 template <
-    typename Array_Type = BArray<>,
-    typename Data_Counter_Type = bool,
-    typename Data_Rule_Type = bool>
+    typename Array_Type         = BArray<>,
+    typename Data_Counter_Type  = bool,
+    typename Data_Rule_Type     = bool,
+    typename Data_Rule_Dyn_Type = bool
+    >
 class Model {
 
-public:
-    
+private:
     /**
       * @name Random number generation
       * @brief Random number generation
@@ -110,6 +111,65 @@ public:
     ///@{
     std::mt19937 * rengine = nullptr;
     bool delete_rengine    = false;
+
+    /**@brief */
+    std::vector< Counts_type >         stats;
+    std::vector< uint >                n_arrays_per_stats;
+
+    /**
+      * @name Container space for the powerset (and its sufficient stats)
+      * @details This is useful in the case of using simulations or evaluating
+      * functions that need to account for the full set of states.
+      */
+    ///@{
+    bool with_pset = false;
+    std::vector< std::vector< Array_Type > >          pset_arrays;
+    std::vector< std::vector< std::vector<double> > > pset_stats;
+    std::vector< std::vector<double> >                pset_probs;
+    ///@}
+
+    /**
+      * @name Information about the arrays used in the model 
+      * @details `target_stats` holds the observed sufficient statistics for each
+      * array in the dataset. `array_frequency` contains the frequency with which
+      * each of the target stats (arrays) shows in the support. `array2support` 
+      * maps array indices (0, 1, ...) to the corresponding support.
+      */
+    ///@{
+    std::vector< std::vector< double > > target_stats;
+    std::vector< uint >                 array_frequency;
+    std::vector< uint >                 arrays2support;
+    ///@}
+
+    /**
+      * @brief Map of types of arrays to support sets
+      * @details This is of the same length as the vector `stats`.
+      */
+    MapVec_type< double, uint > keys2support;
+    
+    /**
+      * @name Functions to compute statistics
+      * @details Arguments are recycled to save memory and computation.
+      */
+    ///@{
+    Counters<Array_Type,Data_Counter_Type>                                  counters;
+    Rules<Array_Type,Data_Rule_Type>                                        rules;
+    Rules<Array_Type,Data_Rule_Dyn_Type>                                    rules_dyn;
+    Support<Array_Type,Data_Counter_Type,Data_Rule_Type,Data_Rule_Dyn_Type> support_fun;
+    StatsCounter<Array_Type,Data_Counter_Type>                              counter_fun;
+    ///@}
+    
+    /**@brief Vector of the previously used parameters */
+    std::vector< std::vector<double> > params_last;
+    std::vector< double > normalizing_constants;
+    std::vector< bool > first_calc_done;
+
+    /**@brief Function to extract features of the array to be hash
+    */
+    std::function<std::vector<double>(const Array_Type &)> keygen = nullptr;  
+
+public:
+    
     void set_rengine(std::mt19937 * rengine_, bool delete_ = false) {
 
         if (delete_rengine)
@@ -131,68 +191,12 @@ public:
 
     };
     ///@}
-    
-    
-    /**@brief */
-    std::vector< Counts_type >         stats;
-    std::vector< uint >                n_arrays_per_stats;
-    
-    /**
-      * @name Container space for the powerset (and its sufficient stats)
-      * @details This is useful in the case of using simulations or evaluating
-      * functions that need to account for the full set of states.
-      */
-    ///@{
-    bool with_pset = false;
-    std::vector< std::vector< Array_Type > >          pset_arrays;
-    std::vector< std::vector< std::vector<double> > > pset_stats;
-    std::vector< std::vector<double> >                pset_probs;
-    ///@}
-    
-    /**
-      * @name Information about the arrays used in the model 
-      * @details `target_stats` holds the observed sufficient statistics for each
-      * array in the dataset. `array_frequency` contains the frequency with which
-      * each of the target stats (arrays) shows in the support. `array2support` 
-      * maps array indices (0, 1, ...) to the corresponding support.
-      */
-    ///@{
-    std::vector< std::vector< double > > target_stats;
-    std::vector< uint >                 array_frequency;
-    std::vector< uint >                 arrays2support;
-    ///@}
-    
-    /**
-      * @brief Map of types of arrays to support sets
-      * @details This is of the same length as the vector `stats`.
-      */
-    MapVec_type< double, uint > keys2support;
-    
-    /**
-      * @name Functions to compute statistics
-      * @details Arguments are recycled to save memory and computation.
-      */
-    ///@{
-    Counters<Array_Type,Data_Counter_Type>               counters;
-    Rules<Array_Type,Data_Rule_Type>                     rules;
-    Support<Array_Type,Data_Counter_Type,Data_Rule_Type> support_fun;
-    StatsCounter<Array_Type,Data_Counter_Type>           counter_fun;
-    ///@}
-    
-    /**@brief Vector of the previously used parameters */
-    std::vector< std::vector<double> > params_last;
-    std::vector< double > normalizing_constants;
-    std::vector< bool > first_calc_done;
-
-    /**@brief Function to extract features of the array to be hash
-    */
-    std::function<std::vector<double>(const Array_Type &)> keygen = nullptr;  
-
+        
     Model();
     Model(uint size_);
-    Model(const Model<Array_Type, Data_Counter_Type, Data_Rule_Type> & Model_);
-    Model<Array_Type, Data_Counter_Type, Data_Rule_Type> & operator=(
-        const Model<Array_Type, Data_Counter_Type, Data_Rule_Type> & Model_
+    Model(const Model<Array_Type,Data_Counter_Type,Data_Rule_Type,Data_Rule_Dyn_Type> & Model_);
+    Model<Array_Type,Data_Counter_Type,Data_Rule_Type,Data_Rule_Dyn_Type> & operator=(
+        const Model<Array_Type,Data_Counter_Type,Data_Rule_Type,Data_Rule_Dyn_Type> & Model_
     );
     ~Model() {
         if (delete_rengine)
@@ -234,6 +238,16 @@ public:
     );
     
     void set_rules(Rules<Array_Type,Data_Rule_Type> * rules_);
+
+    void add_rule_dyn(Rule<Array_Type, Data_Rule_Dyn_Type> & rule);
+    void add_rule_dyn(Rule<Array_Type, Data_Rule_Dyn_Type> * rule);
+    void add_rule_dyn(
+        Rule_fun_type<Array_Type, Data_Rule_Dyn_Type> count_fun_,
+        Data_Rule_Dyn_Type *                          data_        = nullptr,
+        bool                                      delete_data_ = false
+    );
+    
+    void set_rules_dyn(Rules<Array_Type,Data_Rule_Dyn_Type> * rules_);
     ///@}
     
 
@@ -333,6 +347,13 @@ public:
     unsigned int size_unique() const noexcept;
     unsigned int nterms() const noexcept;
     ///@}
+
+    const std::mt19937 * get_rengine() const;
+
+    Counters<Array_Type,Data_Counter_Type> & get_counters();
+    Rules<Array_Type,Data_Rule_Type>       & get_rules();
+    Rules<Array_Type,Data_Rule_Dyn_Type>   & get_rules_dyn();
+
 };
 
 

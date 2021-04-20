@@ -105,9 +105,9 @@ inline std::vector< double > StatsCounter<Array_Type, Data_Type>::count_all() {
     EmptyArray.clear(false);
     
     // Start iterating through the data
-    for (uint i = 0; i < Array->N; ++i) {
+    for (uint i = 0; i < Array->nrow(); ++i) {
         
-        const auto & row = Array->row(i);
+        const auto & row = Array->row(i, false);
 
         // Any element?
         if (row.size() == 0u)
@@ -130,5 +130,11 @@ inline std::vector< double > StatsCounter<Array_Type, Data_Type>::count_all() {
     return current_stats;
     
 }
+
+template <typename Array_Type, typename Data_Type>
+inline Counters<Array_Type,Data_Type> * StatsCounter<Array_Type, Data_Type>::get_counters() {
+    return this->counters;
+}
+
 
 #endif
