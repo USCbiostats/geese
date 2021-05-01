@@ -111,6 +111,18 @@ print_observed_counts <- function(p) {
     invisible(.Call(`_geese_print_observed_counts`, p))
 }
 
+#' @title Evolutionary terms
+#' @description Model terms for both [geese] and [flock] objects.
+#' @export
+#' @param p An object of class [geese] or [flock].
+#' @param funs Vector of function indices (starting from zero).
+#' @param duplication When `TRUE` indicates that this term is only valid for
+#' duplication events.
+#' @name geese-terms
+rule_limit_changes <- function(p, term_pos, lb, ub, duplication = TRUE) {
+    invisible(.Call(`_geese_rule_limit_changes`, p, term_pos, lb, ub, duplication))
+}
+
 #' @export
 #' @rdname geese-common
 predict_geese <- function(p, par, leave_one_out = FALSE, use_reduced_sequence = TRUE, only_annotated = FALSE) {

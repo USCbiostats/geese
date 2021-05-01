@@ -2,6 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{geese-terms}
 \alias{geese-terms}
+\alias{rule_limit_changes}
 \alias{term_gains}
 \alias{term_loss}
 \alias{term_cogain}
@@ -15,6 +16,8 @@
 \alias{term_coopt}
 \title{Evolutionary terms}
 \usage{
+rule_limit_changes(p, term_pos, lb, ub, duplication = TRUE)
+
 term_gains(p, funs, duplication = TRUE)
 
 term_loss(p, funs, duplication = TRUE)
@@ -40,14 +43,16 @@ term_coopt(p, a, b, duplication = TRUE)
 \arguments{
 \item{p}{An object of class \link{geese} or \link{flock}.}
 
-\item{funs}{Vector of function indices (starting from zero).}
-
 \item{duplication}{When \code{TRUE} indicates that this term is only valid for
 duplication events.}
+
+\item{funs}{Vector of function indices (starting from zero).}
 
 \item{a, b}{Indices of functions (starting from zero)}
 }
 \description{
+Model terms for both \link{geese} and \link{flock} objects.
+
 Model terms for both \link{geese} and \link{flock} objects.
 }
 \details{

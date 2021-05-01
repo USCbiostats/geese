@@ -59,7 +59,7 @@ inline void Flock::init() {
         if (a.delete_counters)
             delete a.counters;
 
-        a.counters        = &support.get_counters();
+        a.counters        = support.get_counters();
         a.delete_counters = false;
         
     }
@@ -72,13 +72,17 @@ inline void Flock::init() {
     
 }
 
-inline phylocounters::PhyloCounters & Flock::get_counters() {
+inline phylocounters::PhyloCounters * Flock::get_counters() {
 
     if (dat.size() == 0u)
         throw std::logic_error("The flock has no data yet.");
 
     return this->support.get_counters();
 
+}
+
+inline phylocounters::PhyloSupport *  Flock::get_support() {
+    return this->support.get_support();
 }
 
 inline double Flock::likelihood_joint(

@@ -155,6 +155,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rule_limit_changes
+int rule_limit_changes(SEXP p, int term_pos, int lb, int ub, bool duplication);
+RcppExport SEXP _geese_rule_limit_changes(SEXP pSEXP, SEXP term_posSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP duplicationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< int >::type term_pos(term_posSEXP);
+    Rcpp::traits::input_parameter< int >::type lb(lbSEXP);
+    Rcpp::traits::input_parameter< int >::type ub(ubSEXP);
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(rule_limit_changes(p, term_pos, lb, ub, duplication));
+    return rcpp_result_gen;
+END_RCPP
+}
 // predict_geese
 std::vector< std::vector< double > > predict_geese(SEXP p, const std::vector< double >& par, bool leave_one_out, bool use_reduced_sequence, bool only_annotated);
 RcppExport SEXP _geese_predict_geese(SEXP pSEXP, SEXP parSEXP, SEXP leave_one_outSEXP, SEXP use_reduced_sequenceSEXP, SEXP only_annotatedSEXP) {
@@ -346,6 +360,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_sim_geese", (DL_FUNC) &_geese_sim_geese, 3},
     {"_geese_observed_counts", (DL_FUNC) &_geese_observed_counts, 1},
     {"_geese_print_observed_counts", (DL_FUNC) &_geese_print_observed_counts, 1},
+    {"_geese_rule_limit_changes", (DL_FUNC) &_geese_rule_limit_changes, 5},
     {"_geese_predict_geese", (DL_FUNC) &_geese_predict_geese, 5},
     {"_geese_predict_flock", (DL_FUNC) &_geese_predict_flock, 5},
     {"_geese_term_gains", (DL_FUNC) &_geese_term_gains, 3},
