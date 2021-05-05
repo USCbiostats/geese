@@ -254,3 +254,24 @@ int print_observed_counts(
 
 }
 
+//' @rdname geese-common
+//' @export
+// [[Rcpp::export(rng = false)]]
+int support_size(SEXP p) {
+
+  int ans;
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese > ptr(p);
+    ans = static_cast<int>(ptr->get_support()->get_data().size());
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock > ptr(p);
+    ans = static_cast<int>(ptr->get_support()->get_data().size());
+
+  } IF_NEITHER()
+
+  return ans;
+
+}

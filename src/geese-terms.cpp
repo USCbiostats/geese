@@ -128,7 +128,7 @@ int term_subfun(SEXP p, unsigned int a, unsigned int b) {
 
 //' @export
 //' @rdname geese-terms
-//' @oarams lb,ub Integers, minimum and maximum number of changes.
+//' @params lb,ub Integers, minimum and maximum number of changes.
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_maxfuns(
     SEXP p, unsigned int lb, unsigned int ub,

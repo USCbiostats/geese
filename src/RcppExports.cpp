@@ -155,6 +155,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// support_size
+int support_size(SEXP p);
+RcppExport SEXP _geese_support_size(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(support_size(p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rule_limit_changes
 int rule_limit_changes(SEXP p, int term_pos, int lb, int ub, bool duplication);
 RcppExport SEXP _geese_rule_limit_changes(SEXP pSEXP, SEXP term_posSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP duplicationSEXP) {
@@ -360,6 +370,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_sim_geese", (DL_FUNC) &_geese_sim_geese, 3},
     {"_geese_observed_counts", (DL_FUNC) &_geese_observed_counts, 1},
     {"_geese_print_observed_counts", (DL_FUNC) &_geese_print_observed_counts, 1},
+    {"_geese_support_size", (DL_FUNC) &_geese_support_size, 1},
     {"_geese_rule_limit_changes", (DL_FUNC) &_geese_rule_limit_changes, 5},
     {"_geese_predict_geese", (DL_FUNC) &_geese_predict_geese, 5},
     {"_geese_predict_flock", (DL_FUNC) &_geese_predict_flock, 5},

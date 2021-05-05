@@ -111,6 +111,12 @@ print_observed_counts <- function(p) {
     invisible(.Call(`_geese_print_observed_counts`, p))
 }
 
+#' @rdname geese-common
+#' @export
+support_size <- function(p) {
+    .Call(`_geese_support_size`, p)
+}
+
 #' @title Evolutionary terms
 #' @description Model terms for both [geese] and [flock] objects.
 #' @export

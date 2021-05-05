@@ -222,7 +222,64 @@ par(op)
 summary(window(ans_mcmc2, start = 10000))
 ```
 
+## Limiting the support
 
-## Code of Conduct
+```{r limit_support}
+# Creating the object
+amodel_limited <- new_geese(
+  annotations = fake1,
+  geneid      = c(tree[, 2], n),
+  parent      = c(tree[, 1],-1),
+  duplication = duplication
+  )
+
+# Adding the model terms
+term_gains(amodel_limited, 0:1)
+term_loss(amodel_limited, 0:1)
+term_maxfuns(amodel_limited, 1, 1)
+term_overall_changes(amodel_limited, TRUE)
+
+# At most one gain
+rule_limit_changes(amodel_limited, 3, 0, 2)
+
+# We need to initialize to do all the accounting
+init_model(amodel_limited)
+```
+
+Now we can fit it
+
+```{r}
+set.seed(122)
+ans_mcmc2 <- geese_mcmc(
+  amodel_limited,
+  nsteps  = 20000,
+  kernel  = fmcmc::kernel_ram(
+    warmup = 2000,
+    fixed  = c(FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE)
+    ), 
+  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
+  )
+```
+
+```{r mcmc-analysis-limited, echo = FALSE}
+op <- par(
+  mfrow = c(4, 2), #tcl=.5,
+  las=1, mar = c(3,3,1,0),
+  bty = "n", oma = rep(1,4)
+  )
+for (i in 1:ncol(ans_mcmc2)) {
+  tmpx <- window(ans_mcmc2, start = 10000)[,i,drop=FALSE]
+  
+  coda::traceplot(
+    tmpx, smooth = FALSE, ylim = c(-11,11), col = rgb(0, 128, 128, maxColorValue = 255), 
+    main = names(params)[i]
+    )
+  abline(h = params[i], lty=3, lwd=4, col = "red")
+}
+par(op)
+summary(window(ans_mcmc2, start = 15000))
+```
+
+# Code of Conduct
   
 Please note that the aphylo2 project is released with a [Contributor Code of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

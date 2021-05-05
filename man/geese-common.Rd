@@ -15,6 +15,7 @@
 \alias{sim_geese}
 \alias{observed_counts}
 \alias{print_observed_counts}
+\alias{support_size}
 \alias{predict_geese}
 \alias{predict_flock}
 \title{Common functions for \code{geese} and \code{flock}.}
@@ -42,6 +43,8 @@ sim_geese(p, par, seed = -1L)
 observed_counts(p)
 
 print_observed_counts(p)
+
+support_size(p)
 
 predict_geese(
   p,
