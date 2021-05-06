@@ -1,7 +1,7 @@
 #' MLE for geese
 #' @param amodel an object of class [geese-class]
 #' @param initial Vector of initial parameters
-#' @param ... Passed to [stats:optim]
+#' @param ... Passed to [stats::optim()]
 #' @export
 #' @importFrom stats optim
 geese_mle <- function(

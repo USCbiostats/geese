@@ -1,9 +1,10 @@
+#include <Rcpp.h>
 #include "barry/barry.hpp"
 #include "barry/models/geese.hpp"
-#include <Rcpp.h>
+
 using namespace Rcpp;
 
-#include "geese-utils.hpp"
+#include "geese-utils.h"
 
 //' @title Flock of GEESE
 //' @description Flocks are pooled models which include multiple phylums.
@@ -24,8 +25,9 @@ SEXP new_flock() {
 //' @rdname flock-class
 //' @param p An object of class `flock`.
 //' @param annotations Vector of integer vectors with annotations.
-//' @param geneid integer vector with gene ids
-//' @param parent integer vector with parent gene id
+//' @param geneid integer vector with gene ids.
+//' @param parent integer vector with parent gene id.
+//' @param duplication logical vector indicating the type of event.
 //' @export
 // [[Rcpp::export(rng = false, invisible = true)]]
 int add_geese(

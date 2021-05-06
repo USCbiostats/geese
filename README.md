@@ -111,7 +111,7 @@ term_gains(amodel, 0:1)
 term_loss(amodel, 0:1)
 term_maxfuns(amodel, 1, 1)
 
-# We need to initialize to do all the accountintg
+# We need to initialize to do all the accounting
 init_model(amodel)
 
 # Finding MLE
@@ -294,7 +294,94 @@ summary(window(ans_mcmc2, start = 10000))
 #> par7 -4.12554 -1.3982 -0.1091  1.1896  4.0561
 ```
 
-## Code of Conduct
+## Limiting the support
+
+In this example, we use the function `rule_limit_changes()` to apply a
+constraint to the support of the model. This takes the 6th term (5th
+since the index is in C++), and restricts the support to states where
+there are between \[0, 2\] changes, at most.
+
+This should be useful when dealing with multiple functions or
+[pylotomies](https://en.wikipedia.org/wiki/Polytomy).
+
+``` r
+# Creating the object
+amodel_limited <- new_geese(
+  annotations = fake1,
+  geneid      = c(tree[, 2], n),
+  parent      = c(tree[, 1],-1),
+  duplication = duplication
+  )
+
+# Adding the model terms
+term_gains(amodel_limited, 0:1)
+term_loss(amodel_limited, 0:1)
+term_maxfuns(amodel_limited, 1, 1)
+term_overall_changes(amodel_limited, TRUE)
+
+# At most one gain
+rule_limit_changes(amodel_limited, 5, 0, 2)
+
+
+# We need to initialize to do all the accounting
+init_model(amodel_limited)
+
+# Is limiting the support any useful?
+support_size(amodel_limited)
+#> [1] 9
+```
+
+Since we added the constraint based on the term
+`term_overall_changes()`, we now need to fix the parameter at 0 (i.e. no
+effect) during the MCMC model:
+
+``` r
+set.seed(122)
+ans_mcmc2 <- geese_mcmc(
+  amodel_limited,
+  nsteps  = 20000,
+  kernel  = fmcmc::kernel_ram(
+    warmup = 2000,
+    fixed  = c(FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE)
+    ), 
+  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
+  )
+```
+
+<img src="man/figures/README-mcmc-analysis-limited-1.png" width="100%" />
+
+    #> 
+    #> Iterations = 15000:20000
+    #> Thinning interval = 1 
+    #> Number of chains = 1 
+    #> Sample size per chain = 5001 
+    #> 
+    #> 1. Empirical mean and standard deviation for each variable,
+    #>    plus standard error of the mean:
+    #> 
+    #>         Mean     SD Naive SE Time-series SE
+    #> par1  1.5978 0.7201 0.010182        0.04988
+    #> par2  0.2838 0.6662 0.009421        0.04107
+    #> par3 -0.5430 0.7374 0.010428        0.04801
+    #> par4 -1.6198 0.4177 0.005906        0.02535
+    #> par5  1.5778 0.2493 0.003525        0.01590
+    #> par6  0.0000 0.0000 0.000000        0.00000
+    #> par7  0.9949 4.0323 0.057019        0.68642
+    #> par8  0.2408 4.1023 0.058010        0.78150
+    #> 
+    #> 2. Quantiles for each variable:
+    #> 
+    #>         2.5%     25%     50%      75%   97.5%
+    #> par1  0.2735  1.0748  1.6196  2.08840  3.0638
+    #> par2 -1.0489 -0.1436  0.2981  0.70806  1.6241
+    #> par3 -1.9553 -1.0994 -0.5369 -0.03162  0.9411
+    #> par4 -2.4332 -1.9108 -1.6239 -1.35157 -0.7724
+    #> par5  1.1535  1.3999  1.5442  1.72195  2.1680
+    #> par6  0.0000  0.0000  0.0000  0.00000  0.0000
+    #> par7 -5.9244 -1.3063  0.4356  2.95659 11.2694
+    #> par8 -9.3450 -2.1194  0.1551  2.63111  8.7294
+
+# Code of Conduct
 
 Please note that the aphylo2 project is released with a [Contributor
 Code of

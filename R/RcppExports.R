@@ -13,8 +13,9 @@ new_flock <- function() {
 #' @rdname flock-class
 #' @param p An object of class `flock`.
 #' @param annotations Vector of integer vectors with annotations.
-#' @param geneid integer vector with gene ids
-#' @param parent integer vector with parent gene id
+#' @param geneid integer vector with gene ids.
+#' @param parent integer vector with parent gene id.
+#' @param duplication logical vector indicating the type of event.
 #' @export
 add_geese <- function(p, annotations, geneid, parent, duplication) {
     invisible(.Call(`_geese_add_geese`, p, annotations, geneid, parent, duplication))
@@ -180,7 +181,7 @@ term_subfun <- function(p, a, b) {
 
 #' @export
 #' @rdname geese-terms
-#' @oarams lb,ub Integers, minimum and maximum number of changes.
+#' @param lb,ub Integers, minimum and maximum number of changes.
 term_maxfuns <- function(p, lb, ub, duplication = TRUE) {
     invisible(.Call(`_geese_term_maxfuns`, p, lb, ub, duplication))
 }
@@ -221,8 +222,9 @@ term_coopt <- function(p, a, b, duplication = TRUE) {
 #' @name geese-class
 #' @param p An object of class `geese`.
 #' @param annotations Vector of integer vectors with annotations.
-#' @param geneid integer vector with gene ids
-#' @param parent integer vector with parent gene id
+#' @param geneid integer vector with gene ids.
+#' @param parent integer vector with parent gene id.
+#' @param duplication logical vector indicating the type of events.
 #' @export
 #' @aliases geese
 new_geese <- function(annotations, geneid, parent, duplication) {

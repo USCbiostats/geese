@@ -11,9 +11,11 @@ new_geese(annotations, geneid, parent, duplication)
 \arguments{
 \item{annotations}{Vector of integer vectors with annotations.}
 
-\item{geneid}{integer vector with gene ids}
+\item{geneid}{integer vector with gene ids.}
 
-\item{parent}{integer vector with parent gene id}
+\item{parent}{integer vector with parent gene id.}
+
+\item{duplication}{logical vector indicating the type of events.}
 
 \item{p}{An object of class \code{geese}.}
 }

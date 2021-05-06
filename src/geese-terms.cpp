@@ -1,10 +1,10 @@
+#include <Rcpp.h>
 #include "barry/barry.hpp"
 #include "barry/models/geese.hpp"
-#include <Rcpp.h>
 using namespace Rcpp;
 
 // Useful macros
-#include "geese-utils.hpp"
+#include "geese-utils.h"
 
 using namespace barry::counters;
 
@@ -128,7 +128,7 @@ int term_subfun(SEXP p, unsigned int a, unsigned int b) {
 
 //' @export
 //' @rdname geese-terms
-//' @params lb,ub Integers, minimum and maximum number of changes.
+//' @param lb,ub Integers, minimum and maximum number of changes.
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_maxfuns(
     SEXP p, unsigned int lb, unsigned int ub,

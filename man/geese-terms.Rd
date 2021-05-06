@@ -43,6 +43,8 @@ term_coopt(p, a, b, duplication = TRUE)
 \arguments{
 \item{p}{An object of class \link{geese} or \link{flock}.}
 
+\item{lb, ub}{Integers, minimum and maximum number of changes.}
+
 \item{duplication}{When \code{TRUE} indicates that this term is only valid for
 duplication events.}
 

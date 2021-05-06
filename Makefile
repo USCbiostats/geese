@@ -1,10 +1,13 @@
-build:
+.PHONY: build
+../geese.tar.gz: R/* src/*.cpp src/*.h
 	rm src/*.o ; Rscript -e 'Rcpp::compileAttributes();roxygen2::roxygenize()' && \
-		cd .. && R CMD build geese/
-install:
-	$(MAKE) build && R CMD INSTALL ../geese_*
-check:
-	$(MAKE) build && R CMD check --as-cran ../geese_*
+		cd .. && R CMD build geese/ && mv geese_*.tar.gz geese.tar.gz
+build: ../geese.tar.gz
+
+install: build
+	R CMD INSTALL ../geese.tar.gz
+check: build
+	cd .. && R CMD check --as-cran geese.tar.gz
 
 # Once running, we can set a debug point using 'break [filename].hpp:[linenumber]
 # and then type 'run'

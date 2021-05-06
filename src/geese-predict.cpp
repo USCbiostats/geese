@@ -1,9 +1,9 @@
+#include <Rcpp.h>
 #include "barry/barry.hpp"
 #include "barry/models/geese.hpp"
-#include <Rcpp.h>
 using namespace Rcpp;
 
-#include "geese-utils.hpp"
+#include "geese-utils.h"
 
 //' @export
 //' @rdname geese-common

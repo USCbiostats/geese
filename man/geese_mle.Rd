@@ -16,7 +16,7 @@ geese_mle(
 
 \item{initial}{Vector of initial parameters}
 
-\item{...}{Passed to \link{stats:optim}}
+\item{...}{Passed to \code{\link[stats:optim]{stats::optim()}}}
 }
 \description{
 MLE for geese

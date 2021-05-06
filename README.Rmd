@@ -1,5 +1,7 @@
 ---
-output: github_document
+output:
+  github_document:
+    html_preview: false
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -224,6 +226,13 @@ summary(window(ans_mcmc2, start = 10000))
 
 ## Limiting the support
 
+In this example, we use the function `rule_limit_changes()` to apply a
+constraint to the support of the model. This takes the 6th term (5th since the
+index is in C++), and restricts the support to states where there are between
+$[0, 2]$ changes, at most.
+
+This should be useful when dealing with multiple functions or [pylotomies](https://en.wikipedia.org/wiki/Polytomy).
+
 ```{r limit_support}
 # Creating the object
 amodel_limited <- new_geese(
@@ -240,15 +249,20 @@ term_maxfuns(amodel_limited, 1, 1)
 term_overall_changes(amodel_limited, TRUE)
 
 # At most one gain
-rule_limit_changes(amodel_limited, 3, 0, 2)
+rule_limit_changes(amodel_limited, 5, 0, 2)
+
 
 # We need to initialize to do all the accounting
 init_model(amodel_limited)
+
+# Is limiting the support any useful?
+support_size(amodel_limited)
 ```
 
-Now we can fit it
+Since we added the constraint based on the term `term_overall_changes()`, we
+now need to fix the parameter at 0 (i.e. no effect) during the MCMC model:
 
-```{r}
+```{r limit-mcmc, cache = TRUE}
 set.seed(122)
 ans_mcmc2 <- geese_mcmc(
   amodel_limited,

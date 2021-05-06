@@ -1,20 +1,17 @@
-// #include <random>
-// #include <iostream>
-// #include <string>
-// #include <algorithm>
+#include <Rcpp.h>
 #include "barry/barry.hpp"
 #include "barry/models/geese.hpp"
-#include <Rcpp.h>
 using namespace Rcpp;
 
-#include "geese-utils.hpp"
+#include "geese-utils.h"
 
 //' @title GEne Evolutionary model using SufficiEncy (GEESE)
 //' @name geese-class
 //' @param p An object of class `geese`.
 //' @param annotations Vector of integer vectors with annotations.
-//' @param geneid integer vector with gene ids
-//' @param parent integer vector with parent gene id
+//' @param geneid integer vector with gene ids.
+//' @param parent integer vector with parent gene id.
+//' @param duplication logical vector indicating the type of events.
 //' @export
 //' @aliases geese
 // [[Rcpp::export(rng = false)]]

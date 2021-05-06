@@ -1,10 +1,10 @@
+#include <Rcpp.h>
 #include "barry/barry.hpp"
 #include "barry/models/geese.hpp"
-#include <Rcpp.h>
 using namespace Rcpp;
 
 // Useful macros
-#include "geese-utils.hpp"
+#include "geese-utils.h"
 
 using namespace barry::counters;
 

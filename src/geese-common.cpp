@@ -1,9 +1,9 @@
+#include <Rcpp.h>
 #include "barry/barry.hpp"
 #include "barry/models/geese.hpp"
-#include <Rcpp.h>
 using namespace Rcpp;
 
-#include "geese-utils.hpp"
+#include "geese-utils.h"
 
 //' @title Common functions for `geese` and `flock`.
 //' @name geese-common
@@ -263,7 +263,7 @@ int support_size(SEXP p) {
   IF_GEESE(p) {
 
     Rcpp::XPtr< Geese > ptr(p);
-    ans = static_cast<int>(ptr->get_support()->get_data().size());
+    ans = static_cast<int>(ptr->support_size());
 
   } IF_FLOCK(p) {
 
