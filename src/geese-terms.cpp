@@ -107,17 +107,20 @@ int term_neofun(SEXP p, unsigned int a, unsigned int b) {
 //' @export
 //' @rdname geese-terms
 // [[Rcpp::export(rng = false, invisible = true)]]
-int term_subfun(SEXP p, unsigned int a, unsigned int b) {
+int term_subfun(
+    SEXP p, unsigned int a, unsigned int b,
+    bool duplication = true
+  ) {
 
   IF_GEESE(p) {
 
     Rcpp::XPtr< Geese >ptr(p);
-    phylo::counter_subfun(ptr->get_counters(), a, b);
+    phylo::counter_subfun(ptr->get_counters(), a, b, duplication);
 
   } IF_FLOCK(p) {
 
     Rcpp::XPtr< Flock >ptr(p);
-    phylo::counter_subfun(ptr->get_counters(), a, b);
+    phylo::counter_subfun(ptr->get_counters(), a, b, duplication);
 
   } IF_NEITHER()
 

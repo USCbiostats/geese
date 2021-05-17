@@ -26,7 +26,7 @@ term_cogain(p, a, b)
 
 term_neofun(p, a, b)
 
-term_subfun(p, a, b)
+term_subfun(p, a, b, duplication = TRUE)
 
 term_maxfuns(p, lb, ub, duplication = TRUE)
 

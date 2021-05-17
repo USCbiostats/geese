@@ -8,23 +8,25 @@ using namespace Rcpp;
 //' @title Common functions for `geese` and `flock`.
 //' @name geese-common
 //' @param p An object of class [geese] or [flock].
+//' @param verb Logical scalar. When `TRUE`, it will print a progress bar during
+//' the initialization of the process.
 //' @export
 //' @aliases flock-common
 //' @details `init_model` initializes the model. This triggers the calculation
 //' of the support using the vector of terms included. Initializing a model can
 //' only be done once.
 // [[Rcpp::export(rng = false, invisible = true)]]
-int init_model(SEXP p) {
+int init_model(SEXP p, bool verb = true) {
 
   IF_GEESE(p) {
 
     Rcpp::XPtr< Geese >ptr(p);
-    ptr->init();
+    ptr->init(verb);
 
   } IF_FLOCK(p) {
 
     Rcpp::XPtr< Flock >ptr(p);
-    ptr->init();
+    ptr->init(verb);
 
   } IF_NEITHER()
 
@@ -273,5 +275,69 @@ int support_size(SEXP p) {
   } IF_NEITHER()
 
   return ans;
+
+}
+
+//' @rdname geese-common
+//' @export
+// [[Rcpp::export(rng = false)]]
+int parse_polytomies(SEXP p) {
+
+  int ans;
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese > ptr(p);
+    ans = ptr->parse_polytomies();
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock > ptr(p);
+    ans = ptr->parse_polytomies();
+
+  } IF_NEITHER()
+
+  return ans;
+
+}
+
+//' @rdname geese-common
+//' @export
+// [[Rcpp::export(rng = false)]]
+int nfuns(SEXP p) {
+
+  int ans = 0;
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese > ptr(p);
+    ans = static_cast<int>(ptr->nfuns());
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock > ptr(p);
+    ans = static_cast<int>(ptr->nfuns());
+
+  } IF_NEITHER()
+
+  return ans;
+
+}
+
+//' @rdname geese-common
+//' @export
+// [[Rcpp::export(rng = false, name = "colnames.geese")]]
+std::vector< std::string > colnames_geese(SEXP p) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese > ptr(p);
+    return ptr->colnames();
+
+  } IF_FLOCK(p){
+
+    Rcpp::XPtr< Flock > ptr(p);
+    return ptr->colnames();
+
+
+  } IF_NEITHER()
 
 }

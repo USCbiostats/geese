@@ -17,7 +17,7 @@ geese_mcmc <- function(
   # Normalized Log-likelihood function
   fun <- function(p) {
 
-    ans <- likelihood(p = amodel, par = p, as_log = TRUE) + sum(prior(p)) * ntrees(amodel)
+    ans <- likelihood(p = amodel, par = p, as_log = TRUE) + sum(prior(p))
 
     if (!is.finite(ans))
       return(-.Machine$double.xmax * 1e-100)
@@ -28,7 +28,12 @@ geese_mcmc <- function(
 
   # Calling the FMCMC
   fmcmc::MCMC(
-    initial = initial,
+    initial = structure(
+      initial,
+      names = c(
+        colnames.geese(amodel), sprintf("Root %i", 1:nfuns(amodel))
+      )
+    ),
     fun     = fun,
     ...
   )

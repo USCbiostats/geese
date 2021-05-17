@@ -159,6 +159,24 @@ par(op)
 summary(window(ans_mcmc, start = 15000))
 ```
 
+```{r prediction}
+# Obtaining estimates
+par_estimates <- colMeans(window(ans_mcmc, start = 20000))
+ans_pred      <- predict_geese(amodel, par_estimates, leave_one_out = FALSE)
+ans_pred      <- do.call(rbind, ans_pred)
+
+# Preparing annotations
+ann_obs <- do.call(rbind, fake1)
+
+# Mean Absolute Error
+hist(abs(ans_pred - ann_obs))
+
+# AUC
+(ans <- aphylo::auc(ans_pred, ann_obs))
+plot(auc)
+```
+
+
 ## Using a flock
 
 GEESE models can be grouped (pooled) into a flock.

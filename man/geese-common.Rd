@@ -16,11 +16,14 @@
 \alias{observed_counts}
 \alias{print_observed_counts}
 \alias{support_size}
+\alias{parse_polytomies}
+\alias{nfuns}
+\alias{colnames.geese}
 \alias{predict_geese}
 \alias{predict_flock}
 \title{Common functions for \code{geese} and \code{flock}.}
 \usage{
-init_model(p)
+init_model(p, verb = TRUE)
 
 nterms(p)
 
@@ -46,6 +49,12 @@ print_observed_counts(p)
 
 support_size(p)
 
+parse_polytomies(p)
+
+nfuns(p)
+
+colnames.geese(p)
+
 predict_geese(
   p,
   par,
@@ -64,6 +73,9 @@ predict_flock(
 }
 \arguments{
 \item{p}{An object of class \link{geese} or \link{flock}.}
+
+\item{verb}{Logical scalar. When \code{TRUE}, it will print a progress bar during
+the initialization of the process.}
 
 \item{par}{Numeric vector of length \code{nterms()}.}
 

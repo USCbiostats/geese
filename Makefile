@@ -1,6 +1,6 @@
 .PHONY: build
 ../geese.tar.gz: R/* src/*.cpp src/*.h
-	rm src/*.o ; Rscript -e 'Rcpp::compileAttributes();roxygen2::roxygenize()' && \
+	$(MAKE) clean ; Rscript -e 'Rcpp::compileAttributes();roxygen2::roxygenize()' && \
 		cd .. && R CMD build geese/ && mv geese_*.tar.gz geese.tar.gz
 build: ../geese.tar.gz
 
@@ -13,5 +13,12 @@ check: build
 # and then type 'run'
 debug:
 	R -d gdb switch
+profile: install
+	R --debugger=valgrind --debugger-args='--tool=cachegrind --cachegrind-out-file=test.cache.out'
+
 update:
 	rsync -av ../barry/include/barry inst/include
+
+.PHONY: clean
+clean:
+	rm -rf src/*.o; rm -rf src/*.a; rm -f ../geese.tar.gz

@@ -29,12 +29,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // init_model
-int init_model(SEXP p);
-RcppExport SEXP _geese_init_model(SEXP pSEXP) {
+int init_model(SEXP p, bool verb);
+RcppExport SEXP _geese_init_model(SEXP pSEXP, SEXP verbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    rcpp_result_gen = Rcpp::wrap(init_model(p));
+    Rcpp::traits::input_parameter< bool >::type verb(verbSEXP);
+    rcpp_result_gen = Rcpp::wrap(init_model(p, verb));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -165,6 +166,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// parse_polytomies
+int parse_polytomies(SEXP p);
+RcppExport SEXP _geese_parse_polytomies(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(parse_polytomies(p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// nfuns
+int nfuns(SEXP p);
+RcppExport SEXP _geese_nfuns(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(nfuns(p));
+    return rcpp_result_gen;
+END_RCPP
+}
+// colnames_geese
+std::vector< std::string > colnames_geese(SEXP p);
+RcppExport SEXP _geese_colnames_geese(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(colnames_geese(p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rule_limit_changes
 int rule_limit_changes(SEXP p, int term_pos, int lb, int ub, bool duplication);
 RcppExport SEXP _geese_rule_limit_changes(SEXP pSEXP, SEXP term_posSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP duplicationSEXP) {
@@ -256,14 +287,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // term_subfun
-int term_subfun(SEXP p, unsigned int a, unsigned int b);
-RcppExport SEXP _geese_term_subfun(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP) {
+int term_subfun(SEXP p, unsigned int a, unsigned int b, bool duplication);
+RcppExport SEXP _geese_term_subfun(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type a(aSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(term_subfun(p, a, b));
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_subfun(p, a, b, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -358,7 +390,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_geese_new_flock", (DL_FUNC) &_geese_new_flock, 0},
     {"_geese_add_geese", (DL_FUNC) &_geese_add_geese, 5},
-    {"_geese_init_model", (DL_FUNC) &_geese_init_model, 1},
+    {"_geese_init_model", (DL_FUNC) &_geese_init_model, 2},
     {"_geese_nterms", (DL_FUNC) &_geese_nterms, 1},
     {"_geese_nnodes", (DL_FUNC) &_geese_nnodes, 1},
     {"_geese_ntrees", (DL_FUNC) &_geese_ntrees, 1},
@@ -371,6 +403,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_observed_counts", (DL_FUNC) &_geese_observed_counts, 1},
     {"_geese_print_observed_counts", (DL_FUNC) &_geese_print_observed_counts, 1},
     {"_geese_support_size", (DL_FUNC) &_geese_support_size, 1},
+    {"_geese_parse_polytomies", (DL_FUNC) &_geese_parse_polytomies, 1},
+    {"_geese_nfuns", (DL_FUNC) &_geese_nfuns, 1},
+    {"_geese_colnames_geese", (DL_FUNC) &_geese_colnames_geese, 1},
     {"_geese_rule_limit_changes", (DL_FUNC) &_geese_rule_limit_changes, 5},
     {"_geese_predict_geese", (DL_FUNC) &_geese_predict_geese, 5},
     {"_geese_predict_flock", (DL_FUNC) &_geese_predict_flock, 5},
@@ -378,7 +413,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_term_loss", (DL_FUNC) &_geese_term_loss, 3},
     {"_geese_term_cogain", (DL_FUNC) &_geese_term_cogain, 3},
     {"_geese_term_neofun", (DL_FUNC) &_geese_term_neofun, 3},
-    {"_geese_term_subfun", (DL_FUNC) &_geese_term_subfun, 3},
+    {"_geese_term_subfun", (DL_FUNC) &_geese_term_subfun, 4},
     {"_geese_term_maxfuns", (DL_FUNC) &_geese_term_maxfuns, 4},
     {"_geese_term_overall_changes", (DL_FUNC) &_geese_term_overall_changes, 2},
     {"_geese_term_kgains", (DL_FUNC) &_geese_term_kgains, 4},

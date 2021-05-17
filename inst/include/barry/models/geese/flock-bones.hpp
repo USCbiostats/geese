@@ -20,7 +20,7 @@ public:
     
     // Common components
     std::mt19937              rengine;
-    phylocounters::PhyloModel support = phylocounters::PhyloModel();
+    phylocounters::PhyloModel model = phylocounters::PhyloModel();
 
     Flock() {};
     ~Flock() {};
@@ -48,7 +48,7 @@ public:
      */
     void set_seed(const unsigned int & s);
 
-    void init();
+    void init(bool verb = true);
     
     // void add_geese(Geese x);
     phylocounters::PhyloCounters * get_counters();
@@ -79,6 +79,8 @@ public:
     std::vector< unsigned int > nleafs() const noexcept;
     unsigned int nterms() const;
     unsigned int support_size() const noexcept;
+    std::vector< std::string > colnames() const;
+    unsigned int parse_polytomies(bool verb = true) const noexcept;
     ///@}
 
     /**

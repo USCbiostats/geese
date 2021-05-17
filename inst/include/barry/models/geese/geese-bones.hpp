@@ -34,7 +34,7 @@ inline std::vector< double > keygen_full(
 
     // Baseline data: nrows and columns
     std::vector< double > dat = {
-        (double) array.nrow(), (double) array.ncol()
+        static_cast<double>(array.nrow()), static_cast<double>(array.ncol())
     };
 
     // State of the parent
@@ -79,13 +79,13 @@ private:
      * Since users may start adding counters before initializing the PhyloModel
      * object, the object `counter` is initialized first.
      * 
-     * While the member `support` has an `rengine`, since `Geese` can sample trees,
+     * While the member `model` has an `rengine`, since `Geese` can sample trees,
      * we have the option to keep it separate.
      * 
      */
     ///@{
-    std::mt19937 *                     rengine  = nullptr;
-    phylocounters::PhyloModel *        support  = nullptr;
+    std::mt19937 *                     rengine = nullptr;
+    phylocounters::PhyloModel *        model   = nullptr;
     std::vector< std::vector< bool > > states;
     ///@}
 
@@ -144,7 +144,7 @@ public:
 
     ~Geese();
 
-    void init();
+    void init(bool verb = true);
 
     void inherit_support(const Geese & model_, bool delete_support_ = false);
 
@@ -169,14 +169,17 @@ public:
 
     /**
      * @name Information about the model 
-     * 
+     * @param verb When `true` it will print out information about the encountered
+     * polytomies.
      */
     ///@{
-    unsigned int nfuns() const noexcept;
-    unsigned int nnodes() const noexcept;
-    unsigned int nleafs() const noexcept;
-    unsigned int nterms() const;
-    unsigned int support_size() const noexcept;
+    unsigned int nfuns() const noexcept;             ///< Number of functions analyzed
+    unsigned int nnodes() const noexcept;            ///< Number of nodes (interior + leaf)
+    unsigned int nleafs() const noexcept;            ///< Number of leaf
+    unsigned int nterms() const;                     ///< Number of terms included
+    unsigned int support_size() const noexcept;      ///< Number of unique sets of sufficient stats.
+    std::vector< std::string > colnames() const;     ///< Names of the terms in the model.
+    unsigned int parse_polytomies(bool verb = true) const noexcept;  ///< Check polytomies and return the largest.
     ///@}
 
     std::vector< std::vector<double> > observed_counts();
@@ -226,6 +229,7 @@ public:
 
     std::mt19937 *                     get_rengine();
     phylocounters::PhyloCounters *     get_counters();
+    phylocounters::PhyloModel *        get_model();
     phylocounters::PhyloSupport *      get_support();
     std::vector< std::vector< bool > > get_states();
 

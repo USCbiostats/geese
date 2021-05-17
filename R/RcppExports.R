@@ -24,13 +24,15 @@ add_geese <- function(p, annotations, geneid, parent, duplication) {
 #' @title Common functions for `geese` and `flock`.
 #' @name geese-common
 #' @param p An object of class [geese] or [flock].
+#' @param verb Logical scalar. When `TRUE`, it will print a progress bar during
+#' the initialization of the process.
 #' @export
 #' @aliases flock-common
 #' @details `init_model` initializes the model. This triggers the calculation
 #' of the support using the vector of terms included. Initializing a model can
 #' only be done once.
-init_model <- function(p) {
-    invisible(.Call(`_geese_init_model`, p))
+init_model <- function(p, verb = TRUE) {
+    invisible(.Call(`_geese_init_model`, p, verb))
 }
 
 #' @rdname geese-common
@@ -118,6 +120,24 @@ support_size <- function(p) {
     .Call(`_geese_support_size`, p)
 }
 
+#' @rdname geese-common
+#' @export
+parse_polytomies <- function(p) {
+    .Call(`_geese_parse_polytomies`, p)
+}
+
+#' @rdname geese-common
+#' @export
+nfuns <- function(p) {
+    .Call(`_geese_nfuns`, p)
+}
+
+#' @rdname geese-common
+#' @export
+colnames.geese <- function(p) {
+    .Call(`_geese_colnames_geese`, p)
+}
+
 #' @title Evolutionary terms
 #' @description Model terms for both [geese] and [flock] objects.
 #' @export
@@ -175,8 +195,8 @@ term_neofun <- function(p, a, b) {
 
 #' @export
 #' @rdname geese-terms
-term_subfun <- function(p, a, b) {
-    invisible(.Call(`_geese_term_subfun`, p, a, b))
+term_subfun <- function(p, a, b, duplication = TRUE) {
+    invisible(.Call(`_geese_term_subfun`, p, a, b, duplication))
 }
 
 #' @export
