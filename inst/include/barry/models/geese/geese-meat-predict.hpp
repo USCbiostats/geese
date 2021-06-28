@@ -11,8 +11,8 @@ inline std::vector< std::vector<double> > Geese::predict_backend(
 {
 
     // Splitting the probabilities
-    std::vector< double > par_terms(par.begin(), par.end() - nfunctions);
-    std::vector< double > par_root(par.end() - nfunctions, par.end());
+    std::vector< double > par_terms(par.begin(), par.end() - nfuns());
+    std::vector< double > par_root(par.end() - nfuns(), par.end());
 
     // Scaling root
     for (auto& p : par_root)
@@ -20,16 +20,17 @@ inline std::vector< std::vector<double> > Geese::predict_backend(
 
     // Generating probabilities at the root-level (root state)
     std::vector< double > rootp(this->states.size(), 1.0);
-    for (unsigned int i = 0u; i < rootp.size(); ++i)
+    for (unsigned int s = 0u; s < rootp.size(); ++s)
     {
 
-        for (unsigned int j = 0u; j < nfuns(); ++j)
-            rootp[i] *= states[i][j] ? par_root[j] : (1.0 - par_root[j]);
+        for (unsigned int f = 0u; f < nfuns(); ++f)
+            rootp[s] *= states[s][f] ? par_root[f] : (1.0 - par_root[f]);
         
     }
 
     // Making room 
-    std::vector< std::vector<double> > res(nnodes());
+    std::vector< std::vector<double> > res(
+        nnodes(), std::vector<double>(nfuns()));
 
     // Step 1: Computing the probability at the root node
     std::vector< double > tmp_prob(nfuns(), 0.0);
@@ -38,16 +39,23 @@ inline std::vector< std::vector<double> > Geese::predict_backend(
     tmp_node->probability.resize(states.size(), 0.0);
     double tmp_likelihood = likelihood(par, false, use_reduced_sequence);
 
-    for (unsigned int s = 0u; s < states.size(); ++s) {
+    for (unsigned int s = 0u; s < states.size(); ++s)
+    {
 
         // Overall state probability P(x_s | D)
         tmp_node->probability[s] = tmp_node->subtree_prob[s] * rootp[s] /
             tmp_likelihood;
 
         // Marginalizing the probabilities P(x_sf | D)
-        for (unsigned int f = 0u; f < nfuns(); ++f) {
+        for (unsigned int f = 0u; f < nfuns(); ++f)
+        {
+
+            // Since the probability, the expected value, is for
+            // observing an x = 1, then we need to make sure that we
+            // are multiplying by the corresponding state
             if (states[s][f])
                 tmp_prob[f] += tmp_node->probability[s];
+
         }
         
 
@@ -56,106 +64,142 @@ inline std::vector< std::vector<double> > Geese::predict_backend(
     // Storing the final prob
     res[nodes[preorder[0u]].ord] = tmp_prob;
     
-        // Going in the opposite direction
+    // Going in the opposite direction
     for (auto& i : preorder)
     {
+
+        // printf_barry("Looking at node %i\n", i);
 
         Node & node = nodes[i];
 
         // We just started from the root
-        if (node.parent == nullptr)
+        if (node.is_leaf())
             continue;
 
         // Reserving space
-        node.probability.resize(states.size(), 0.0);
+        for (auto & off : node.offspring)
+        {
+            off->probability.resize(this->states.size(), 0.0);
+            std::fill(off->probability.begin(), off->probability.end(), 0.0);
+        }
 
-        std::vector< double > zerovec(nfuns(), 0.0);
-        res[node.ord] = zerovec;
-
-        // Need to identify what is the position of the node with respect to
-        // its siblings
-        unsigned int n_pos = 0u;
-        for (unsigned int n = 0u; n < node.parent->offspring.size(); ++n)
+        // We start by computing the "Everything below"
+        // Since at this point only matters the state of the offspring,
+        // we just grab the first of narray.
+        const auto & pset = model->get_pset(node.narray[0u]);
+        std::vector< double > Prob_Xoff_given_D(pset->size(), 0.0);
+        std::vector< unsigned int > pset_final;
+        for (unsigned int p = 0u; p < pset->size(); ++p)
         {
 
-            if (node.parent->offspring[n]->id == node.id)
-                break;
-            
-            ++n_pos;
-            
-        }
+            const auto & pset_p = pset->operator[](p);
 
-        // Iterating through the offspring state P(x_n^p | D)
-        std::fill(node.probability.begin(), node.probability.end(), 0.0);
-        for (unsigned int s = 0u; s < states.size(); ++s)
-        {         
-
-            // Iterating throught the parent state
-            for (unsigned int s_p = 0u; s_p < states.size(); ++s_p)
+            // Everything below Xoff
+            double everything_below = 1.0;
+            bool in_the_set = true;
+            for (unsigned int off = 0u; off < node.offspring.size(); ++off)
             {
 
-                // All the ways in which we can go from x_pk to x_nk, we first
-                // need to find its location in the model (loc):
-                unsigned int loc = node.parent->narray[s_p];
-                
-                // Retrieving the corresponding arrays and stats that will be
-                // use to marginalize
-                auto p_arrays = model->get_pset(loc);
-                auto p_stats  = model->get_stats(loc);
-
-                double prob = 0.0;
-
-                // Iterating through all the cases in which x_p -> x_nk^p
-                for (unsigned int a = 0u; a < p_arrays->size(); ++a)
+                // Below leafs, the everything below is 1.
+                if (node.offspring[off]->is_leaf())
                 {
-                
-                    const auto & A = p_arrays->operator[](a);
-
-                    // Should we include this?
-                    bool includeit = true;
-                    for (unsigned int k = 0u; k < nfuns(); ++k)
-                        if (A(k, n_pos, false) != static_cast<unsigned int>(states[s][k]))
+                    const auto & off_ann = node.offspring[off]->annotations;
+                    for (unsigned int f = 0u; f < nfuns(); ++f)
+                    {
+                        if ((off_ann[f] != 9u) && (off_ann[f] != pset_p(f, off)))
                         {
-                            
-                            // If it does not match, then jump to the next state
-                            includeit = false;
+                            in_the_set = false;
                             break;
-                            
                         }
-                    
+                            
+                    }
 
-                    // If not to be included, then we go to the next
-                    if (!includeit)
-                        continue;
+                    if (!in_the_set)
+                        break;
 
-                    // Computing the likelihood 
-                    prob += model->likelihood(par_terms, p_stats->at(a), loc);
-                    
+                    continue;
                 }
 
-                // Finalizing
-                node.probability[s] += node.parent->probability[s_p] * prob;
+                // Getting the offspring state, and how it maps
+                const auto & off_state = pset_p.get_col_vec(off);
+                unsigned int loc = this->map_to_nodes[off_state];
+
+                everything_below *= node.offspring[off]->subtree_prob[loc];
 
             }
+
+            // If an offspring annotation is not in the set, then the likelihood
+            // of observing that state is zero.
+            if (!in_the_set)
+                continue;
+
+            // Generating a copy of the array
+            // phylocounters::PhyloArray tmp_array(pset_p, true);
+            // phylocounters::NodeData tmp_data(*pset_p.D());
+
+            // Iterating now throughout the states of the parent
+            double everything_above = 0.0;
+            for (unsigned int s = 0u; s < states.size(); ++s)
+            {
+
+                // // Updating state accordingly
+                // tmp_array.set_data(
+                //     new phylocounters::NodeData(tmp_data.blengths, states[s], tmp_data.duplication),
+                //     true
+                // );
+                    // D()->states = states[s];
+
+                // Identifying the loc
+                unsigned int loc = node.narray[s];
+
+                everything_above +=
+                    (model->likelihood(
+                        par_terms,
+                        model->get_stats(loc)->operator[](p),
+                        loc
+                        ) * //tmp_array, loc) * 
+                    node.probability[s] / node.subtree_prob[s]);
+
+            }
+
+            Prob_Xoff_given_D[p] = everything_above * everything_below;
+            pset_final.push_back(p);
             
         }
 
-        // Computing marginal probabilities. For this we need to integrate out
-        // function by function.
-        std::fill(tmp_prob.begin(), tmp_prob.end(), 0.0);
-        for (unsigned int s = 0u; s < states.size(); ++s) {
-        
-            for (unsigned int k = 0u; k < nfuns(); ++k) {
+        // Marginalizing at the state level
+        for (const auto & p: pset_final)
+        {
 
-                // If the state is true, then include it, otherwise, don't
-                if (states[s][k])
-                    tmp_prob[k] += node.probability[s];
+            const auto & pset_p = pset->operator[](p);
+
+            for (unsigned int off = 0u; off < node.offspring.size(); ++off)
+            {
+
+                // Figuring out the state of the offspring
+                unsigned int off_s = this->map_to_nodes[pset_p.get_col_vec(off)];
+                node.offspring[off]->probability[off_s] += Prob_Xoff_given_D[p];
+
 
             }
-                        
+
         }
 
-        res[node.ord] = tmp_prob;
+        // Finally, we can marginalize the values at the 
+        // gene function level.
+        for (const auto & off : node.offspring)
+        {
+            for (unsigned int s = 0u; s < states.size(); ++s)
+            {
+
+                for (unsigned int f = 0u; f < nfuns(); ++f)
+                    if (states[s][f])
+                        res[off->ord][f] += off->probability[s];
+
+            }
+                
+                
+        }      
 
     }
         

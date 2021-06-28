@@ -234,6 +234,12 @@ term_genes_changing <- function(p, duplication = TRUE) {
 
 #' @export
 #' @rdname geese-terms
+term_prop_genes_changing <- function(p, duplication = TRUE) {
+    invisible(.Call(`_geese_term_prop_genes_changing`, p, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
 term_coopt <- function(p, a, b, duplication = TRUE) {
     invisible(.Call(`_geese_term_coopt`, p, a, b, duplication))
 }
