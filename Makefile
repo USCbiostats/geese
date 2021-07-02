@@ -1,13 +1,17 @@
+VERSION:=$(shell Rscript -e 'x<-readLines("DESCRIPTION");cat(gsub(".+[:]\\s*", "", x[grepl("^Vers", x)]))')
+PKGNAME:=$(shell Rscript -e 'x<-readLines("DESCRIPTION");cat(gsub(".+[:]\\s*", "", x[grepl("^Package", x)]))')
+
 .PHONY: build
-../geese.tar.gz: R/* src/*.cpp src/*.h
-	$(MAKE) clean ; Rscript -e 'Rcpp::compileAttributes();roxygen2::roxygenize()' && \
-		cd .. && R CMD build geese/ && mv geese_*.tar.gz geese.tar.gz
-build: ../geese.tar.gz
+${PKGNAME}_${VERSION}.tar.gz: R/* src/*.cpp src/*.h inst/include/barry/**
+	$(MAKE) clean ;\
+	       	Rscript -e 'Rcpp::compileAttributes();roxygen2::roxygenize()' && \
+		R CMD build .	
+build: ${PKGNAME}_${VERSION}.tar.gz
 
 install: build
-	R CMD INSTALL ../geese.tar.gz
+	R CMD INSTALL ${PKGNAME}_${VERSION}.tar.gz
 check: build
-	cd .. && R CMD check --as-cran geese.tar.gz
+	R CMD check --as-cran ${PKGNAME}_${VERSION}.tar.gz
 
 # Once running, we can set a debug point using 'break [filename].hpp:[linenumber]
 # and then type 'run'
@@ -21,4 +25,4 @@ update:
 
 .PHONY: clean
 clean:
-	rm -rf src/*.o; rm -rf src/*.a; rm -f ../geese.tar.gz
+	rm -rf src/*.o; rm -rf src/*.a; rm -f ${PKGNAME}_${VERSION}.tar.gz

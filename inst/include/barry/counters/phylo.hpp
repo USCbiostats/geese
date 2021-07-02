@@ -26,12 +26,12 @@ public:
     /**
      * Branch length.
      */
-    std::vector< double > blengths;
+    std::vector< double > blengths = {};
     
     /**
      * State of the parent node.
      */
-    std::vector< bool > states;
+    std::vector< bool > states = {};
     
     /**
      * 
@@ -46,7 +46,7 @@ public:
         bool duplication_ = true
     ) : blengths(blengths_), states(states_), duplication(duplication_) {};
     
-    ~NodeData() {};
+    // ~NodeData() {};
   
 };
 
