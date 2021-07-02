@@ -63,151 +63,140 @@ inline std::vector< std::vector<double> > Geese::predict_backend(
 
     // Storing the final prob
     res[nodes[preorder[0u]].ord] = tmp_prob;
-    
-    // Going in the opposite direction
-    for (auto& i : preorder)
+
+    for (auto & i : preorder)
     {
 
-        // printf_barry("Looking at node %i\n", i);
-
-        Node & node = nodes[i];
-
-        // We just started from the root
-        if (node.is_leaf())
+        // Leafs have nothing to do here
+        Node & parent = nodes[i];
+        if (parent.is_leaf())
             continue;
 
-        // Reserving space
-        for (auto & off : node.offspring)
+        // Creating space.
+        std::vector< std::vector< double > > everything_below(states.size());
+        std::vector< std::vector< double > > everything_above(states.size());
+        std::vector< std::vector< phylocounters::PhyloArray > > psets(states.size());
+
+        // Making space for the offspring
+        for (auto & off : parent.offspring)
         {
-            off->probability.resize(this->states.size(), 0.0);
+            off->probability.resize(states.size(), 0.0);
             std::fill(off->probability.begin(), off->probability.end(), 0.0);
         }
 
-        // We start by computing the "Everything below"
-        // Since at this point only matters the state of the offspring,
-        // we just grab the first of narray.
-        const auto & pset = model->get_pset(node.narray[0u]);
-        std::vector< double > Prob_Xoff_given_D(pset->size(), 0.0);
-        std::vector< unsigned int > pset_final;
-        for (unsigned int p = 0u; p < pset->size(); ++p)
+        // Iterating through the parent states
+        for (unsigned int s = 0u; s < states.size(); ++s)
         {
 
-            const auto & pset_p = pset->operator[](p);
+            // Retrieving powerset of stats and arrays
+            // it is not const since we will flip the states back and forth
+            // to generate the key
+            const auto & pset_arrays = model->get_pset(parent.narray[s]);
+            const auto & pset_target = model->get_pset_stats(parent.narray[s]);
 
-            // Everything below Xoff
-            double everything_below = 1.0;
-            bool in_the_set = true;
-            for (unsigned int off = 0u; off < node.offspring.size(); ++off)
+            for (unsigned int p = 0u; p < pset_arrays->size(); ++p)
             {
 
-                // Below leafs, the everything below is 1.
-                if (node.offspring[off]->is_leaf())
+                // Corresponding graph and target stats
+                const phylocounters::PhyloArray & array_p = pset_arrays->at(p);
+                const std::vector<double> & target_p = pset_target->at(p);
+
+                phylocounters::PhyloArray tmp_array(nfuns(), array_p.ncol());
+                tmp_array += array_p;
+
+                // Adding to the map, we only do this during the first run,
+                // afterwards, we need to actually look for the array.
+                bool in_the_set = true; /// < True if the array belongs to the set
+                
+                // Everything below just need to be computed only once
+                // and thus, if already added, no need to go through all of this!
+                double everything_below_p = 1.0;
+                for (unsigned int off = 0u; off < parent.offspring.size(); ++off)
                 {
 
-                    // But we can only includ it if the current state actually
-                    // matches the leaf data (otherwise the prob is 0)
-                    const auto & off_ann = node.offspring[off]->annotations;
-                    for (unsigned int f = 0u; f < nfuns(); ++f)
+                    // Below leafs, the everything below is 1.
+                    if (parent.offspring[off]->is_leaf())
                     {
-                        if ((off_ann[f] != 9u) && (off_ann[f] != pset_p(f, off)))
+
+                        // But we can only includ it if the current state actually
+                        // matches the leaf data (otherwise the prob is 0)
+                        const auto & off_ann = parent.offspring[off]->annotations;
+                        for (unsigned int f = 0u; f < nfuns(); ++f)
                         {
-                            in_the_set = false;
-                            break;
+
+                            if ((off_ann[f] != 9u) && (off_ann[f] != array_p(f, off)))
+                            {
+                                in_the_set = false;
+                                break;
+                            }
+                                
                         }
-                            
+
+                        if (!in_the_set)
+                            break;
+
+                        continue;
+
+                    } else {
+
+                        // Getting the offspring state, and how it maps, only
+                        // if it is not an offspring
+                        const auto & off_state = array_p.get_col_vec(off);
+                        unsigned int loc = this->map_to_nodes[off_state];
+
+                        everything_below_p *= parent.offspring[off]->subtree_prob[loc];
+
                     }
-
-                    if (!in_the_set)
-                        break;
-
-                    continue;
-
-                } else {
-
-                    // Getting the offspring state, and how it maps, only
-                    // if it is not an offspring
-                    const auto & off_state = pset_p.get_col_vec(off);
-                    unsigned int loc = this->map_to_nodes[off_state];
-
-                    everything_below *= node.offspring[off]->subtree_prob[loc];
 
                 }
 
-                
+                // If it is not in the set, then continue to the next array
+                if (!in_the_set)
+                    continue;
 
-            }
+                psets[s].push_back(array_p); // Generating a copy
+                everything_below[s].push_back(everything_below_p);
 
-            // If an offspring annotation is not in the set, then the likelihood
-            // of observing that state is zero.
-            if (!in_the_set)
-            {
-                Prob_Xoff_given_D[p] = 0.0;
-                continue;
-
-            }
-
-            // Generating a copy of the array
-            phylocounters::PhyloArray tmp_array(nfuns(), pset_p.ncol());
-            tmp_array += pset_p;
-
-            phylocounters::NodeData tmp_data(
-                std::vector<double>(1.0, pset_p.ncol()),
-                std::vector<bool>(true, nfuns()),
-                node.duplication
+                // The first run, we only need to grow the list
+                everything_above[s].push_back(
+                    model->likelihood(
+                        par_terms, target_p, parent.narray[s], false
+                    ) *  parent.probability[s] / parent.subtree_prob[s]
                 );
 
-            tmp_array.set_data(&tmp_data, false);
 
-            // Iterating now throughout the states of the parent
-            double everything_above = 0.0;
-            for (unsigned int s = 0u; s < states.size(); ++s)
-            {
-
-                // Updating state accordingly
-                unsigned int loc = node.narray[s];
-
-                tmp_data.states = states[s];
-
-                everything_above +=
-                    (model->likelihood(par_terms, tmp_array, loc) * 
-                    node.probability[s] / node.subtree_prob[s]);
-
-            }
-
-            // To ease memory allocation
-            tmp_array.flush_data();
-
-            Prob_Xoff_given_D[p] = everything_above * everything_below;
-            pset_final.push_back(p);
+            } // end for psets
             
-        }
-
-        // // Checking that things addup to one
-        // double sum_probs = 0.0;
-        // for (auto & prob_p : Prob_Xoff_given_D)
-        //     sum_probs += prob_p;
+        } // end for states
 
         // Marginalizing at the state level
-        for (const auto & p: pset_final)
+        for (unsigned int s = 0u; s < states.size(); ++s)
         {
-
-            const auto & pset_p = pset->operator[](p);
-
-            for (unsigned int off = 0u; off < node.offspring.size(); ++off)
+            for (unsigned int p = 0u; p < everything_above[s].size(); ++p)
             {
 
-                // Figuring out the state of the offspring
-                unsigned int off_s = this->map_to_nodes[pset_p.get_col_vec(off)];
-                node.offspring[off]->probability[off_s] += Prob_Xoff_given_D[p];
+                // p-th pset
+                const auto & pset_p = psets[s][p];
 
+                // Updating the probability (it is the product)
+                everything_above[s][p] *= everything_below[s][p];
+
+                for (unsigned int off = 0u; off < parent.offspring.size(); ++off)
+                {
+
+                    // Figuring out the state of the offspring
+                    unsigned int off_s = this->map_to_nodes[pset_p.get_col_vec(off)];
+                    parent.offspring[off]->probability[off_s] += everything_above[s][p];
+
+
+                }
 
             }
-
         }
 
         // Finally, we can marginalize the values at the 
         // gene function level.
-        for (const auto & off : node.offspring)
+        for (const auto & off : parent.offspring)
         {
             for (unsigned int s = 0u; s < states.size(); ++s)
             {
@@ -238,11 +227,11 @@ inline std::vector< std::vector<double> > Geese::predict_backend(
                     res[off->ord][f] = 0.0;
 
             }
-                
-                
-        }      
+   
 
-    }
+        }
+
+    } // end for over preorder
         
     return res;
 
