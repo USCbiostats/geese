@@ -324,8 +324,8 @@ int nfuns(SEXP p) {
 
 //' @rdname geese-common
 //' @export
-// [[Rcpp::export(rng = false, name = "colnames.geese")]]
-std::vector< std::string > colnames_geese(SEXP p) {
+// [[Rcpp::export(rng = false, name = "names.geese")]]
+std::vector< std::string > names_geese(SEXP p) {
 
   IF_GEESE(p) {
 
@@ -341,3 +341,4 @@ std::vector< std::string > colnames_geese(SEXP p) {
   } IF_NEITHER()
 
 }
+

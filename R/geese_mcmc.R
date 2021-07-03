@@ -31,7 +31,7 @@ geese_mcmc <- function(
     initial = structure(
       initial,
       names = c(
-        colnames.geese(amodel), sprintf("Root %i", 1:nfuns(amodel))
+        names(amodel), sprintf("Root %i", 1:nfuns(amodel))
       )
     ),
     fun     = fun,

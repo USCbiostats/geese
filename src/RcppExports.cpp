@@ -186,13 +186,13 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// colnames_geese
-std::vector< std::string > colnames_geese(SEXP p);
-RcppExport SEXP _geese_colnames_geese(SEXP pSEXP) {
+// names_geese
+std::vector< std::string > names_geese(SEXP p);
+RcppExport SEXP _geese_names_geese(SEXP pSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    rcpp_result_gen = Rcpp::wrap(colnames_geese(p));
+    rcpp_result_gen = Rcpp::wrap(names_geese(p));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -416,7 +416,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_support_size", (DL_FUNC) &_geese_support_size, 1},
     {"_geese_parse_polytomies", (DL_FUNC) &_geese_parse_polytomies, 1},
     {"_geese_nfuns", (DL_FUNC) &_geese_nfuns, 1},
-    {"_geese_colnames_geese", (DL_FUNC) &_geese_colnames_geese, 1},
+    {"_geese_names_geese", (DL_FUNC) &_geese_names_geese, 1},
     {"_geese_rule_limit_changes", (DL_FUNC) &_geese_rule_limit_changes, 5},
     {"_geese_predict_geese", (DL_FUNC) &_geese_predict_geese, 5},
     {"_geese_predict_flock", (DL_FUNC) &_geese_predict_flock, 5},

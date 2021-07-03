@@ -134,8 +134,8 @@ nfuns <- function(p) {
 
 #' @rdname geese-common
 #' @export
-colnames.geese <- function(p) {
-    .Call(`_geese_colnames_geese`, p)
+names.geese <- function(p) {
+    .Call(`_geese_names_geese`, p)
 }
 
 #' @title Evolutionary terms
