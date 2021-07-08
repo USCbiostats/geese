@@ -183,14 +183,14 @@ term_loss <- function(p, funs, duplication = TRUE) {
 #' @export
 #' @rdname geese-terms
 #' @param a,b Indices of functions (starting from zero)
-term_cogain <- function(p, a, b) {
-    invisible(.Call(`_geese_term_cogain`, p, a, b))
+term_cogain <- function(p, a, b, duplication = TRUE) {
+    invisible(.Call(`_geese_term_cogain`, p, a, b, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
-term_neofun <- function(p, a, b) {
-    invisible(.Call(`_geese_term_neofun`, p, a, b))
+term_neofun <- function(p, a, b, duplication = TRUE) {
+    invisible(.Call(`_geese_term_neofun`, p, a, b, duplication))
 }
 
 #' @export

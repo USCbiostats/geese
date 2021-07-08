@@ -263,26 +263,28 @@ BEGIN_RCPP
 END_RCPP
 }
 // term_cogain
-int term_cogain(SEXP p, unsigned int a, unsigned int b);
-RcppExport SEXP _geese_term_cogain(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP) {
+int term_cogain(SEXP p, unsigned int a, unsigned int b, bool duplication);
+RcppExport SEXP _geese_term_cogain(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type a(aSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(term_cogain(p, a, b));
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_cogain(p, a, b, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_neofun
-int term_neofun(SEXP p, unsigned int a, unsigned int b);
-RcppExport SEXP _geese_term_neofun(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP) {
+int term_neofun(SEXP p, unsigned int a, unsigned int b, bool duplication);
+RcppExport SEXP _geese_term_neofun(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type a(aSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type b(bSEXP);
-    rcpp_result_gen = Rcpp::wrap(term_neofun(p, a, b));
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_neofun(p, a, b, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -422,8 +424,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_predict_flock", (DL_FUNC) &_geese_predict_flock, 5},
     {"_geese_term_gains", (DL_FUNC) &_geese_term_gains, 3},
     {"_geese_term_loss", (DL_FUNC) &_geese_term_loss, 3},
-    {"_geese_term_cogain", (DL_FUNC) &_geese_term_cogain, 3},
-    {"_geese_term_neofun", (DL_FUNC) &_geese_term_neofun, 3},
+    {"_geese_term_cogain", (DL_FUNC) &_geese_term_cogain, 4},
+    {"_geese_term_neofun", (DL_FUNC) &_geese_term_neofun, 4},
     {"_geese_term_subfun", (DL_FUNC) &_geese_term_subfun, 4},
     {"_geese_term_maxfuns", (DL_FUNC) &_geese_term_maxfuns, 4},
     {"_geese_term_overall_changes", (DL_FUNC) &_geese_term_overall_changes, 2},

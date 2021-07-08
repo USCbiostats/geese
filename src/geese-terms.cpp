@@ -65,17 +65,17 @@ int term_loss(SEXP p, std::vector<unsigned int> & funs,
 //' @rdname geese-terms
 //' @param a,b Indices of functions (starting from zero)
 // [[Rcpp::export(rng = false, invisible = true)]]
-int term_cogain(SEXP p, unsigned int a, unsigned int b) {
+int term_cogain(SEXP p, unsigned int a, unsigned int b, bool duplication = true) {
 
   IF_GEESE(p) {
 
     Rcpp::XPtr< Geese >ptr(p);
-    phylo::counter_cogain(ptr->get_counters(), a, b);
+    phylo::counter_cogain(ptr->get_counters(), a, b, duplication);
 
   } IF_FLOCK(p) {
 
     Rcpp::XPtr< Flock >ptr(p);
-    phylo::counter_cogain(ptr->get_counters(), a, b);
+    phylo::counter_cogain(ptr->get_counters(), a, b, duplication);
 
   } IF_NEITHER()
 
@@ -86,17 +86,17 @@ int term_cogain(SEXP p, unsigned int a, unsigned int b) {
 //' @export
 //' @rdname geese-terms
 // [[Rcpp::export(rng = false, invisible = true)]]
-int term_neofun(SEXP p, unsigned int a, unsigned int b) {
+int term_neofun(SEXP p, unsigned int a, unsigned int b, bool duplication = true) {
 
   IF_GEESE(p) {
 
     Rcpp::XPtr< Geese >ptr(p);
-    phylo::counter_neofun(ptr->get_counters(), a, b);
+    phylo::counter_neofun(ptr->get_counters(), a, b, duplication);
 
   } IF_FLOCK(p) {
 
     Rcpp::XPtr< Flock >ptr(p);
-    phylo::counter_neofun(ptr->get_counters(), a, b);
+    phylo::counter_neofun(ptr->get_counters(), a, b, duplication);
 
   } IF_NEITHER()
 

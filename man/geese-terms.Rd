@@ -23,9 +23,9 @@ term_gains(p, funs, duplication = TRUE)
 
 term_loss(p, funs, duplication = TRUE)
 
-term_cogain(p, a, b)
+term_cogain(p, a, b, duplication = TRUE)
 
-term_neofun(p, a, b)
+term_neofun(p, a, b, duplication = TRUE)
 
 term_subfun(p, a, b, duplication = TRUE)
 
