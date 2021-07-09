@@ -342,3 +342,75 @@ std::vector< std::string > names_geese(SEXP p) {
 
 }
 
+//' Compute the transition probability
+//' @param p An object of class `geese` or `flock`.
+//' @param params A vector of model parameters.
+//' @param duplication logical scalar. Type of evolutionary event.
+//' @param state logical vector. State of the parent.
+//' @param array matrix indicating the state of the offspring (rows = function, cols = offspring).
+//' @param as_log logical scalar. When `TRUE` returns the log.
+//' @export
+// [[Rcpp::export(rng = false)]]
+double transition_prob(
+    SEXP p,
+    const std::vector< double > & params,
+    bool duplication,
+    const std::vector< bool > & state,
+    const IntegerMatrix array,
+    bool as_log = false
+  ) {
+
+  if (state.size() != static_cast<unsigned int>(array.nrow()))
+    stop("The length of -state- does not match the number of functions in -nrow-.");
+
+  phylocounters::PhyloArray A(array.nrow(), array.ncol());
+  A.set_data(
+    new phylocounters::NodeData(std::vector<double>(1.0, array.ncol()), state, duplication),
+    true
+  );
+
+  for (int i = 0; i < array.nrow(); ++i)
+    for (int j = 0; j < array.ncol(); ++j)
+      A(i, j) = array(i, j);
+
+  IF_GEESE(p)
+  {
+
+    // Preparing data
+    Rcpp::XPtr< Geese > ptr(p);
+    return ptr->get_model()->likelihood(params, A, -1, as_log);
+
+  } IF_FLOCK(p) {
+
+    // Preparing data
+    Rcpp::XPtr< Flock > ptr(p);
+    return ptr->get_model()->likelihood(params, A, -1, as_log);
+
+  } IF_NEITHER()
+
+  return 0.0;
+
+}
+
+// [[Rcpp::export(rng = false, invisible = true)]]
+int print_geese(SEXP p)
+{
+
+  IF_GEESE(p)
+  {
+
+    // Preparing data
+    Rcpp::XPtr< Geese > ptr(p);
+    ptr->print();
+
+  } IF_FLOCK(p) {
+
+    // Preparing data
+    Rcpp::XPtr< Flock > ptr(p);
+    ptr->print();
+
+  } IF_NEITHER()
+
+  return 0;
+
+}

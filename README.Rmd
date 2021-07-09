@@ -124,6 +124,13 @@ init_model(amodel)
 
 # Finding MLE
 geese_mle(amodel, hessian = TRUE)
+
+transition_prob(
+  amodel,
+  params = c(-1, -1, -2, -2, -.5), 
+  duplication = TRUE, state = c(FALSE, FALSE),
+  array = matrix(c(1, 0, 0, 1)*0, ncol=2)
+)
 ```
 
 ## Model fitting MCMC

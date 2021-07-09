@@ -138,6 +138,22 @@ names.geese <- function(p) {
     .Call(`_geese_names_geese`, p)
 }
 
+#' Compute the transition probability
+#' @param p An object of class `geese` or `flock`.
+#' @param params A vector of model parameters.
+#' @param duplication logical scalar. Type of evolutionary event.
+#' @param state logical vector. State of the parent.
+#' @param array matrix indicating the state of the offspring (rows = function, cols = offspring).
+#' @param as_log logical scalar. When `TRUE` returns the log.
+#' @export
+transition_prob <- function(p, params, duplication, state, array, as_log = FALSE) {
+    .Call(`_geese_transition_prob`, p, params, duplication, state, array, as_log)
+}
+
+print_geese <- function(p) {
+    invisible(.Call(`_geese_print_geese`, p))
+}
+
 #' @title Evolutionary terms
 #' @description Model terms for both [geese] and [flock] objects.
 #' @export

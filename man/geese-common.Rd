@@ -22,6 +22,8 @@
 \alias{predict_geese}
 \alias{predict_flock}
 \alias{names.flock}
+\alias{print.geese}
+\alias{print.flock}
 \title{Common functions for \code{geese} and \code{flock}.}
 \usage{
 init_model(p, verb = TRUE)
@@ -73,6 +75,10 @@ predict_flock(
 )
 
 \method{names}{flock}(x)
+
+\method{print}{geese}(x, ...)
+
+\method{print}{flock}(x, ...)
 }
 \arguments{
 \item{p}{An object of class \link{geese} or \link{flock}.}
