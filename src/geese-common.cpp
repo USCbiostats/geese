@@ -392,6 +392,55 @@ double transition_prob(
 
 }
 
+//' @export
+//' @rdname transition_prob
+//' @params i,j Locations (index from zero) of the cell to compute.
+//' @details `conditional_prob` computes the so-called "Gibbs sampling"
+//' probability, in which the likelihood of observing Y(i,j) = 1 conditional
+//' on the rest of the data is computed.
+// [[Rcpp::export(rng = false)]]
+double conditional_prob(
+    SEXP p,
+    const std::vector< double > & params,
+    bool duplication,
+    const std::vector< bool > & state,
+    const IntegerMatrix array,
+    uint i, uint j,
+    bool as_log = false
+) {
+
+  if (state.size() != static_cast<unsigned int>(array.nrow()))
+    stop("The length of -state- does not match the number of functions in -nrow-.");
+
+  phylocounters::PhyloArray A(array.nrow(), array.ncol());
+  A.set_data(
+    new phylocounters::NodeData(std::vector<double>(1.0, array.ncol()), state, duplication),
+    true
+  );
+
+  for (int i = 0; i < array.nrow(); ++i)
+    for (int j = 0; j < array.ncol(); ++j)
+      A(i, j) = array(i, j);
+
+  IF_GEESE(p)
+  {
+
+    // Preparing data
+    Rcpp::XPtr< Geese > ptr(p);
+    return ptr->get_model()->conditional_prob(A, params, i, j);
+
+  } IF_FLOCK(p) {
+
+    // Preparing data
+    Rcpp::XPtr< Flock > ptr(p);
+    return ptr->get_model()->conditional_prob(A, params, i, j);
+
+  } IF_NEITHER()
+
+    return 0.0;
+
+}
+
 // [[Rcpp::export(rng = false, invisible = true)]]
 int print_geese(SEXP p)
 {

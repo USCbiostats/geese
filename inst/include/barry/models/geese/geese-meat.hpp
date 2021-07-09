@@ -392,10 +392,10 @@ inline unsigned int Geese::parse_polytomies(bool verb) const noexcept {
             if (verb)
                 printf_barry("Node id: %i has polytomy size %i\n", n.second.id, noff);
                 
-            if (noff > largest)
-                largest = noff;
-
         }
+
+        if (noff > largest)
+            largest = noff;
 
     }
 

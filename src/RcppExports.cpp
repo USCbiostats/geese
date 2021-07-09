@@ -211,6 +211,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// conditional_prob
+double conditional_prob(SEXP p, const std::vector< double >& params, bool duplication, const std::vector< bool >& state, const IntegerMatrix array, uint i, uint j, bool as_log);
+RcppExport SEXP _geese_conditional_prob(SEXP pSEXP, SEXP paramsSEXP, SEXP duplicationSEXP, SEXP stateSEXP, SEXP arraySEXP, SEXP iSEXP, SEXP jSEXP, SEXP as_logSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const std::vector< double >& >::type params(paramsSEXP);
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< const std::vector< bool >& >::type state(stateSEXP);
+    Rcpp::traits::input_parameter< const IntegerMatrix >::type array(arraySEXP);
+    Rcpp::traits::input_parameter< uint >::type i(iSEXP);
+    Rcpp::traits::input_parameter< uint >::type j(jSEXP);
+    Rcpp::traits::input_parameter< bool >::type as_log(as_logSEXP);
+    rcpp_result_gen = Rcpp::wrap(conditional_prob(p, params, duplication, state, array, i, j, as_log));
+    return rcpp_result_gen;
+END_RCPP
+}
 // print_geese
 int print_geese(SEXP p);
 RcppExport SEXP _geese_print_geese(SEXP pSEXP) {
@@ -445,6 +462,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_nfuns", (DL_FUNC) &_geese_nfuns, 1},
     {"_geese_names_geese", (DL_FUNC) &_geese_names_geese, 1},
     {"_geese_transition_prob", (DL_FUNC) &_geese_transition_prob, 6},
+    {"_geese_conditional_prob", (DL_FUNC) &_geese_conditional_prob, 8},
     {"_geese_print_geese", (DL_FUNC) &_geese_print_geese, 1},
     {"_geese_rule_limit_changes", (DL_FUNC) &_geese_rule_limit_changes, 5},
     {"_geese_predict_geese", (DL_FUNC) &_geese_predict_geese, 5},
