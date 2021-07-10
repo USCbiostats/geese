@@ -22,7 +22,19 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of geese is to ...
+This R package taps into statistical theory mostly developed in the social networks
+realm. Using Exponential-Family Random Graph Models (ERGMs), `geese` provides an
+statistical framework for building Gene Functional Evolution Models using Sufficiency.
+For example, users can directly hypothesize whether Neofunctionalization or Subfunctionalization
+events were taking place in a phylogeny, without having to estimate the full transition
+Markov Matrix that is usually used.
+
+GEESE is computationally efficient, with C++ under-the-hood, allowing the analyses
+of either single trees (a GEESE) or multiple trees simulatenously (pooled model),
+in a Flock.
+
+This is work in progress and based on the theoretical work developed duing
+[George G. Vega Yon](https://ggv.cl)'s doctoral thesis.
 
 ## Installation
 
@@ -122,6 +134,8 @@ term_maxfuns(amodel, 1, 1)
 # We need to initialize to do all the accounting
 init_model(amodel)
 
+print(amodel)
+
 # Finding MLE
 geese_mle(amodel, hessian = TRUE)
 
@@ -219,6 +233,8 @@ term_maxfuns(flock, 1, 1)
 
 # We need to initialize to do all the accountintg
 init_model(flock)
+
+print(flock)
 ```
 
 We can use the same program to fit the MCMC

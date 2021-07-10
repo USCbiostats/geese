@@ -7,15 +7,33 @@ Epidemiology](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-
 # geese: *GE*ne-functional *E*volution using *S*uffici*E*ncy <img src="man/figures/logo.svg" align="right" width="180px"/>
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
-The goal of geese is to …
+This R package taps into statistical theory mostly developed in the
+social networks realm. Using Exponential-Family Random Graph Models
+(ERGMs), `geese` provides an statistical framework for building Gene
+Functional Evolution Models using Sufficiency. For example, users can
+directly hypothesize whether Neofunctionalization or
+Subfunctionalization events were taking place in a phylogeny, without
+having to estimate the full transition Markov Matrix that is usually
+used.
+
+GEESE is computationally efficient, with C++ under-the-hood, allowing
+the analyses of either single trees (a GEESE) or multiple trees
+simulatenously (pooled model), in a Flock.
+
+This is work in progress and based on the theoretical work developed
+duing [George G. Vega Yon](https://ggv.cl)’s doctoral thesis.
 
 ## Installation
 
 <!-- You can install the released version of geese from [CRAN](https://CRAN.R-project.org) with: -->
+
 <!-- ``` r -->
+
 <!-- install.packages("geese") -->
+
 <!-- ``` -->
 
 The development version from [GitHub](https://github.com/) with:
@@ -55,6 +73,8 @@ term_gains(amodel, 0:1)
 term_loss(amodel, 0:1)
 term_maxfuns(amodel, 1, 1)
 init_model(amodel)
+#> Initializing nodes in Geese (this could take a while)...
+#> ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| done.
 
 # Testing
 params <- c(
@@ -70,7 +90,7 @@ params <- c(
 names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
 
 likelihood(amodel, params*0) # Equals 1 b/c all missings
-#> [1] 0
+#> [1] 1
 
 # Simulating data
 fake1 <- sim_geese(p = amodel, par = params, seed = 1110)
@@ -113,6 +133,28 @@ term_maxfuns(amodel, 1, 1)
 
 # We need to initialize to do all the accounting
 init_model(amodel)
+#> Initializing nodes in Geese (this could take a while)...
+#> ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| done.
+
+print(amodel)
+#> GEESE
+#> INFO ABOUT PHYLOGENY
+#> # of functions           : 2
+#> # of nodes [int; leaf]   : [199; 100]
+#> # of ann. [zeros; ones]  : [87; 113]
+#> # of events [dupl; spec] : [99; 0]
+#> Largest polytomy         : 2
+#> 
+#> INFO ABOUT THE SUPPORT
+#> Num. of Arrays     : 396
+#> Support size       : 4
+#> Support size range : [0, 14]
+#> Model terms (5)   :
+#>  - Gains 0 at duplication
+#>  - Gains 1 at duplication
+#>  - Loss 0 at duplication
+#>  - Loss 1 at duplication
+#>  - Genes with [1, 1] funs at duplication
 
 # Finding MLE
 geese_mle(amodel, hessian = TRUE)
@@ -139,16 +181,24 @@ geese_mle(amodel, hessian = TRUE)
 #> [3,]  9.719647e-02 -2.661554e-01 -1.562040e+00  1.126001e-01 -1.189657e+00
 #> [4,] -5.826438e-01  2.058254e+00  1.126001e-01 -5.959471e+00 -3.427126e+00
 #> [5,]  1.230857e+00  2.388066e+00 -1.189657e+00 -3.427126e+00 -2.441145e+01
-#> [6,] -8.064660e-07  1.930012e-06 -1.187495e-06  3.366196e-06 -4.565237e-07
-#> [7,]  6.354028e-06 -8.340448e-04  9.558576e-06 -6.562351e-04  1.888232e-04
+#> [6,] -8.064660e-07  1.930012e-06 -1.188383e-06  3.367084e-06 -4.565237e-07
+#> [7,]  6.355805e-06 -8.340431e-04  9.558576e-06 -6.562342e-04  1.888223e-04
 #>               [,6]          [,7]
-#> [1,] -8.064660e-07  6.354028e-06
-#> [2,]  1.930012e-06 -8.340448e-04
-#> [3,] -1.187495e-06  9.558576e-06
-#> [4,]  3.366196e-06 -6.562351e-04
-#> [5,] -4.565237e-07  1.888232e-04
-#> [6,]  4.440892e-08  6.750156e-08
+#> [1,] -8.064660e-07  6.355805e-06
+#> [2,]  1.930012e-06 -8.340431e-04
+#> [3,] -1.188383e-06  9.558576e-06
+#> [4,]  3.367084e-06 -6.562342e-04
+#> [5,] -4.565237e-07  1.888223e-04
+#> [6,]  4.263256e-08  6.750156e-08
 #> [7,]  6.750156e-08 -2.657963e-05
+
+transition_prob(
+  amodel,
+  params = c(-1, -1, -2, -2, -.5), 
+  duplication = TRUE, state = c(FALSE, FALSE),
+  array = matrix(c(1, 0, 0, 1)*0, ncol=2)
+)
+#> [1] 0.2315802
 ```
 
 ## Model fitting MCMC
@@ -157,10 +207,14 @@ geese_mle(amodel, hessian = TRUE)
 set.seed(122)
 ans_mcmc <- geese_mcmc(
   amodel,
-  nsteps  = 40000,
+  nsteps  = 20000,
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
   prior   = function(p) dlogis(p, scale = 2, log = TRUE)
   )
+#> 
+#> |0%                 |25%                |50%                |75%           100%|
+#> --------------------------------------------------------------------------------
+#> ////////////////////////////////////////////////////////////////////////////////
 ```
 
 We can take a look at the results like this:
@@ -168,33 +222,73 @@ We can take a look at the results like this:
 <img src="man/figures/README-mcmc-analysis-1.png" width="100%" />
 
     #> 
-    #> Iterations = 15000:40000
+    #> Iterations = 15000:20000
     #> Thinning interval = 1 
     #> Number of chains = 1 
-    #> Sample size per chain = 25001 
+    #> Sample size per chain = 5001 
     #> 
     #> 1. Empirical mean and standard deviation for each variable,
     #>    plus standard error of the mean:
     #> 
-    #>          Mean     SD Naive SE Time-series SE
-    #> par1  1.26120 0.7629 0.004825       0.023220
-    #> par2  1.93817 1.2494 0.007902       0.072333
-    #> par3 -1.51192 0.8443 0.005340       0.026278
-    #> par4 -0.86702 0.5525 0.003494       0.017003
-    #> par5  1.99785 0.2394 0.001514       0.006938
-    #> par6 -0.19538 3.6550 0.023116       0.175974
-    #> par7 -0.02748 3.6706 0.023215       0.161282
+    #>                                          Mean     SD Naive SE Time-series SE
+    #> Gains 0 at duplication                 1.2723 0.7586 0.010727        0.05294
+    #> Gains 1 at duplication                 1.8373 0.9848 0.013926        0.07326
+    #> Loss 0 at duplication                 -1.4241 0.8064 0.011403        0.05438
+    #> Loss 1 at duplication                 -0.8163 0.5572 0.007879        0.03446
+    #> Genes with [1, 1] funs at duplication  1.9937 0.2215 0.003132        0.01277
+    #> Root 1                                 0.3445 2.9532 0.041761        0.31086
+    #> Root 2                                -0.3347 3.0158 0.042645        0.33184
     #> 
     #> 2. Quantiles for each variable:
     #> 
-    #>         2.5%     25%      50%     75%   97.5%
-    #> par1 -0.1486  0.7323  1.23488  1.7457 2.83010
-    #> par2  0.1582  1.1853  1.75376  2.4721 4.84487
-    #> par3 -3.2207 -2.0756 -1.47760 -0.9378 0.04801
-    #> par4 -1.8700 -1.2413 -0.89249 -0.5323 0.30781
-    #> par5  1.5569  1.8305  1.98664  2.1502 2.51727
-    #> par6 -7.7258 -2.4187 -0.12163  2.0795 6.98715
-    #> par7 -7.8283 -2.2335 -0.01834  2.2817 7.28420
+    #>                                          2.5%     25%     50%     75%   97.5%
+    #> Gains 0 at duplication                -0.1466  0.7817  1.2424  1.7714 2.73773
+    #> Gains 1 at duplication                 0.2052  1.1583  1.7674  2.4307 3.76635
+    #> Loss 0 at duplication                 -3.0947 -1.9784 -1.4155 -0.8769 0.06948
+    #> Loss 1 at duplication                 -1.8223 -1.1907 -0.8697 -0.4792 0.39775
+    #> Genes with [1, 1] funs at duplication  1.6037  1.8319  1.9926  2.1413 2.42520
+    #> Root 1                                -4.9226 -1.7294  0.2676  2.0521 6.89956
+    #> Root 2                                -6.3861 -2.1793 -0.2905  1.6815 5.45537
+
+``` r
+# Obtaining estimates
+par_estimates <- colMeans(window(ans_mcmc, start = 20000))
+ans_pred      <- predict_geese(amodel, par_estimates, leave_one_out = TRUE)
+ans_pred      <- do.call(rbind, ans_pred)
+
+# Preparing annotations
+ann_obs <- do.call(rbind, fake1)
+
+# Mean Absolute Error
+hist(abs(ans_pred - ann_obs))
+```
+
+<img src="man/figures/README-prediction-1.png" width="100%" />
+
+``` r
+
+# AUC
+(ans <- aphylo::prediction_score(
+  cbind(as.vector(ans_pred)),
+  cbind(as.vector(ann_obs))
+  ))
+#> Prediction score (H0: Observed = Random)
+#> 
+#>  N obs.      : 398
+#>  alpha(0, 1) : 0.42, 0.58
+#>  Observed    : 0.81 ***
+#>  Random      : 0.51 
+#>  P(<t)       : 0.0000
+#> --------------------------------------------------------------------------------
+#> Values scaled to range between 0 and 1, 1 being best.
+#> 
+#> Significance levels: *** p < .01, ** p < .05, * p < .10
+#> AUC 0.93.
+#> MAE 0.19.
+plot(ans$auc)
+```
+
+<img src="man/figures/README-prediction-2.png" width="100%" />
 
 ## Using a flock
 
@@ -228,6 +322,30 @@ term_maxfuns(flock, 1, 1)
 
 # We need to initialize to do all the accountintg
 init_model(flock)
+#> Initializing nodes in Geese (this could take a while)...
+#> ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| done.
+#> Initializing nodes in Geese (this could take a while)...
+#> ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| done.
+
+print(flock)
+#> FLOCK (GROUP OF GEESE)
+#> INFO ABOUT THE PHYLOGENIES
+#> # of phylogenies         : 2
+#> # of functions           : 2
+#> # of ann. [zeros; ones]  : [166; 234]
+#> # of events [dupl; spec] : [198; 0]
+#> Largest polytomy         : 2
+#> 
+#> INFO ABOUT THE SUPPORT
+#> Num. of Arrays     : 792
+#> Support size       : 4
+#> Support size range : [0, 14]
+#> Model terms (5)   :
+#>  - Gains 0 at duplication
+#>  - Gains 1 at duplication
+#>  - Loss 0 at duplication
+#>  - Loss 1 at duplication
+#>  - Genes with [1, 1] funs at duplication
 ```
 
 We can use the same program to fit the MCMC
@@ -299,7 +417,7 @@ summary(window(ans_mcmc2, start = 10000))
 In this example, we use the function `rule_limit_changes()` to apply a
 constraint to the support of the model. This takes the 6th term (5th
 since the index is in C++), and restricts the support to states where
-there are between \[0, 2\] changes, at most.
+there are between \([0, 2]\) changes, at most.
 
 This should be useful when dealing with multiple functions or
 [pylotomies](https://en.wikipedia.org/wiki/Polytomy).
@@ -325,10 +443,12 @@ rule_limit_changes(amodel_limited, 5, 0, 2)
 
 # We need to initialize to do all the accounting
 init_model(amodel_limited)
+#> Initializing nodes in Geese (this could take a while)...
+#> ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| done.
 
 # Is limiting the support any useful?
 support_size(amodel_limited)
-#> [1] 9
+#> [1] 38
 ```
 
 Since we added the constraint based on the term
