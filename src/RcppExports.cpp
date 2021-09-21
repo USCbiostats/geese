@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // new_flock
 SEXP new_flock();
 RcppExport SEXP _geese_new_flock() {
@@ -29,12 +34,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // init_model
-int init_model(SEXP p, bool verb);
+int init_model(SEXP p, int verb);
 RcppExport SEXP _geese_init_model(SEXP pSEXP, SEXP verbSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< bool >::type verb(verbSEXP);
+    Rcpp::traits::input_parameter< int >::type verb(verbSEXP);
     rcpp_result_gen = Rcpp::wrap(init_model(p, verb));
     return rcpp_result_gen;
 END_RCPP

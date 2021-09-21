@@ -16,7 +16,7 @@ using namespace Rcpp;
 //' of the support using the vector of terms included. Initializing a model can
 //' only be done once.
 // [[Rcpp::export(rng = false, invisible = true)]]
-int init_model(SEXP p, bool verb = true) {
+int init_model(SEXP p, int verb = 80) {
 
   IF_GEESE(p) {
 

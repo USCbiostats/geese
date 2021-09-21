@@ -26,7 +26,7 @@
 \alias{print.flock}
 \title{Common functions for \code{geese} and \code{flock}.}
 \usage{
-init_model(p, verb = TRUE)
+init_model(p, verb = 80L)
 
 nterms(p)
 

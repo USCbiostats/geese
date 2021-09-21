@@ -4,6 +4,12 @@
 // Configuration ---------------------------------------------------------------
 #include "barry-configuration.hpp"
 
+// Debug
+#include "barry-debug.hpp"
+
+// Progress bar
+#include "progress.hpp"
+
 // -----------------------------------------------------------------------------
 
 // Basic types

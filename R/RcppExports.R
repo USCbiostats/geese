@@ -31,7 +31,7 @@ add_geese <- function(p, annotations, geneid, parent, duplication) {
 #' @details `init_model` initializes the model. This triggers the calculation
 #' of the support using the vector of terms included. Initializing a model can
 #' only be done once.
-init_model <- function(p, verb = TRUE) {
+init_model <- function(p, verb = 80L) {
     invisible(.Call(`_geese_init_model`, p, verb))
 }
 

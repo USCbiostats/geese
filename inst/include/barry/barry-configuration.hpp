@@ -15,6 +15,8 @@
   *   checks whether the likelihood is finite or not.
   * 
   * - `printf_barry` If not specified, will be defined as `printf`.
+  * 
+  * - `BARRY_DEBUG_LEVEL`, when defined, will make things verbose.
   */
 ///@{
 #ifdef BARRY_USE_UNORDERED_MAP
@@ -52,6 +54,10 @@
 #ifndef BARRY_MAX_NUM_ELEMENTS
     #define BARRY_MAX_NUM_ELEMENTS static_cast< unsigned int >(UINT_MAX/2u)
 #endif
+
+// BARRY_DEBUG_LEVEL: See barry-debug.hpp
+
+// BARRY_PROGRESS_BAR_WIDTH: See progress.hpp
 
 ///@}
 
