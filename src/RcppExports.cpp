@@ -433,6 +433,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// term_k_genes_changing
+int term_k_genes_changing(SEXP p, unsigned int k, bool duplication);
+RcppExport SEXP _geese_term_k_genes_changing(SEXP pSEXP, SEXP kSEXP, SEXP duplicationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_k_genes_changing(p, k, duplication));
+    return rcpp_result_gen;
+END_RCPP
+}
 // new_geese
 SEXP new_geese(std::vector< std::vector< unsigned int > >& annotations, std::vector< unsigned int >& geneid, std::vector< int >& parent, std::vector< bool >& duplication);
 RcppExport SEXP _geese_new_geese(SEXP annotationsSEXP, SEXP geneidSEXP, SEXP parentSEXP, SEXP duplicationSEXP) {
@@ -484,6 +496,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_term_genes_changing", (DL_FUNC) &_geese_term_genes_changing, 2},
     {"_geese_term_prop_genes_changing", (DL_FUNC) &_geese_term_prop_genes_changing, 2},
     {"_geese_term_coopt", (DL_FUNC) &_geese_term_coopt, 4},
+    {"_geese_term_k_genes_changing", (DL_FUNC) &_geese_term_k_genes_changing, 3},
     {"_geese_new_geese", (DL_FUNC) &_geese_new_geese, 4},
     {NULL, NULL, 0}
 };

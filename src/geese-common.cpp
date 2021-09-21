@@ -8,8 +8,8 @@ using namespace Rcpp;
 //' @title Common functions for `geese` and `flock`.
 //' @name geese-common
 //' @param p An object of class [geese] or [flock].
-//' @param verb Logical scalar. When `TRUE`, it will print a progress bar during
-//' the initialization of the process.
+//' @param verb Integer scalar. When `>1`, it will print a progress bar during
+//' the initialization of the process of length `verb`.
 //' @export
 //' @aliases flock-common
 //' @details `init_model` initializes the model. This triggers the calculation

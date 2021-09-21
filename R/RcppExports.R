@@ -24,8 +24,8 @@ add_geese <- function(p, annotations, geneid, parent, duplication) {
 #' @title Common functions for `geese` and `flock`.
 #' @name geese-common
 #' @param p An object of class [geese] or [flock].
-#' @param verb Logical scalar. When `TRUE`, it will print a progress bar during
-#' the initialization of the process.
+#' @param verb Integer scalar. When `>1`, it will print a progress bar during
+#' the initialization of the process of length `verb`.
 #' @export
 #' @aliases flock-common
 #' @details `init_model` initializes the model. This triggers the calculation
@@ -268,6 +268,12 @@ term_prop_genes_changing <- function(p, duplication = TRUE) {
 #' @rdname geese-terms
 term_coopt <- function(p, a, b, duplication = TRUE) {
     invisible(.Call(`_geese_term_coopt`, p, a, b, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
+term_k_genes_changing <- function(p, k, duplication = TRUE) {
+    invisible(.Call(`_geese_term_k_genes_changing`, p, k, duplication))
 }
 
 #' @title GEne Evolutionary model using SufficiEncy (GEESE)

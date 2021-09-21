@@ -5,14 +5,18 @@
 #define BARRY_PROGRESS_BAR_WIDTH 80
 #endif
 
+/**
+ * @brief A simple progress bar
+  */
 class Progress {
 private:
-    int width;
-    int n;
-    int step;
-    int n_steps;
-    int step_size;
-    int n_bars;
+    int    width;     ///< Total width size (number of bars)
+    int    n;         ///< Total number of iterations
+    double step_size; ///< Size of the step
+    int last_loc;     ///< Last location of the bar
+    int cur_loc;      ///< Last location of the bar
+    int i;            ///< Current iteration step
+    
 public:
 
     Progress(int n_, int width_);
@@ -26,44 +30,27 @@ public:
 inline Progress::Progress(int n_, int width_) {
 
 
-    width   = std::max(1, width_ - 7);
-    n       = n_;
-    step    = 0;
-    n_steps = (n > width) ?
-        static_cast<int>(floor(static_cast<double>(n) / width)) : n;
-
-    step_size  = static_cast<int>(n / n_steps);
-
-    n_bars = static_cast<int>(std::max(1.0, floor(width / static_cast<double>(n_steps))));
+    width     = std::max(7, width_ - 7);
+    n         = n_;
+    step_size = static_cast<double>(width)/static_cast<double>(n);
+    last_loc  = 0;
+    i         = 0;
 
 }
 
 inline void Progress::next() {
 
-    if (!(step++ % step_size))
-    {
+    cur_loc = std::floor((++i) * step_size);
 
-        if (width <= 1)
-            return;
+    for (int j = 0; j < (cur_loc - last_loc); ++j)
+        printf_barry("|");
 
-        for (int j = 0; j < n_bars; ++j)
-            printf_barry("|");
-    }
+    last_loc = cur_loc;
 
 }
 
 inline void Progress::end() {
 
-    int reminder = static_cast<int>(width) - n_bars * n_steps;
-
-    if ((width > 1) & (reminder > 0))
-    {
-
-        for (int j = 0; j < reminder; ++j)
-            printf_barry("|");
-
-    }
-    
     printf_barry(" done.\n");
 
 }

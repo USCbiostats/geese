@@ -15,6 +15,7 @@
 \alias{term_genes_changing}
 \alias{term_prop_genes_changing}
 \alias{term_coopt}
+\alias{term_k_genes_changing}
 \title{Evolutionary terms}
 \usage{
 rule_limit_changes(p, term_pos, lb, ub, duplication = TRUE)
@@ -42,6 +43,8 @@ term_genes_changing(p, duplication = TRUE)
 term_prop_genes_changing(p, duplication = TRUE)
 
 term_coopt(p, a, b, duplication = TRUE)
+
+term_k_genes_changing(p, k, duplication = TRUE)
 }
 \arguments{
 \item{p}{An object of class \link{geese} or \link{flock}.}

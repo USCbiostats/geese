@@ -316,3 +316,27 @@ int term_coopt(
 
 }
 
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_k_genes_changing(
+    SEXP p,
+    unsigned int k,
+    bool duplication = true
+) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_k_genes_changing(ptr->get_counters(), k, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_k_genes_changing(ptr->get_counters(), k, duplication);
+
+  } IF_NEITHER()
+
+  return 0;
+
+}

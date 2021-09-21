@@ -83,8 +83,8 @@ predict_flock(
 \arguments{
 \item{p}{An object of class \link{geese} or \link{flock}.}
 
-\item{verb}{Logical scalar. When \code{TRUE}, it will print a progress bar during
-the initialization of the process.}
+\item{verb}{Integer scalar. When \verb{>1}, it will print a progress bar during
+the initialization of the process of length \code{verb}.}
 
 \item{par}{Numeric vector of length \code{nterms()}.}
 
