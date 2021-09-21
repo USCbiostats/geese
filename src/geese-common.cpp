@@ -394,7 +394,7 @@ double transition_prob(
 
 //' @export
 //' @rdname transition_prob
-//' @params i,j Locations (index from zero) of the cell to compute.
+//' @param i,j Locations (index from zero) of the cell to compute.
 //' @details `conditional_prob` computes the so-called "Gibbs sampling"
 //' probability, in which the likelihood of observing Y(i,j) = 1 conditional
 //' on the rest of the data is computed.
