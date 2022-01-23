@@ -7,7 +7,8 @@
 geese_mle(
   amodel,
   initial = rep(0, nterms(amodel)),
-  control = list(maxit = 1000L, fnscale = -1),
+  control = list(),
+  offset_list = NULL,
   ...
 )
 }
@@ -15,6 +16,9 @@ geese_mle(
 \item{amodel}{an object of class \linkS4class{geese}}
 
 \item{initial}{Vector of initial parameters}
+
+\item{offset_list}{Integer vector with the indices of the parameters
+that will set set to be fixed.}
 
 \item{...}{Passed to \code{\link[stats:optim]{stats::optim()}}}
 }

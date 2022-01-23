@@ -21,6 +21,8 @@ conditional_prob(p, params, duplication, state, array, i, j, as_log = FALSE)
 \item{array}{matrix indicating the state of the offspring (rows = function, cols = offspring).}
 
 \item{as_log}{logical scalar. When \code{TRUE} returns the log.}
+
+\item{i, j}{Locations (index from zero) of the cell to compute.}
 }
 \description{
 Compute the transition probability
