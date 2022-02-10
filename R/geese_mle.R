@@ -18,7 +18,7 @@ geese_mle <- function(
   control$fnscale <- -1
 
   # Normalized Log-likelihood function
-  if (offset_list) {
+  if (length(offset_list)) {
 
     tmppar <- initial
     not_fixed <- setdiff(seq_along(initial), offset_list)

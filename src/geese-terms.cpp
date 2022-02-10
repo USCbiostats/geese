@@ -20,7 +20,7 @@ using namespace barry::counters;
 int term_gains(
     SEXP p,
     std::vector<unsigned int> & funs,
-    bool duplication = true
+    unsigned int duplication = 1
 ) {
 
   IF_GEESE(p) {
@@ -43,7 +43,7 @@ int term_gains(
 //' @rdname geese-terms
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_loss(SEXP p, std::vector<unsigned int> & funs,
-              bool duplication = true) {
+              unsigned int duplication = 1) {
 
   IF_GEESE(p) {
 
@@ -65,7 +65,7 @@ int term_loss(SEXP p, std::vector<unsigned int> & funs,
 //' @rdname geese-terms
 //' @param a,b Indices of functions (starting from zero)
 // [[Rcpp::export(rng = false, invisible = true)]]
-int term_cogain(SEXP p, unsigned int a, unsigned int b, bool duplication = true) {
+int term_cogain(SEXP p, unsigned int a, unsigned int b, unsigned int duplication = 1) {
 
   IF_GEESE(p) {
 
@@ -86,7 +86,7 @@ int term_cogain(SEXP p, unsigned int a, unsigned int b, bool duplication = true)
 //' @export
 //' @rdname geese-terms
 // [[Rcpp::export(rng = false, invisible = true)]]
-int term_neofun(SEXP p, unsigned int a, unsigned int b, bool duplication = true) {
+int term_neofun(SEXP p, unsigned int a, unsigned int b, unsigned int duplication = 1) {
 
   IF_GEESE(p) {
 
@@ -109,7 +109,7 @@ int term_neofun(SEXP p, unsigned int a, unsigned int b, bool duplication = true)
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_subfun(
     SEXP p, unsigned int a, unsigned int b,
-    bool duplication = true
+    unsigned int duplication = 1
   ) {
 
   IF_GEESE(p) {
@@ -135,7 +135,7 @@ int term_subfun(
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_maxfuns(
     SEXP p, unsigned int lb, unsigned int ub,
-    bool duplication = true) {
+    unsigned int duplication = 1) {
 
   IF_GEESE(p) {
 
@@ -161,7 +161,7 @@ int term_maxfuns(
 //' @export
 //' @rdname geese-terms
 // [[Rcpp::export(rng = false, invisible = true)]]
-int term_overall_changes(SEXP p, bool duplication = true) {
+int term_overall_changes(SEXP p, unsigned int duplication = 1) {
 
   IF_GEESE(p) {
 
@@ -179,6 +179,51 @@ int term_overall_changes(SEXP p, bool duplication = true) {
   return 0;
 
 }
+
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_overall_gains(SEXP p, unsigned int duplication = 1) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_overall_gains(ptr->get_counters(), duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_overall_gains(ptr->get_counters(), duplication);
+
+  } IF_NEITHER()
+
+
+  return 0;
+
+}
+
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_overall_loss(SEXP p, unsigned int duplication = 1) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_overall_loss(ptr->get_counters(), duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_overall_loss(ptr->get_counters(), duplication);
+
+  } IF_NEITHER()
+
+
+  return 0;
+
+}
+
 
 //' @export
 //' @rdname geese-terms
@@ -187,7 +232,7 @@ int term_kgains(
   SEXP p,
   std::vector<unsigned int> & funs,
   int k = 1,
-  bool duplication = true
+  unsigned int duplication = 1
 ) {
 
   IF_GEESE(p) {
@@ -219,7 +264,7 @@ int term_neofun_a2b(
     SEXP p,
     int a,
     int b,
-    bool duplication = true
+    unsigned int duplication = 1
 ) {
 
   IF_GEESE(p) {
@@ -245,7 +290,7 @@ int term_neofun_a2b(
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_genes_changing(
     SEXP p,
-    bool duplication = true
+    unsigned int duplication = 1
 ) {
 
   IF_GEESE(p) {
@@ -269,7 +314,7 @@ int term_genes_changing(
 // [[Rcpp::export(rng = false, invisible = true)]]
 int term_prop_genes_changing(
     SEXP p,
-    bool duplication = true
+    unsigned int duplication = 1
 ) {
 
   IF_GEESE(p) {
@@ -297,7 +342,7 @@ int term_coopt(
     SEXP p,
     unsigned int a,
     unsigned int b,
-    bool duplication = true
+    unsigned int duplication = 1
 ) {
 
   IF_GEESE(p) {
@@ -322,7 +367,7 @@ int term_coopt(
 int term_k_genes_changing(
     SEXP p,
     unsigned int k,
-    bool duplication = true
+    unsigned int duplication = 1
 ) {
 
   IF_GEESE(p) {
@@ -340,3 +385,184 @@ int term_k_genes_changing(
   return 0;
 
 }
+
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_less_than_p_prop_genes_changing(
+    SEXP p,
+    double prop,
+    unsigned int duplication = 1
+) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_less_than_p_prop_genes_changing(ptr->get_counters(), prop, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_less_than_p_prop_genes_changing(ptr->get_counters(), prop, duplication);
+
+  } IF_NEITHER()
+
+  return 0;
+
+}
+
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_pairwise_preserving(
+    SEXP p,
+    unsigned int funA,
+    unsigned int funB,
+    unsigned int duplication = 1
+) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_pairwise_preserving(ptr->get_counters(), funA, funB, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_pairwise_preserving(ptr->get_counters(), funA, funB, duplication);
+
+  } IF_NEITHER()
+
+  return 0;
+
+}
+
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_gains_from_0(
+    SEXP p,
+    std::vector<unsigned int> & fun,
+    unsigned int duplication = 1
+) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_gains_from_0(ptr->get_counters(), fun, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_gains_from_0(ptr->get_counters(), fun, duplication);
+
+  } IF_NEITHER()
+
+  return 0;
+
+}
+
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_overall_gains_from_0(
+    SEXP p,
+    unsigned int duplication = 1
+) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_overall_gains_from_0(ptr->get_counters(), duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_overall_gains_from_0(ptr->get_counters(), duplication);
+
+  } IF_NEITHER()
+
+  return 0;
+
+}
+
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_pairwise_first_gain(
+    SEXP p,
+    unsigned int funA,
+    unsigned int funB,
+    unsigned int duplication = 1
+) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_pairwise_first_gain(ptr->get_counters(), funA, funB, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_pairwise_first_gain(ptr->get_counters(), funA, funB, duplication);
+
+  } IF_NEITHER()
+
+  return 0;
+
+}
+
+
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_preserve_pseudogene(
+    SEXP p,
+    unsigned int funA,
+    unsigned int funB,
+    unsigned int duplication = 1
+) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_preserve_pseudogene(ptr->get_counters(), funA, funB, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_preserve_pseudogene(ptr->get_counters(), funA, funB, duplication);
+
+  } IF_NEITHER()
+
+  return 0;
+
+}
+
+
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_pairwise_overall_change(
+    SEXP p,
+    unsigned int duplication = 1
+) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_pairwise_overall_change(ptr->get_counters(), duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_pairwise_overall_change(ptr->get_counters(), duplication);
+
+  } IF_NEITHER()
+
+  return 0;
+
+}
+
+
+

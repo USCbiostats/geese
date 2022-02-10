@@ -270,7 +270,7 @@ int support_size(SEXP p) {
   } IF_FLOCK(p) {
 
     Rcpp::XPtr< Flock > ptr(p);
-    ans = static_cast<int>(ptr->get_support()->get_data().size());
+    ans = static_cast<int>(ptr->get_support_fun()->get_data().size());
 
   } IF_NEITHER()
 
@@ -281,22 +281,22 @@ int support_size(SEXP p) {
 //' @rdname geese-common
 //' @export
 // [[Rcpp::export(rng = false)]]
-int parse_polytomies(SEXP p) {
+IntegerVector parse_polytomies(SEXP p, bool verbose = true) {
 
-  int ans;
+  std::vector< size_t > vec_ans;
   IF_GEESE(p) {
 
     Rcpp::XPtr< Geese > ptr(p);
-    ans = ptr->parse_polytomies();
+    (void) ptr->parse_polytomies(verbose, &vec_ans);
 
   } IF_FLOCK(p) {
 
     Rcpp::XPtr< Flock > ptr(p);
-    ans = ptr->parse_polytomies();
+    (void) ptr->parse_polytomies(verbose, &vec_ans);
 
   } IF_NEITHER()
 
-  return ans;
+  return wrap(vec_ans);
 
 }
 
@@ -461,5 +461,65 @@ int print_geese(SEXP p)
   } IF_NEITHER()
 
   return 0;
+
+}
+
+//' Returns the support of the model
+//' @export
+// [[Rcpp::export(rng = false)]]
+std::vector< NumericMatrix > get_support(SEXP p)
+{
+
+  std::vector< std::vector< double > > dat;
+  size_t n_terms;
+  std::vector< std::string > vnames = {"weights"};
+
+  IF_GEESE(p)
+  {
+
+    // Preparing data
+    Rcpp::XPtr< Geese > ptr(p);
+    dat     = *(ptr->get_model()->get_stats_support());
+    n_terms = ptr->nterms() - ptr->nfuns() + 1u;
+
+    auto names = ptr->colnames();
+    for (auto n : names)
+      vnames.push_back(n);
+
+  } IF_FLOCK(p) {
+
+    // Preparing data
+    Rcpp::XPtr< Flock > ptr(p);
+    dat     = *(ptr->get_model()->get_stats_support());
+    n_terms = ptr->nterms() - ptr->nfuns() + 1u;
+
+    auto names = ptr->colnames();
+    for (auto n : names)
+      vnames.push_back(n);
+
+  } IF_NEITHER()
+
+
+  std::vector< NumericMatrix > ans;
+  for (auto stats : dat)
+  {
+    size_t n_rows = stats.size() / (n_terms);
+    NumericMatrix tmp(n_rows, n_terms);
+
+    for (auto i = 0u; i < n_rows; ++i)
+      for (auto j = 0u; j < n_terms; ++j)
+        tmp(i, j) = stats[i * n_terms + j];
+
+    tmp.attr("dimnames") = List::create(
+      R_NilValue,
+      wrap(vnames)
+    );
+
+    ans.push_back(clone(tmp));
+
+  }
+
+  return ans;
+
 
 }

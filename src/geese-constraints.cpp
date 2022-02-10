@@ -28,12 +28,12 @@ int rule_limit_changes(
   IF_GEESE(p) {
 
     Rcpp::XPtr< Geese >ptr(p);
-    phylo::rule_dyn_limit_changes(ptr->get_support(), term_pos, lb, ub, duplication);
+    phylo::rule_dyn_limit_changes(ptr->get_support_fun(), term_pos, lb, ub, duplication);
 
   } IF_FLOCK(p) {
 
     Rcpp::XPtr< Flock >ptr(p);
-    phylo::rule_dyn_limit_changes(ptr->get_support(), term_pos, lb, ub, duplication);
+    phylo::rule_dyn_limit_changes(ptr->get_support_fun(), term_pos, lb, ub, duplication);
 
   } IF_NEITHER()
 

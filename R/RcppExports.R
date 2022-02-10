@@ -122,8 +122,8 @@ support_size <- function(p) {
 
 #' @rdname geese-common
 #' @export
-parse_polytomies <- function(p) {
-    .Call(`_geese_parse_polytomies`, p)
+parse_polytomies <- function(p, verbose = TRUE) {
+    .Call(`_geese_parse_polytomies`, p, verbose)
 }
 
 #' @rdname geese-common
@@ -164,6 +164,12 @@ print_geese <- function(p) {
     invisible(.Call(`_geese_print_geese`, p))
 }
 
+#' Returns the support of the model
+#' @export
+get_support <- function(p) {
+    .Call(`_geese_get_support`, p)
+}
+
 #' @title Evolutionary terms
 #' @description Model terms for both [geese] and [flock] objects.
 #' @export
@@ -196,51 +202,63 @@ predict_flock <- function(p, par, leave_one_out = FALSE, use_reduced_sequence = 
 #' @param duplication When `TRUE` indicates that this term is only valid for
 #' duplication events.
 #' @name geese-terms
-term_gains <- function(p, funs, duplication = TRUE) {
+term_gains <- function(p, funs, duplication = 1L) {
     invisible(.Call(`_geese_term_gains`, p, funs, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
-term_loss <- function(p, funs, duplication = TRUE) {
+term_loss <- function(p, funs, duplication = 1L) {
     invisible(.Call(`_geese_term_loss`, p, funs, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
 #' @param a,b Indices of functions (starting from zero)
-term_cogain <- function(p, a, b, duplication = TRUE) {
+term_cogain <- function(p, a, b, duplication = 1L) {
     invisible(.Call(`_geese_term_cogain`, p, a, b, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
-term_neofun <- function(p, a, b, duplication = TRUE) {
+term_neofun <- function(p, a, b, duplication = 1L) {
     invisible(.Call(`_geese_term_neofun`, p, a, b, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
-term_subfun <- function(p, a, b, duplication = TRUE) {
+term_subfun <- function(p, a, b, duplication = 1L) {
     invisible(.Call(`_geese_term_subfun`, p, a, b, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
 #' @param lb,ub Integers, minimum and maximum number of changes.
-term_maxfuns <- function(p, lb, ub, duplication = TRUE) {
+term_maxfuns <- function(p, lb, ub, duplication = 1L) {
     invisible(.Call(`_geese_term_maxfuns`, p, lb, ub, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
-term_overall_changes <- function(p, duplication = TRUE) {
+term_overall_changes <- function(p, duplication = 1L) {
     invisible(.Call(`_geese_term_overall_changes`, p, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
-term_kgains <- function(p, funs, k = 1L, duplication = TRUE) {
+term_overall_gains <- function(p, duplication = 1L) {
+    invisible(.Call(`_geese_term_overall_gains`, p, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
+term_overall_loss <- function(p, duplication = 1L) {
+    invisible(.Call(`_geese_term_overall_loss`, p, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
+term_kgains <- function(p, funs, k = 1L, duplication = 1L) {
     invisible(.Call(`_geese_term_kgains`, p, funs, k, duplication))
 }
 
@@ -248,32 +266,74 @@ term_kgains <- function(p, funs, k = 1L, duplication = TRUE) {
 #' @rdname geese-terms
 #' @details In the case of `term_neofun_a2b`, `a` represents the origin function
 #' from which `b` is originated.
-term_neofun_a2b <- function(p, a, b, duplication = TRUE) {
+term_neofun_a2b <- function(p, a, b, duplication = 1L) {
     invisible(.Call(`_geese_term_neofun_a2b`, p, a, b, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
-term_genes_changing <- function(p, duplication = TRUE) {
+term_genes_changing <- function(p, duplication = 1L) {
     invisible(.Call(`_geese_term_genes_changing`, p, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
-term_prop_genes_changing <- function(p, duplication = TRUE) {
+term_prop_genes_changing <- function(p, duplication = 1L) {
     invisible(.Call(`_geese_term_prop_genes_changing`, p, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
-term_coopt <- function(p, a, b, duplication = TRUE) {
+term_coopt <- function(p, a, b, duplication = 1L) {
     invisible(.Call(`_geese_term_coopt`, p, a, b, duplication))
 }
 
 #' @export
 #' @rdname geese-terms
-term_k_genes_changing <- function(p, k, duplication = TRUE) {
+term_k_genes_changing <- function(p, k, duplication = 1L) {
     invisible(.Call(`_geese_term_k_genes_changing`, p, k, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
+term_less_than_p_prop_genes_changing <- function(p, prop, duplication = 1L) {
+    invisible(.Call(`_geese_term_less_than_p_prop_genes_changing`, p, prop, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
+term_pairwise_preserving <- function(p, funA, funB, duplication = 1L) {
+    invisible(.Call(`_geese_term_pairwise_preserving`, p, funA, funB, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
+term_gains_from_0 <- function(p, fun, duplication = 1L) {
+    invisible(.Call(`_geese_term_gains_from_0`, p, fun, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
+term_overall_gains_from_0 <- function(p, duplication = 1L) {
+    invisible(.Call(`_geese_term_overall_gains_from_0`, p, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
+term_pairwise_first_gain <- function(p, funA, funB, duplication = 1L) {
+    invisible(.Call(`_geese_term_pairwise_first_gain`, p, funA, funB, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
+term_preserve_pseudogene <- function(p, funA, funB, duplication = 1L) {
+    invisible(.Call(`_geese_term_preserve_pseudogene`, p, funA, funB, duplication))
+}
+
+#' @export
+#' @rdname geese-terms
+term_pairwise_overall_change <- function(p, duplication = 1L) {
+    invisible(.Call(`_geese_term_pairwise_overall_change`, p, duplication))
 }
 
 #' @title GEne Evolutionary model using SufficiEncy (GEESE)

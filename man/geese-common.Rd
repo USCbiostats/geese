@@ -52,7 +52,7 @@ print_observed_counts(p)
 
 support_size(p)
 
-parse_polytomies(p)
+parse_polytomies(p, verbose = TRUE)
 
 nfuns(p)
 

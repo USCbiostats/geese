@@ -10,41 +10,68 @@
 \alias{term_subfun}
 \alias{term_maxfuns}
 \alias{term_overall_changes}
+\alias{term_overall_gains}
+\alias{term_overall_loss}
 \alias{term_kgains}
 \alias{term_neofun_a2b}
 \alias{term_genes_changing}
 \alias{term_prop_genes_changing}
 \alias{term_coopt}
 \alias{term_k_genes_changing}
+\alias{term_less_than_p_prop_genes_changing}
+\alias{term_pairwise_preserving}
+\alias{term_gains_from_0}
+\alias{term_overall_gains_from_0}
+\alias{term_pairwise_first_gain}
+\alias{term_preserve_pseudogene}
+\alias{term_pairwise_overall_change}
 \title{Evolutionary terms}
 \usage{
 rule_limit_changes(p, term_pos, lb, ub, duplication = TRUE)
 
-term_gains(p, funs, duplication = TRUE)
+term_gains(p, funs, duplication = 1L)
 
-term_loss(p, funs, duplication = TRUE)
+term_loss(p, funs, duplication = 1L)
 
-term_cogain(p, a, b, duplication = TRUE)
+term_cogain(p, a, b, duplication = 1L)
 
-term_neofun(p, a, b, duplication = TRUE)
+term_neofun(p, a, b, duplication = 1L)
 
-term_subfun(p, a, b, duplication = TRUE)
+term_subfun(p, a, b, duplication = 1L)
 
-term_maxfuns(p, lb, ub, duplication = TRUE)
+term_maxfuns(p, lb, ub, duplication = 1L)
 
-term_overall_changes(p, duplication = TRUE)
+term_overall_changes(p, duplication = 1L)
 
-term_kgains(p, funs, k = 1L, duplication = TRUE)
+term_overall_gains(p, duplication = 1L)
 
-term_neofun_a2b(p, a, b, duplication = TRUE)
+term_overall_loss(p, duplication = 1L)
 
-term_genes_changing(p, duplication = TRUE)
+term_kgains(p, funs, k = 1L, duplication = 1L)
 
-term_prop_genes_changing(p, duplication = TRUE)
+term_neofun_a2b(p, a, b, duplication = 1L)
 
-term_coopt(p, a, b, duplication = TRUE)
+term_genes_changing(p, duplication = 1L)
 
-term_k_genes_changing(p, k, duplication = TRUE)
+term_prop_genes_changing(p, duplication = 1L)
+
+term_coopt(p, a, b, duplication = 1L)
+
+term_k_genes_changing(p, k, duplication = 1L)
+
+term_less_than_p_prop_genes_changing(p, prop, duplication = 1L)
+
+term_pairwise_preserving(p, funA, funB, duplication = 1L)
+
+term_gains_from_0(p, fun, duplication = 1L)
+
+term_overall_gains_from_0(p, duplication = 1L)
+
+term_pairwise_first_gain(p, funA, funB, duplication = 1L)
+
+term_preserve_pseudogene(p, funA, funB, duplication = 1L)
+
+term_pairwise_overall_change(p, duplication = 1L)
 }
 \arguments{
 \item{p}{An object of class \link{geese} or \link{flock}.}
