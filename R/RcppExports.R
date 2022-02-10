@@ -336,6 +336,12 @@ term_pairwise_overall_change <- function(p, duplication = 1L) {
     invisible(.Call(`_geese_term_pairwise_overall_change`, p, duplication))
 }
 
+#' @export
+#' @rdname geese-terms
+term_pairwise_neofun_singlefun <- function(p, nfun, duplication = 1L) {
+    invisible(.Call(`_geese_term_pairwise_neofun_singlefun`, p, nfun, duplication))
+}
+
 #' @title GEne Evolutionary model using SufficiEncy (GEESE)
 #' @name geese-class
 #' @param p An object of class `geese`.

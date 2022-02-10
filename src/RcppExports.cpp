@@ -563,6 +563,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// term_pairwise_neofun_singlefun
+int term_pairwise_neofun_singlefun(SEXP p, unsigned int nfun, unsigned int duplication);
+RcppExport SEXP _geese_term_pairwise_neofun_singlefun(SEXP pSEXP, SEXP nfunSEXP, SEXP duplicationSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nfun(nfunSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    rcpp_result_gen = Rcpp::wrap(term_pairwise_neofun_singlefun(p, nfun, duplication));
+    return rcpp_result_gen;
+END_RCPP
+}
 // new_geese
 SEXP new_geese(std::vector< std::vector< unsigned int > >& annotations, std::vector< unsigned int >& geneid, std::vector< int >& parent, std::vector< bool >& duplication);
 RcppExport SEXP _geese_new_geese(SEXP annotationsSEXP, SEXP geneidSEXP, SEXP parentSEXP, SEXP duplicationSEXP) {
@@ -625,6 +637,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_term_pairwise_first_gain", (DL_FUNC) &_geese_term_pairwise_first_gain, 4},
     {"_geese_term_preserve_pseudogene", (DL_FUNC) &_geese_term_preserve_pseudogene, 4},
     {"_geese_term_pairwise_overall_change", (DL_FUNC) &_geese_term_pairwise_overall_change, 2},
+    {"_geese_term_pairwise_neofun_singlefun", (DL_FUNC) &_geese_term_pairwise_neofun_singlefun, 3},
     {"_geese_new_geese", (DL_FUNC) &_geese_new_geese, 4},
     {NULL, NULL, 0}
 };

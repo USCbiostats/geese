@@ -564,5 +564,31 @@ int term_pairwise_overall_change(
 
 }
 
+//' @export
+//' @rdname geese-terms
+// [[Rcpp::export(rng = false, invisible = true)]]
+int term_pairwise_neofun_singlefun(
+    SEXP p,
+    unsigned int nfun,
+    unsigned int duplication = 1
+) {
+
+  IF_GEESE(p) {
+
+    Rcpp::XPtr< Geese >ptr(p);
+    phylo::counter_pairwise_neofun_singlefun(ptr->get_counters(), nfun, duplication);
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr< Flock >ptr(p);
+    phylo::counter_pairwise_neofun_singlefun(ptr->get_counters(), nfun, duplication);
+
+  } IF_NEITHER()
+
+  return 0;
+
+}
+
+
 
 

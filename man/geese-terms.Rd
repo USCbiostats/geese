@@ -25,6 +25,7 @@
 \alias{term_pairwise_first_gain}
 \alias{term_preserve_pseudogene}
 \alias{term_pairwise_overall_change}
+\alias{term_pairwise_neofun_singlefun}
 \title{Evolutionary terms}
 \usage{
 rule_limit_changes(p, term_pos, lb, ub, duplication = TRUE)
@@ -72,6 +73,8 @@ term_pairwise_first_gain(p, funA, funB, duplication = 1L)
 term_preserve_pseudogene(p, funA, funB, duplication = 1L)
 
 term_pairwise_overall_change(p, duplication = 1L)
+
+term_pairwise_neofun_singlefun(p, nfun, duplication = 1L)
 }
 \arguments{
 \item{p}{An object of class \link{geese} or \link{flock}.}
