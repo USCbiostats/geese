@@ -281,22 +281,24 @@ int support_size(SEXP p) {
 //' @rdname geese-common
 //' @export
 // [[Rcpp::export(rng = false)]]
-IntegerVector parse_polytomies(SEXP p, bool verbose = true) {
+int parse_polytomies(SEXP p, bool verbose = true) {
 
   std::vector< size_t > vec_ans;
   IF_GEESE(p) {
 
     Rcpp::XPtr< Geese > ptr(p);
-    (void) ptr->parse_polytomies(verbose, &vec_ans);
+//    (void) ptr->parse_polytomies(verbose, &vec_ans);
+    return ptr->parse_polytomies(verbose);
 
   } IF_FLOCK(p) {
 
     Rcpp::XPtr< Flock > ptr(p);
-    (void) ptr->parse_polytomies(verbose, &vec_ans);
+    //(void) ptr->parse_polytomies(verbose, &vec_ans);
+    return ptr->parse_polytomies(verbose);
 
   } IF_NEITHER()
 
-  return wrap(vec_ans);
+  return 0; //wrap(vec_ans);
 
 }
 

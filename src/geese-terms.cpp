@@ -589,6 +589,3 @@ int term_pairwise_neofun_singlefun(
 
 }
 
-
-
-

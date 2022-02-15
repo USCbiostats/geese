@@ -172,7 +172,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // parse_polytomies
-IntegerVector parse_polytomies(SEXP p, bool verbose);
+int parse_polytomies(SEXP p, bool verbose);
 RcppExport SEXP _geese_parse_polytomies(SEXP pSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

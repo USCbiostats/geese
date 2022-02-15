@@ -62,10 +62,10 @@ n <- 100L
 annotations <- replicate(n * 2 - 1, c(9, 9), simplify = FALSE)
 
 # Random tree
-set.seed(31)
+set.seed(3151)
 tree <- aphylo::sim_tree(n)$edge - 1L
 
-duplication <- rep(TRUE, n * 2 - 1)
+duplication <- c(rep(FALSE, n), sample.int(2, n - 1, replace = TRUE, prob = c(.8, .2)) == 2)
 
 # Reading the data in
 amodel <- new_geese(
@@ -75,24 +75,30 @@ amodel <- new_geese(
   duplication = duplication
   )
 
-# Preparing the model
-term_gains(amodel, 0:1)
-term_loss(amodel, 0:1)
-term_maxfuns(amodel, 1, 1)
+# Persistence to preserve parent state
+term_overall_changes(amodel, duplication = 0)
+term_overall_changes(amodel, duplication = 1)
+
+# Tendency for only one sib gaining function 0
+term_pairwise_neofun_singlefun(amodel, 0, duplication = 1)
+
+# Function 1 is gain from function 0
+term_neofun_a2b(amodel, 0, 1, duplication = 1)
+
 init_model(amodel)
 
 # Testing
 params <- c(
-  # Gains
-  2, 1.5,
-  # Loss
-  -2, -1.5,
-  # Max funs
-  2, 
+  # Persist the parent state
+  -4, -4, 
+  # Gain function 0
+  3, 
+  # Neofun 0 -> 1
+  5,
   # Root probabilities
   -10, -10
 )
-names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
+names(params) <- c(names(amodel), "root0", "root1")
 
 likelihood(amodel, params*0) # Equals 1 b/c all missings
 
@@ -110,7 +116,8 @@ ap <- aphylo_from_data_frame(
   annotations = data.frame(
     id = c(tree[, 2], n),
     do.call(rbind, fake1)
-    )
+    ),
+  types = data.frame(0:(2*n-2), as.integer(!duplication))
 )
 plot(ap)
 ```
@@ -126,10 +133,15 @@ amodel <- new_geese(
   duplication = duplication
   )
 
-# Adding the model terms
-term_gains(amodel, 0:1)
-term_loss(amodel, 0:1)
-term_maxfuns(amodel, 1, 1)
+# Persistence to preserve parent state
+term_overall_changes(amodel, duplication = 0)
+term_overall_changes(amodel, duplication = 1)
+
+# Tendency for only one sib gaining function 0
+term_pairwise_neofun_singlefun(amodel, 0, duplication = 1)
+
+# Function 1 is gain from function 0
+term_neofun_a2b(amodel, 0, 1, duplication = 1)
 
 # We need to initialize to do all the accounting
 init_model(amodel)
@@ -141,7 +153,7 @@ geese_mle(amodel, hessian = TRUE)
 
 transition_prob(
   amodel,
-  params = c(-1, -1, -2, -2, -.5), 
+  params = params[-((length(params) - 1):length(params))], 
   duplication = TRUE, state = c(FALSE, FALSE),
   array = matrix(c(1, 0, 0, 1)*0, ncol=2)
 )
@@ -155,20 +167,21 @@ ans_mcmc <- geese_mcmc(
   amodel,
   nsteps  = 20000,
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
-  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
+  prior   = function(p) dnorm(p, sd = 2, log = TRUE)
   )
 ```
 
 We can take a look at the results like this:
 
 ```{r mcmc-analysis, echo = FALSE}
+mcmc_estimates <- ans_mcmc # oldans$estimates
 op <- par(
   mfrow = c(4, 2), #tcl=.5,
   las=1, mar = c(3,3,1,0),
   bty = "n", oma = rep(1,4)
   )
-for (i in 1:ncol(ans_mcmc)) {
-  tmpx <- window(ans_mcmc, start = 10000)[,i,drop=FALSE]
+for (i in 1:ncol(mcmc_estimates)) {
+  tmpx <- window(mcmc_estimates, start = 10000)[,i,drop=FALSE]
   
   coda::traceplot(
     tmpx, smooth = FALSE, ylim = c(-11,11), col = rgb(0, 128, 128, maxColorValue = 255), 
@@ -177,17 +190,22 @@ for (i in 1:ncol(ans_mcmc)) {
   abline(h = params[i], lty=3, lwd=4, col = "red")
 }
 par(op)
-summary(window(ans_mcmc, start = 15000))
+summary(window(mcmc_estimates, start = end(ans_mcmc) * 3/4))
 ```
 
 ```{r prediction}
 # Obtaining estimates
-par_estimates <- colMeans(window(ans_mcmc, start = 20000))
+par_estimates <- colMeans(window(ans_mcmc, start = end(ans_mcmc) * 3/4))
 ans_pred      <- predict_geese(amodel, par_estimates, leave_one_out = TRUE)
 ans_pred      <- do.call(rbind, ans_pred)
 
 # Preparing annotations
 ann_obs <- do.call(rbind, fake1)
+
+# Subsetting
+idx <- which(tree[, 2] < 100)
+ans_pred <- ans_pred[idx,]
+ann_obs <- ann_obs[idx,]
 
 # Mean Absolute Error
 hist(abs(ans_pred - ann_obs))
@@ -199,6 +217,14 @@ hist(abs(ans_pred - ann_obs))
   ))
 plot(ans$auc)
 ```
+
+
+<!-- We can compare these results to what we would obtain using aphylo -->
+
+<!-- # ```{r aphylo} -->
+<!-- # ans_aphylo <- aphylo_mcmc(ap ~ mu_d + mu_s + Pi) -->
+<!-- # (ps <- prediction_score(ans_aphylo)) -->
+<!-- # ``` -->
 
 
 ## Using a flock
@@ -226,10 +252,15 @@ add_geese(
   duplication = duplication  
 )
 
-# Adding the model terms
-term_gains(flock, 0:1)
-term_loss(flock, 0:1)
-term_maxfuns(flock, 1, 1)
+# Persistence to preserve parent state
+term_overall_changes(amodel, duplication = 0)
+term_overall_changes(amodel, duplication = 1)
+
+# Tendency for only one sib gaining function 0
+term_pairwise_neofun_singlefun(amodel, 0, duplication = 1)
+
+# Function 1 is gain from function 0
+term_neofun_a2b(amodel, 0, 1, duplication = 1)
 
 # We need to initialize to do all the accountintg
 init_model(flock)
@@ -271,7 +302,7 @@ summary(window(ans_mcmc2, start = 10000))
 ## Limiting the support
 
 In this example, we use the function `rule_limit_changes()` to apply a
-constraint to the support of the model. This takes the 6th term (5th since the
+constraint to the support of the model. This takes the first 2 term (0 and 1 since the
 index is in C++), and restricts the support to states where there are between
 $[0, 2]$ changes, at most.
 
@@ -286,15 +317,19 @@ amodel_limited <- new_geese(
   duplication = duplication
   )
 
-# Adding the model terms
-term_gains(amodel_limited, 0:1)
-term_loss(amodel_limited, 0:1)
-term_maxfuns(amodel_limited, 1, 1)
-term_overall_changes(amodel_limited, TRUE)
+# Persistence to preserve parent state
+term_overall_changes(amodel_limited, duplication = 0)
+term_overall_changes(amodel_limited, duplication = 1)
 
-# At most one gain
-rule_limit_changes(amodel_limited, 5, 0, 2)
+# Tendency for only one sib gaining function 0
+term_pairwise_neofun_singlefun(amodel_limited, 0, duplication = 1)
 
+# Function 1 is gain from function 0
+term_neofun_a2b(amodel_limited, 0, 1, duplication = 1)
+
+# At most two moves
+rule_limit_changes(amodel_limited, 0, 0, 2, duplication = 0)
+rule_limit_changes(amodel_limited, 1, 0, 2, duplication = 1)
 
 # We need to initialize to do all the accounting
 init_model(amodel_limited)
@@ -312,10 +347,10 @@ ans_mcmc2 <- geese_mcmc(
   amodel_limited,
   nsteps  = 20000,
   kernel  = fmcmc::kernel_ram(
-    warmup = 2000,
-    fixed  = c(FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE)
+    warmup = 2000 #,
+    # fixed  = c(TRUE, TRUE, rep(FALSE, nterms(amodel_limited) - 2))
     ), 
-  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
+  prior   = function(p) dnorm(p, sd = 2, log = TRUE)
   )
 ```
 
