@@ -7,7 +7,9 @@
 geese_mcmc(
   amodel,
   initial = rep(0, nterms(amodel)),
-  prior = function(p) {     stats::dlogis(p, log = TRUE) },
+  prior = function(p) {
+     stats::dlogis(p, log = TRUE)
+ },
   ...
 )
 }

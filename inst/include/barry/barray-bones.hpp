@@ -1,11 +1,17 @@
 // #include <vector>
 // #include <unordered_map>
-#include "typedefs.hpp"
-#include "cell-bones.hpp"
-#include "barraycell-bones.hpp"
+// #include "typedefs.hpp"
+// #include "cell-bones.hpp"
+// #include "barraycell-bones.hpp"
 
 #ifndef BARRAY_BONES_HPP 
 #define BARRAY_BONES_HPP 1
+
+template<typename Cell_Type, typename Data_Type>
+class BArrayCell;
+
+template<typename Cell_Type, typename Data_Type>
+class BArrayCell_const;
 
 /**
  * @brief Baseline class for binary arrays.
@@ -111,8 +117,10 @@ public:
      */
     ///@{
     void set_data(Data_Type * data_, bool delete_data_ = false);
-    Data_Type * D();
-    const Data_Type * D() const;
+    Data_Type * D_ptr();
+    const Data_Type * D_ptr() const;
+    Data_Type & D();
+    const Data_Type & D() const;
     void flush_data();
     ///@}
     

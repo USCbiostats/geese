@@ -1,5 +1,5 @@
 // #include <stdexcept>
-#include "barraydense-bones.hpp"
+// #include "barraydense-bones.hpp"
 
 #ifndef BARRY_BARRAYDENSE_MEAT_HPP
 #define BARRY_BARRAYDENSE_MEAT_HPP 
@@ -338,12 +338,20 @@ BDENSE_TEMPLATE(void, set_data) (
     
 }
 
-BDENSE_TEMPLATE(Data_Type *, D) () {
+BDENSE_TEMPLATE(Data_Type *, D_ptr) () {
     return this->data;
 }
 
-BDENSE_TEMPLATE(const Data_Type *, D) () const {
+BDENSE_TEMPLATE(const Data_Type *, D_ptr) () const {
     return this->data;
+}
+
+BDENSE_TEMPLATE(Data_Type &, D) () {
+    return *this->data;
+}
+
+BDENSE_TEMPLATE(const Data_Type &, D) () const {
+    return *this->data;
 }
 
 BDENSE_TEMPLATE(void, out_of_range) (
@@ -952,7 +960,7 @@ BDENSE_TEMPLATE(void, print) (
   
     std::va_list args;
     va_start(args, fmt);
-    vprintf(fmt, args);
+    printf_barry(fmt, args);
     va_end(args);
 
     for (uint i = 0u; i < N; ++i)

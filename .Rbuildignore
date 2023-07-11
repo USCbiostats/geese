@@ -7,3 +7,4 @@
 vignettes
 Makefile
 inst/simulation-study/
+^\.github$

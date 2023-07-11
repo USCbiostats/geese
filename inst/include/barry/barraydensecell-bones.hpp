@@ -1,9 +1,12 @@
-#include "typedefs.hpp"
+// #include "typedefs.hpp"
 
 #ifndef BARRY_BARRAYDENSECELL_BONES_HPP
 #define BARRY_BARRAYDENSECELL_BONES_HPP 1
 
 #define POS(a, b) (a) + (b) * N
+
+template<typename Cell_Type, typename Data_Type>
+class BArrayDense;
 
 template<typename Cell_Type, typename Data_Type>
 class BArrayDenseCol;
@@ -45,6 +48,10 @@ public:
         dat = Array_;
 
     };
+
+    BArrayDenseCell<Cell_Type,Data_Type>& operator=(
+        const BArrayDenseCell<Cell_Type,Data_Type> & other
+        );
 
     ~BArrayDenseCell(){};
     void operator=(const Cell_Type & val);

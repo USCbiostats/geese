@@ -1,5 +1,3 @@
-#include "powerset-bones.hpp"
-
 #ifndef BARRY_POWERSET_MEAT_HPP
 #define BARRY_POWERSET_MEAT_HPP 1
 
@@ -29,7 +27,6 @@ inline void PowerSet<Array_Type,Data_Rule_Type>::init_support()
     n_free   = coordinates_free.size() / 2u;
     n_locked = coordinates_locked.size() / 2u;
     
-
     // Computing initial statistics
     if (EmptyArray.nnozero() > 0u)
     {
@@ -163,44 +160,33 @@ template <typename Array_Type, typename Data_Rule_Type>
 inline void PowerSet<Array_Type,Data_Rule_Type>::reset(
         uint N_,
         uint M_
-    ) {
+) {
     
     data.empty();
     N = N_, M = M_;
     
     return;
+
 }
 
 template <typename Array_Type, typename Data_Rule_Type>
 inline void PowerSet<Array_Type,Data_Rule_Type>::add_rule(
-        Rule<Array_Type, Data_Rule_Type> & rule
+        Rule<Array_Type, Data_Rule_Type> rule
 ) {
     
     rules->add_rule(rule);
     return;
-}
-
-template <typename Array_Type, typename Data_Rule_Type>
-inline void PowerSet<Array_Type,Data_Rule_Type>::add_rule(
-        Rule<Array_Type, Data_Rule_Type> * rule
-) {
-    
-    rules->add_rule(rule);
-    return;
-    
 }
 
 template <typename Array_Type, typename Data_Rule_Type>
 inline void PowerSet<Array_Type,Data_Rule_Type>::add_rule(
         Rule_fun_type<Array_Type,Data_Rule_Type> rule_fun_,
-        Data_Rule_Type *                            data_,
-        bool                                   delete_data_
+        Data_Rule_Type data_
 ) {
     
     rules->add_rule(
         rule_fun_,
-        data_,
-        delete_data_
+        data_
     );
     
     return;

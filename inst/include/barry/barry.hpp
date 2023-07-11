@@ -13,6 +13,9 @@
 #include <cfloat>
 #include <string>
 #include <cstdint>
+#include <memory>
+#include <regex>
+#include <iterator>
 
 #ifdef BARRY_USE_OMP
 #include <omp.h>
@@ -21,7 +24,9 @@
 #ifndef BARRY_HPP
 #define BARRY_HPP 
 
-#define BARRY_VERSION 0.1
+#define BARRY_VERSION_MAYOR 0
+#define BARRY_VERSION_MINOR 1
+#define BARRY_VERSION BARRY_VERSION_MAYOR ## . ## BARRY_VERSION_MINOR
 
 /**
   * @brief barry: Your go-to motif accountant
@@ -31,6 +36,7 @@ namespace barry {
     //! Tree class and TreeIterator class
     #include "typedefs.hpp"
     #include "barry-macros.hpp"
+    #include "freqtable.hpp"
 
     #include "cell-bones.hpp"
     #include "cell-meat.hpp"
@@ -76,25 +82,29 @@ namespace barry {
         namespace phylo {
             #include "counters/phylo.hpp"
         }
+        namespace defm {
+            #include "counters/defm.hpp"
+        }
     }
     
 }
 
 namespace netcounters = barry::counters::network;
 namespace phylocounters = barry::counters::phylo;
+namespace defmcounters = barry::counters::defm;
 
 #define COUNTER_FUNCTION(a) template <typename Array_Type = barry::BArray<>, typename Data_Type = bool> \
-    inline double (a) (const Array_Type & Array, uint i, uint j, Data_Type * data)\
+    inline double (a) (const Array_Type & Array, uint i, uint j, Data_Type & data)\
 
 #define COUNTER_LAMBDA(a) template <typename Array_Type = barry::BArray<>, typename Data_Type = bool> \
     Counter_fun_type<Array_Type, Data_Type> a = \
-    [](const Array_Type & Array, uint i, uint j, Data_Type * data)
+    [](const Array_Type & Array, uint i, uint j, Data_Type & data)
 
 #define RULE_FUNCTION(a) template <typename Array_Type = barry::BArray<>, typename Data_Type = bool> \
-    inline bool (a) (const Array_Type & Array, uint i, uint j, Data_Type * data)\
+    inline bool (a) (const Array_Type & Array, uint i, uint j, Data_Type & data)\
 
 #define RULE_LAMBDA(a) template <typename Array_Type = barry::BArray<>, typename Data_Type = bool> \
     Rule_fun_type<Array_Type, Data_Type> a = \
-    [](const Array_Type & Array, uint i, uint j, Data_Type * data)
+    [](const Array_Type & Array, uint i, uint j, Data_Type & data)
 
 #endif

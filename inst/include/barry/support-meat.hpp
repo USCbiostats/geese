@@ -1,5 +1,3 @@
-#include "support-bones.hpp"
-
 #ifndef BARRY_SUPPORT_MEAT
 #define BARRY_SUPPORT_MEAT_HPP 1
 
@@ -12,10 +10,9 @@
 #define SUPPORT_TEMPLATE(a,b) template SUPPORT_TEMPLATE_ARGS() \
     inline a SUPPORT_TYPE()::b
 
-
 SUPPORT_TEMPLATE(void, init_support)(
     std::vector< Array_Type > * array_bank,
-    std::vector< std::vector< double > > * stats_bank
+    std::vector< double > * stats_bank
 ) {
     
     // Computing the locations
@@ -109,7 +106,7 @@ SUPPORT_TEMPLATE(void, init_support)(
         array_bank->push_back(EmptyArray);
     
     if (include_it && (stats_bank != nullptr))
-        stats_bank->push_back(current_stats);
+        std::copy(current_stats.begin(), current_stats.end(), std::back_inserter(*stats_bank));
 
     return;
 }
@@ -130,9 +127,9 @@ SUPPORT_TEMPLATE(void, reset_array)(const Array_Type & Array_) {
 }
 
 SUPPORT_TEMPLATE(void, calc_backend_sparse)(
-        uint                                   pos,
-        std::vector< Array_Type > *            array_bank,
-        std::vector< std::vector< double > > * stats_bank
+        uint pos,
+        std::vector< Array_Type > * array_bank,
+        std::vector< double > * stats_bank
     ) {
     
     // Did we reached the end??
@@ -182,7 +179,6 @@ SUPPORT_TEMPLATE(void, calc_backend_sparse)(
             change_stats[pos * n_counters + n] = tmp_chng;
 
         }
-            
 
     }
     
@@ -208,7 +204,7 @@ SUPPORT_TEMPLATE(void, calc_backend_sparse)(
                 array_bank->push_back(EmptyArray);
             
             if (stats_bank != nullptr)
-                stats_bank->push_back(current_stats);
+                std::copy(current_stats.begin(), current_stats.end(), std::back_inserter(*stats_bank));
 
         }
             
@@ -225,7 +221,7 @@ SUPPORT_TEMPLATE(void, calc_backend_sparse)(
             array_bank->push_back(EmptyArray);
         
         if (stats_bank != nullptr)
-            stats_bank->push_back(current_stats);
+            std::copy(current_stats.begin(), current_stats.end(), std::back_inserter(*stats_bank));
 
     }
     
@@ -257,9 +253,9 @@ SUPPORT_TEMPLATE(void, calc_backend_sparse)(
 }
 
 SUPPORT_TEMPLATE(void, calc_backend_dense)(
-        uint                                   pos,
-        std::vector< Array_Type > *            array_bank,
-        std::vector< std::vector< double > > * stats_bank
+        uint pos,
+        std::vector< Array_Type > * array_bank,
+        std::vector< double > * stats_bank
     ) {
     
     // Did we reached the end??
@@ -298,6 +294,8 @@ SUPPORT_TEMPLATE(void, calc_backend_dense)(
         }
         else
         {
+            if (std::isnan(tmp_chng))
+                throw std::domain_error("Undefined number.");
 
             change_stats_different++;
             current_stats[n] += tmp_chng;
@@ -325,7 +323,7 @@ SUPPORT_TEMPLATE(void, calc_backend_dense)(
                 array_bank->push_back(EmptyArray);
             
             if (stats_bank != nullptr)
-                stats_bank->push_back(current_stats);
+                std::copy(current_stats.begin(), current_stats.end(), std::back_inserter(*stats_bank));
 
         }
             
@@ -344,7 +342,7 @@ SUPPORT_TEMPLATE(void, calc_backend_dense)(
             array_bank->push_back(EmptyArray);
         
         if (stats_bank != nullptr)
-            stats_bank->push_back(current_stats);
+            std::copy(current_stats.begin(), current_stats.end(), std::back_inserter(*stats_bank));
 
     }
     
@@ -371,8 +369,8 @@ SUPPORT_TEMPLATE(void, calc_backend_dense)(
 }
 
 SUPPORT_TEMPLATE(void, calc)(
-        std::vector< Array_Type > *            array_bank,
-        std::vector< std::vector< double > > * stats_bank,
+        std::vector< Array_Type > * array_bank,
+        std::vector< double > * stats_bank,
         unsigned int max_num_elements_
 ) {
 
@@ -393,16 +391,12 @@ SUPPORT_TEMPLATE(void, calc)(
     if (max_num_elements_ != 0u)
         this->max_num_elements = BARRY_MAX_NUM_ELEMENTS;
 
+    if (this->data.size() == 0u)
+    {
+        throw std::logic_error("The array has support of size 0 (i.e., empty support). This could be a problem in the rules (constraints).\n");
+    }
 
-    return;
-    
-}
 
-SUPPORT_TEMPLATE(void, add_counter)(
-        Counter<Array_Type, Data_Counter_Type> * f_
-    ) {
-    
-    counters->add_counter(f_);
     return;
     
 }
@@ -498,7 +492,8 @@ SUPPORT_TEMPLATE(void, set_rules_dyn)(
 
 SUPPORT_TEMPLATE(bool, eval_rules_dyn)(
     const std::vector< double > & counts,
-    const uint & i, const uint & j
+    const uint & i,
+    const uint & j
 ) {
 
     if (rules_dyn->size() == 0u)
@@ -513,8 +508,27 @@ SUPPORT_TEMPLATE(bool, eval_rules_dyn)(
 
     return rule_res;
 
-
 }
+
+// SUPPORT_TEMPLATE(bool, eval_rules_dyn)(
+//     const double * counts,
+//     const uint & i,
+//     const uint & j
+// ) {
+
+//     if (rules_dyn->size() == 0u)
+//         return true;
+
+//     // Swapping pointers for a while
+//     std::vector< double > tmpstats = current_stats;
+//     current_stats = counts;
+
+//     bool rule_res = rules_dyn->operator()(EmptyArray, i, j);
+//     current_stats = tmpstats;
+
+//     return rule_res;
+
+// }
 
 //////////////////////////
 
@@ -545,7 +559,7 @@ SUPPORT_TEMPLATE(void, print)() const {
     data.print();
 }
 
-SUPPORT_TEMPLATE(const FreqTable<> &, get_data)() const {
+SUPPORT_TEMPLATE(const FreqTable<double> &, get_data)() const {
     return this->data;
 }
 

@@ -1,6 +1,3 @@
-#include "statscounter-bones.hpp"
-
-
 #ifndef BARRY_STATSCOUNTER_MEAT_HPP
 #define BARRY_STATSCOUNTER_MEAT_HPP 1
 
@@ -42,14 +39,6 @@ STATSCOUNTER_TEMPLATE(void, reset_array)(const Array_Type * Array_)
     EmptyArray.clear();
     
     return;
-}
-
-STATSCOUNTER_TEMPLATE(void, add_counter)(Counter<Array_Type,Data_Type> * f_)
-{
-    
-    counters->add_counter(f_);
-    return;
-    
 }
 
 STATSCOUNTER_TEMPLATE(void, add_counter)(Counter<Array_Type,Data_Type> f_)

@@ -1,22 +1,5 @@
-// #include <vector>
-// #include <unordered_map>
-#include "barray-bones.hpp"
-#include "support-bones.hpp"
-#include "statscounter-bones.hpp"
-#include "rules-bones.hpp"
-
 #ifndef BARRY_MODEL_BONES_HPP 
 #define BARRY_MODEL_BONES_HPP 1
-
-/**
- * @brief Array Hasher class (used for computing support)
- * 
- */
-template<typename Array_Type>
-inline std::vector< double > keygen_default(const Array_Type & Array_) {
-    return {static_cast<double>(Array_.nrow()), static_cast<double>(Array_.ncol())};
-}
-
 
 /**
  * @ingroup stat-models
@@ -42,10 +25,15 @@ inline std::vector< double > keygen_default(const Array_Type & Array_) {
  * @tparam Data_Counter_Type Any type.
  * @tparam Data_Rule_Type Any type.
  */
-template <typename Array_Type = BArray<>, typename Data_Counter_Type = bool, typename Data_Rule_Type  = bool, typename Data_Rule_Dyn_Type = bool>
+template<
+    typename Array_Type = BArray<>,
+    typename Data_Counter_Type = bool,
+    typename Data_Rule_Type  = bool,
+    typename Data_Rule_Dyn_Type = bool
+    >
 class Model {
 
-private:
+protected:
     /**
      * @name Random number generation
      * @brief Random number generation
@@ -60,12 +48,20 @@ private:
      * array in the dataset. `array_frequency` contains the frequency with which
      * each of the target stats_target (arrays) shows in the support. `array2support` 
      * maps array indices (0, 1, ...) to the corresponding support.
+     * 
+     * Each vector of `stats_support` has the data stored in a row-wise order,
+     * with each row starting with the weights, e.g., in a model with `k` terms
+     * the first k + 1 elements of `stats_support` would be:
+     * - weights
+     * - term 1
+     * - term 2
+     * - ...
+     * - term k
      */
     ///@{
-    std::vector< std::vector< double > > stats_support; ///< Sufficient statistics of the model (support)
+    std::vector< std::vector< double > > stats_support;          ///< Sufficient statistics of the model (support)
     std::vector< uint >                  stats_support_n_arrays; ///< Number of arrays included per support.
-    std::vector< std::vector< double > > stats_target;  ///< Target statistics of the model
-    std::vector< uint >                  array_frequency;
+    std::vector< std::vector< double > > stats_target;           ///< Target statistics of the model
     std::vector< uint >                  arrays2support;
     ///@}
 
@@ -82,9 +78,9 @@ private:
      */
     ///@{
     bool with_pset = false;
-    std::vector< std::vector< Array_Type > >          pset_arrays; ///< Arrays of the support(s)
-    std::vector< std::vector< std::vector<double> > > pset_stats;  ///< Statistics of the support(s)
-    std::vector< std::vector<double> >                pset_probs;  ///< Probabilities of the support(s)
+    std::vector< std::vector< Array_Type > > pset_arrays; ///< Arrays of the support(s)
+    std::vector< std::vector<double> >       pset_stats;  ///< Statistics of the support(s)
+    std::vector< std::vector<double> >       pset_probs;  ///< Probabilities of the support(s)
     ///@}
     
     /**
@@ -104,14 +100,30 @@ private:
     std::vector< double > normalizing_constants;
     std::vector< bool > first_calc_done;
 
-    /**@brief Function to extract features of the array to be hash
-    */
-    std::function<std::vector<double>(const Array_Type &)> keygen = nullptr;  
-
     bool delete_counters  = false;
     bool delete_rules     = false;
     bool delete_rules_dyn = false;
 
+    /**
+     * @brief Transformation of the model
+     * 
+     * @details When specified, this function will update the model by modifying
+     * the linear equation. For example, if the user wanted to add interaction
+     * terms, rescale, or apply other operations of the sorts, the user can do such
+     * through this function.
+     * 
+     * The function should return `void` and receive the following arguments:
+     * - `data` Pointer to the first element of the set of sufficient statistics
+     * - `k` unsigned int indicating the number of sufficient statistics
+     * 
+     * @returns
+     * Nothing, but it will modify the model data.
+     */
+    std::function<std::vector<double>(double *, unsigned int k)>
+        transform_model_fun = nullptr;
+
+    std::vector< std::string > transform_model_term_names;
+    
 public:
     
     void set_rengine(std::mt19937 * rengine_, bool delete_ = false) {
@@ -144,7 +156,7 @@ public:
         const Model<Array_Type,Data_Counter_Type,Data_Rule_Type,Data_Rule_Dyn_Type> & Model_
     );
 
-    ~Model() {
+    virtual ~Model() {
         if (delete_counters)
             delete counters;
 
@@ -159,7 +171,6 @@ public:
     };
     
     void store_psets() noexcept;
-    void set_keygen(std::function<std::vector<double>(const Array_Type &)> keygen_);
     std::vector< double > gen_key(const Array_Type & Array_);
     
     /**
@@ -169,14 +180,13 @@ public:
      */
     ///@{
     void add_counter(Counter<Array_Type, Data_Counter_Type> & counter);
-    void add_counter(Counter<Array_Type, Data_Counter_Type> * counter);
     void add_counter(
         Counter_fun_type<Array_Type,Data_Counter_Type> count_fun_,
         Counter_fun_type<Array_Type,Data_Counter_Type> init_fun_    = nullptr,
-        Data_Counter_Type *                            data_        = nullptr,
-        bool                                           delete_data_ = false
+        Data_Counter_Type                              data_        = nullptr
     );
     void set_counters(Counters<Array_Type,Data_Counter_Type> * counters_);
+    void add_hasher(Hasher_fun_type<Array_Type,Data_Counter_Type> fun_);
     ///@}
     
     /**
@@ -186,21 +196,17 @@ public:
      */
     ///@{
     void add_rule(Rule<Array_Type, Data_Rule_Type> & rule);
-    void add_rule(Rule<Array_Type, Data_Rule_Type> * rule);
     void add_rule(
         Rule_fun_type<Array_Type, Data_Rule_Type> count_fun_,
-        Data_Rule_Type *                          data_        = nullptr,
-        bool                                      delete_data_ = false
+        Data_Rule_Type                            data_
     );
     
     void set_rules(Rules<Array_Type,Data_Rule_Type> * rules_);
 
     void add_rule_dyn(Rule<Array_Type, Data_Rule_Dyn_Type> & rule);
-    void add_rule_dyn(Rule<Array_Type, Data_Rule_Dyn_Type> * rule);
     void add_rule_dyn(
         Rule_fun_type<Array_Type, Data_Rule_Dyn_Type> count_fun_,
-        Data_Rule_Dyn_Type *                          data_        = nullptr,
-        bool                                      delete_data_ = false
+        Data_Rule_Dyn_Type                            data_
     );
     
     void set_rules_dyn(Rules<Array_Type,Data_Rule_Dyn_Type> * rules_);
@@ -251,6 +257,13 @@ public:
         bool as_log = false
     );
 
+    double likelihood(
+        const std::vector<double> & params,
+        const double * target_,
+        const uint & i,
+        bool as_log = false
+    );
+    
     double likelihood_total(
         const std::vector<double> & params,
         bool as_log = false
@@ -276,7 +289,7 @@ public:
         const uint & i
     );
 
-    const std::vector< std::vector< double > > * get_pset_stats(
+    const std::vector< double > * get_pset_stats(
         const uint & i
     );
     ///@}
@@ -286,7 +299,7 @@ public:
     /**
      * @brief Prints information about the model
      */
-    void print() const;
+    virtual void print() const;
     
     Array_Type sample(const Array_Type & Array_, const std::vector<double> & params = {});
     Array_Type sample(const uint & i, const std::vector<double> & params);
@@ -327,6 +340,8 @@ public:
     unsigned int size() const noexcept;
     unsigned int size_unique() const noexcept;
     unsigned int nterms() const noexcept;
+    unsigned int nrules() const noexcept;
+    unsigned int nrules_dyn() const noexcept;
     unsigned int support_size() const noexcept;
     std::vector< std::string > colnames() const;
     ///@}
@@ -340,16 +355,42 @@ public:
 
     /**
      * @brief Raw pointers to the support and target statistics
+     * @details 
+     * The support of the model is stored as a vector of vector<double>. Each
+     * element of it contains the support for an specific type of array included.
+     * It represents an array of size `(k + 1) x n unique elements`, with the data
+     * stored by-row. The last element of each entry corresponds to the weights,
+     * i.e., the frequency with which such sufficient statistics are observed in
+     * the support.
      */
     ///@{
     std::vector< std::vector< double > > * get_stats_target();
     std::vector< std::vector< double > > * get_stats_support();
     std::vector< unsigned int > * get_arrays2support();
     std::vector< std::vector< Array_Type > > * get_pset_arrays();
-    std::vector< std::vector< std::vector<double> > > * get_pset_stats();  ///< Statistics of the support(s)
-    std::vector< std::vector<double> > *                get_pset_probs(); 
+    std::vector< std::vector<double> > * get_pset_stats();  ///< Statistics of the support(s)
+    std::vector< std::vector<double> > * get_pset_probs(); 
     ///@}
 
+    /**
+     * @brief Set the transform_model_fun object
+     * @details The transform_model function is used to transform the data
+     * 
+     * @param data 
+     * @param target 
+     * @param n_arrays 
+     * @param arrays2support 
+     */
+    ///@{
+    void set_transform_model(
+        std::function<std::vector<double>(double*,unsigned int)> fun,
+        std::vector< std::string > names
+        );
+    std::vector<double> transform_model(
+        double * data,
+        unsigned int k
+    );
+    ///@}
 
 };
 

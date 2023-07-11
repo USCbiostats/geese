@@ -127,7 +127,47 @@ struct vecHasher
 
 template<typename Ta = double, typename Tb = uint> 
 using MapVec_type = std::unordered_map< std::vector< Ta >, Tb, vecHasher<Ta>>;
-  
+
+/**
+ * @brief Ascending sorting an array
+ * 
+ * It will sort an array solving ties using the next column. Data is
+ * stored column-wise.
+ * 
+ * @tparam T 
+ * @param v 
+ * @param nrows 
+ * @return std::vector<size_t> The sorting index.
+ */
+inline std::vector< size_t > sort_array(
+    const double * v,
+    size_t start,
+    size_t ncols,
+    size_t nrows
+    ) {
+
+    // initialize original index locations
+    std::vector<size_t> idx(nrows);
+    std::iota(idx.begin(), idx.end(), 0);
+
+    std::sort(idx.begin(), idx.end(),
+       [&v,nrows,ncols,start](size_t i1, size_t i2) {
+
+            for (size_t j = 0u; j < ncols; ++j)
+            {
+                if (*(v + (nrows * j + i1+start)) == *(v + (nrows * j + i2 + start)))
+                    continue;   
+                else 
+                    return *(v + (nrows * j + i1+start)) < *(v + (nrows * j + i2 + start));
+            }
+
+            return false;
+        });
+
+    return idx;
+
+}   
+
 
 // Mostly relevant in the case of the stats count functions -------------------
 template <typename Cell_Type, typename Data_Type> class BArray;
@@ -145,11 +185,20 @@ template <typename Cell_Type, typename Data_Type> class BArrayDense;
  */
 ///@{
 template <typename Array_Type, typename Data_Type>
-using Counter_fun_type = std::function<double(const Array_Type &, uint, uint, Data_Type *)>;
+using Counter_fun_type = std::function<double(const Array_Type &, uint, uint, Data_Type &)>;
 
 template <typename Array_Type, typename Data_Type>
-using Rule_fun_type = std::function<bool(const Array_Type &, uint, uint, Data_Type *)>;
+using Rule_fun_type = std::function<bool(const Array_Type &, uint, uint, Data_Type &)>;
 ///@}
+
+/**
+ * @brief Hasher function used by the counter
+ * @details Used to characterize the support of the array.
+ * 
+ * @tparam Array_Type 
+ */
+template <typename Array_Type, typename Data_Type>
+using Hasher_fun_type = std::function<std::vector<double>(const Array_Type &, Data_Type *)>;
 
 // Misc ------------------------------------------------------------------------
 /**
@@ -196,15 +245,15 @@ inline bool vec_equal_approx(
 }
 ///@}
 
+#ifdef __OPENM
+#pragma omp declare simd
+#endif
 template <typename T>
 inline T vec_inner_prod(
-const std::vector< T > & a,
-const std::vector< T > & b
+    const T * a,
+    const T * b,
+    size_t n
 ) {
-
-    
-    if (a.size() != b.size())
-        throw std::length_error("-a- and -b- should have the same length.");
     
     double res = 0.0;
     #ifdef __OPENM 
@@ -212,22 +261,22 @@ const std::vector< T > & b
     #else
     #pragma GCC ivdep
     #endif
-    for (unsigned int i = 0u; i < a.size(); ++i)
-        res += (a[i] * b[i]);
+    for (unsigned int i = 0u; i < n; ++i)
+        res += (*(a + i) * *(b + i));
     
     return res;
 
 }
 
+#ifdef __OPENM
+#pragma omp declare simd
+#endif
 template <>
 inline double vec_inner_prod(
-const std::vector< double > & a,
-const std::vector< double > & b
+    const double * a,
+    const double * b,
+    size_t n
 ) {
-    
-    
-    if (a.size() != b.size())
-        throw std::length_error("-a- and -b- should have the same length.");
     
     double res = 0.0;
     #ifdef __OPENMP
@@ -235,11 +284,12 @@ const std::vector< double > & b
     #else
     #pragma GCC ivdep
     #endif
-    for (unsigned int i = 0u; i < a.size(); ++i)
-        res += (a[i] * b[i]);
+    for (unsigned int i = 0u; i < n; ++i)
+        res += (*(a + i) * *(b + i));
     
     return res;
 
 }
 
 #endif
+

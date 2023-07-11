@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 # geese: *GE*ne-functional *E*volution using *S*uffici*E*ncy <img src="man/figures/logo.svg" align="right" width="180px"/>
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/USCbiostats/geese/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/USCbiostats/geese/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This R package taps into statistical theory mostly developed in the social networks

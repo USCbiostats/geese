@@ -1,5 +1,5 @@
 // #include <stdexcept>
-#include "barray-bones.hpp"
+// #include "barray-bones.hpp"
 
 template<typename Cell_Type>
 class Cell;
@@ -358,15 +358,26 @@ BARRAY_TEMPLATE(void, set_data) (
     
 }
 
-BARRAY_TEMPLATE(Data_Type *, D) ()
+BARRAY_TEMPLATE(Data_Type *, D_ptr) ()
 {
     return this->data;
 }
 
 template<typename Cell_Type, typename Data_Type>
-inline const Data_Type * BArray<Cell_Type,Data_Type>::D() const
+inline const Data_Type * BArray<Cell_Type,Data_Type>::D_ptr() const
 {
     return this->data;
+}
+
+BARRAY_TEMPLATE(Data_Type &, D) ()
+{
+    return *this->data;
+}
+
+template<typename Cell_Type, typename Data_Type>
+inline const Data_Type & BArray<Cell_Type,Data_Type>::D() const
+{
+    return *this->data;
 }
 
 template<typename Cell_Type, typename Data_Type>
@@ -1191,7 +1202,7 @@ BARRAY_TEMPLATE(void, print) (
   
     std::va_list args;
     va_start(args, fmt);
-    vprintf(fmt, args);
+    printf_barry(fmt, args);
     va_end(args);
 
     for (uint i = 0u; i < N; ++i)

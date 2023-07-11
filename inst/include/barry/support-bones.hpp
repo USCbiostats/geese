@@ -1,13 +1,20 @@
-// #include <vector>
-// #include <unordered_map>
-#include "typedefs.hpp"
-#include "barray-bones.hpp"
-#include "statsdb.hpp"
-#include "counters-bones.hpp"
-#include "rules-bones.hpp"
-
 #ifndef BARRY_SUPPORT_BONES_HPP 
 #define BARRY_SUPPORT_BONES_HPP 1
+
+template <typename Cell_Type, typename Data_Type>
+class BArray;
+
+template <typename Tdat>
+class FreqTable;
+
+template <typename Array_Type, typename Data_Counter_Type>
+class Counters;
+
+template <typename Array_Type, typename Data_Rule_Type>
+class Rules;
+
+template<typename Array_Type, typename Data_Type>
+class Rule;
 
 /**
  * @brief Compute the support of sufficient statistics
@@ -27,10 +34,10 @@
  * prescribed degree sequence. 
  */ 
 template <
-    typename Array_Type         = BArray<>,
+    typename Array_Type         = BArray<bool, bool>,
     typename Data_Counter_Type  = bool,
     typename Data_Rule_Type     = bool,
-    typename Data_Rule_Dyn_Type = bool
+    typename Data_Rule_Dyn_Type = bool 
     >
 class Support {
     
@@ -38,13 +45,13 @@ private:
     void calc_backend_sparse(
         uint pos = 0u,
         std::vector< Array_Type > * array_bank = nullptr,
-        std::vector< std::vector< double > > * stats_bank = nullptr
+        std::vector< double > * stats_bank = nullptr
     );
 
     void calc_backend_dense(
         uint pos = 0u,
         std::vector< Array_Type > * array_bank = nullptr,
-        std::vector< std::vector< double > > * stats_bank = nullptr
+        std::vector< double > * stats_bank = nullptr
     );
 
     /**
@@ -113,7 +120,7 @@ public:
     
     void init_support(
         std::vector< Array_Type > * array_bank = nullptr,
-        std::vector< std::vector< double > > * stats_bank = nullptr
+        std::vector< double > * stats_bank = nullptr
     );
     
     /**
@@ -135,7 +142,6 @@ public:
      * @param counters_ A vector of counters to be added.
      */
     ///@{
-    void add_counter(Counter<Array_Type, Data_Counter_Type> * f_);
     void add_counter(Counter<Array_Type,Data_Counter_Type> f_);
     void set_counters(Counters<Array_Type,Data_Counter_Type> * counters_);
     ///@}
@@ -153,6 +159,7 @@ public:
     void add_rule_dyn(Rule<Array_Type,Data_Rule_Dyn_Type> f_);
     void set_rules_dyn(Rules<Array_Type,Data_Rule_Dyn_Type> * rules_);
     bool eval_rules_dyn(const std::vector<double> & counts, const uint & i, const uint & j);
+    // bool eval_rules_dyn(const double * counts, const uint & i, const uint & j);
     ///@}
 
     /**
@@ -170,7 +177,7 @@ public:
      */
     void calc(
         std::vector< Array_Type > * array_bank = nullptr,
-        std::vector< std::vector< double > > * stats_bank = nullptr,
+        std::vector< double > * stats_bank = nullptr,
         unsigned int max_num_elements_ = 0u
     );
     
@@ -178,7 +185,7 @@ public:
     std::vector< double > * get_current_stats(); ///< List current statistics.
     void print() const;
     
-    const FreqTable<> &                      get_data() const;
+    const FreqTable< double > &              get_data() const;
     Counters<Array_Type,Data_Counter_Type> * get_counters();   ///< Vector of couter functions.
     Rules<Array_Type,Data_Rule_Type> *       get_rules();      ///< Vector of static rules (cells to iterate).
     Rules<Array_Type,Data_Rule_Dyn_Type> *   get_rules_dyn();  ///< Vector of dynamic rules (to include/exclude a realizaton).
