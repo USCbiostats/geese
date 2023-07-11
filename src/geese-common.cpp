@@ -407,7 +407,7 @@ double conditional_prob(
     bool duplication,
     const std::vector< bool > & state,
     const IntegerMatrix array,
-    uint i, uint j,
+    unsigned int i, unsigned int j,
     bool as_log = false
 ) {
 

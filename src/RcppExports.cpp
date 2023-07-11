@@ -218,7 +218,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // conditional_prob
-double conditional_prob(SEXP p, const std::vector< double >& params, bool duplication, const std::vector< bool >& state, const IntegerMatrix array, uint i, uint j, bool as_log);
+double conditional_prob(SEXP p, const std::vector< double >& params, bool duplication, const std::vector< bool >& state, const IntegerMatrix array, unsigned int i, unsigned int j, bool as_log);
 RcppExport SEXP _geese_conditional_prob(SEXP pSEXP, SEXP paramsSEXP, SEXP duplicationSEXP, SEXP stateSEXP, SEXP arraySEXP, SEXP iSEXP, SEXP jSEXP, SEXP as_logSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -227,8 +227,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
     Rcpp::traits::input_parameter< const std::vector< bool >& >::type state(stateSEXP);
     Rcpp::traits::input_parameter< const IntegerMatrix >::type array(arraySEXP);
-    Rcpp::traits::input_parameter< uint >::type i(iSEXP);
-    Rcpp::traits::input_parameter< uint >::type j(jSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type i(iSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type j(jSEXP);
     Rcpp::traits::input_parameter< bool >::type as_log(as_logSEXP);
     rcpp_result_gen = Rcpp::wrap(conditional_prob(p, params, duplication, state, array, i, j, as_log));
     return rcpp_result_gen;
