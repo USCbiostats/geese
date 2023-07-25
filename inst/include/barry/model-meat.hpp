@@ -828,8 +828,6 @@ MODEL_TEMPLATE(double, likelihood_total)(
         
         #ifdef __OPENM 
         #pragma omp simd reduction(-:res)
-        #else
-        #pragma GCC ivdep
         #endif
         for (unsigned int i = 0u; i < params_last_size; ++i)
             res -= (std::log(normalizing_constants[i]) * this->stats_support_n_arrays[i]);
@@ -840,8 +838,6 @@ MODEL_TEMPLATE(double, likelihood_total)(
         size_t stats_target_size = stats_target.size();
         #ifdef __OPENM 
         #pragma omp simd reduction(*:res)
-        #else
-        #pragma GCC ivdep
         #endif
         for (unsigned int i = 0; i < stats_target_size; ++i)
             res *= std::exp(
