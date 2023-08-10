@@ -34,8 +34,8 @@ RULE_FUNCTION(rule_empty_free) {
 // Hasher
 
 inline std::vector< double > keygen_full(
-    const phylocounters::PhyloArray & array,
-    const phylocounters::PhyloCounterData * d
+    const PhyloArray & array,
+    const PhyloCounterData * d
     ) {
 
     // Baseline data: nrows and columns
@@ -46,7 +46,7 @@ inline std::vector< double > keygen_full(
 
     // State of the parent
     dat.push_back(0.0);
-    unsigned int count = 0u;
+    size_t count = 0u;
     for (bool i : array.D_ptr()->states) {
         dat[dat.size() - 1u] += (i ? 1.0 : 0.0) * pow(10, static_cast<double>(count));
         count++;
@@ -59,11 +59,11 @@ inline std::vector< double > keygen_full(
 }
 
 inline bool vec_diff(
-    const std::vector< unsigned int > & s,
-    const std::vector< unsigned int > & a
+    const std::vector< size_t > & s,
+    const std::vector< size_t > & a
 ) {
 
-    for (unsigned int i = 0u; i < a.size(); ++i)
+    for (size_t i = 0u; i < a.size(); ++i)
         if ((a[i] != 9u) && (a[i] != s[i]))
             return true;
 
@@ -78,6 +78,28 @@ class Flock;
  * @details A list of available terms for this model can be found in the
  * \ref counters-phylo section.
  *
+ */
+/**
+ * @brief Class representing a phylogenetic tree model with annotations.
+ * 
+ * The `Geese` class represents a phylogenetic tree model with annotations. It
+ * includes a total of `N + 1` nodes, the `+ 1` being the root node. The class
+ * provides methods for initializing the model, calculating the likelihood,
+ * simulating trees, and making predictions. 
+ * 
+ * The class includes shared objects within a `Geese` object, such as `rengine`,
+ * `model`, `states`, `n_zeros`, `n_ones`, `n_dupl_events`, and `n_spec_events`.
+ * It also includes information about the type of event, such as `etype_default`,
+ * `etype_speciation`, `etype_duplication`, and `etype_either`.
+ * 
+ * The class provides constructors, a destructor, and methods for initializing
+ * the model, inheriting support, calculating the sequence, calculating the
+ * reduced sequence, calculating the likelihood, calculating the likelihood
+ * exhaustively, getting probabilities, setting the seed, simulating trees,
+ * parsing polytomies, getting observed counts, printing observed counts,
+ * printing information about the GEESE, and making predictions.
+ * 
+ * @see Flock
  */
 class Geese {
     friend Flock;
@@ -95,30 +117,47 @@ private:
      */
     ///@{
     std::mt19937 *                     rengine = nullptr;
-    phylocounters::PhyloModel *        model   = nullptr;
+    PhyloModel *        model   = nullptr;
     std::vector< std::vector< bool > > states;
-    unsigned int n_zeros       = 0u; ///< Number of zeros
-    unsigned int n_ones        = 0u; ///< Number of ones
-    unsigned int n_dupl_events = 0u; ///< Number of duplication events
-    unsigned int n_spec_events = 0u; ///< Number of speciation events
+    size_t n_zeros       = 0u; ///< Number of zeros
+    size_t n_ones        = 0u; ///< Number of ones
+    size_t n_dupl_events = 0u; ///< Number of duplication events
+    size_t n_spec_events = 0u; ///< Number of speciation events
     ///@}
 
 public:
 
     // Data
-    unsigned int                       nfunctions;
-    std::map< unsigned int, Node >     nodes;
-    barry::MapVec_type< unsigned int > map_to_nodes;
+    size_t                       nfunctions;
+    std::map< size_t, Node >     nodes;
+    barry::MapVec_type< size_t > map_to_nodes;
     std::vector< std::vector< std::vector< size_t > > > pset_loc;    ///< Locations of columns
 
     // Tree-traversal sequence
-    std::vector< unsigned int > sequence;
-    std::vector< unsigned int > reduced_sequence;  
+    std::vector< size_t > sequence;
+    std::vector< size_t > reduced_sequence;  
 
     // Admin-related objects
     bool initialized     = false;
     bool delete_rengine  = false;
     bool delete_support  = false;
+
+    // Information about the type of event
+    
+    /***
+     * @name Information about the type of event
+     * @details
+     * The type of event is stored in the `etype` member. The possible values
+     * are `etype_default`, `etype_speciation`, `etype_duplication`, and
+     * `etype_either`.
+     * 
+    */
+    ///@{
+    static const size_t etype_default     = 1ul;
+    static const size_t etype_speciation  = 0ul;
+    static const size_t etype_duplication = 1ul;
+    static const size_t etype_either      = 2ul;
+    ///@}
 
     /**
      * @name Construct a new Geese object
@@ -143,10 +182,10 @@ public:
     Geese();
 
     Geese(
-        std::vector< std::vector<unsigned int> > & annotations,
-        std::vector< unsigned int > &              geneid,
-        std::vector< int > &                       parent,
-        std::vector< bool > &                      duplication
+        std::vector< std::vector<size_t> > & annotations,
+        std::vector< size_t > &              geneid,
+        std::vector< int > &                 parent,
+        std::vector< bool > &                duplication
         );
 
     // Copy constructor
@@ -165,11 +204,11 @@ public:
 
     ~Geese();
 
-    void init(unsigned int bar_width = BARRY_PROGRESS_BAR_WIDTH);
+    void init(size_t bar_width = BARRY_PROGRESS_BAR_WIDTH);
 
     void inherit_support(const Geese & model_, bool delete_support_ = false);
 
-    // Node * operator()(unsigned int & nodeid);
+    // Node * operator()(size_t & nodeid);
     void calc_sequence(Node * n = nullptr);
     void calc_reduced_sequence();
 
@@ -183,8 +222,8 @@ public:
 
     std::vector< double > get_probabilities() const;
 
-    void set_seed(const unsigned int & s);
-    std::vector< std::vector< unsigned int > > simulate(
+    void set_seed(const size_t & s);
+    std::vector< std::vector< size_t > > simulate(
         const std::vector< double > & par
         );
 
@@ -194,14 +233,14 @@ public:
      * polytomies.
      */
     ///@{
-    unsigned int nfuns() const noexcept;             ///< Number of functions analyzed
-    unsigned int nnodes() const noexcept;            ///< Number of nodes (interior + leaf)
-    unsigned int nleafs() const noexcept;            ///< Number of leaf
-    unsigned int nterms() const;                     ///< Number of terms included
-    unsigned int support_size() const noexcept;      ///< Number of unique sets of sufficient stats.
-    std::vector< unsigned int > nannotations() const noexcept;      ///< Number of annotations.
+    size_t nfuns() const noexcept;             ///< Number of functions analyzed
+    size_t nnodes() const noexcept;            ///< Number of nodes (interior + leaf)
+    size_t nleafs() const noexcept;            ///< Number of leaf
+    size_t nterms() const;                     ///< Number of terms included
+    size_t support_size() const noexcept;      ///< Number of unique sets of sufficient stats.
+    std::vector< size_t > nannotations() const noexcept;      ///< Number of annotations.
     std::vector< std::string > colnames() const;     ///< Names of the terms in the model.
-    unsigned int parse_polytomies(
+    size_t parse_polytomies(
         bool verb = true,
         std::vector< size_t > * dist = nullptr
         ) const noexcept;  ///< Check polytomies and return the largest.
@@ -248,12 +287,12 @@ public:
     std::vector< std::vector<double> > predict_backend(
         const std::vector< double > & par,
         bool use_reduced_sequence,
-        const std::vector< uint > & preorder
+        const std::vector< size_t > & preorder
         );
 
     std::vector< std::vector< double > > predict_exhaust_backend(
         const std::vector< double > & par,
-        const std::vector< uint > & preorder
+        const std::vector< size_t > & preorder
         );
 
     std::vector< std::vector< double > > predict_exhaust(
@@ -263,14 +302,14 @@ public:
     std::vector< std::vector< double > > predict_sim(
         const std::vector< double > & par,
         bool only_annotated       = false,
-        unsigned int nsims        = 10000u
+        size_t nsims        = 10000u
         );
     ///@}
 
     void init_node(Node & n);
     void update_annotations(
-        unsigned int nodeid,
-        std::vector< unsigned int > newann
+        size_t nodeid,
+        std::vector< size_t > newann
     );
 
     /**
@@ -286,9 +325,9 @@ public:
      */
     ///@{
     std::mt19937 *                     get_rengine();
-    phylocounters::PhyloCounters *     get_counters();
-    phylocounters::PhyloModel *        get_model();
-    phylocounters::PhyloSupport *      get_support_fun();
+    PhyloCounters *     get_counters();
+    PhyloModel *        get_model();
+    PhyloSupport *      get_support_fun();
     ///@}
     
     /**
@@ -300,7 +339,7 @@ public:
      * @return std::vector< std::vector< bool > > of length `2^P`.
      */
     std::vector< std::vector< bool > > get_states() const;  
-    std::vector< unsigned int >        get_annotated_nodes() const; ///< Returns the ids of the nodes with at least one annotation
+    std::vector< size_t >        get_annotated_nodes() const; ///< Returns the ids of the nodes with at least one annotation
 
 };
 

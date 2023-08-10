@@ -26,7 +26,7 @@ update:
 .PHONY: man docker
 
 man: R/* 
-	Rscript --vanilla -e 'roxygen2::roxygenize()'
+	Rscript --vanilla -e 'Rcpp::compileAttributes();devtools::document()'
 
 
 .PHONY: clean

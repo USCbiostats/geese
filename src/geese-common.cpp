@@ -157,13 +157,13 @@ NumericMatrix get_probabilities(SEXP p) {
   CHECK_GEESE(p)
 
   Rcpp::XPtr< Geese >ptr(p);
-  unsigned int N = ptr->nodes.size();
-  unsigned int M = ptr->get_states().size();
+  size_t N = ptr->nodes.size();
+  size_t M = ptr->get_states().size();
   NumericMatrix m(N, M);
   std::fill(m.begin(), m.end(), 0.0);
 
   for (auto& i : ptr->sequence) {
-    unsigned int k = 0u;
+    size_t k = 0u;
     for (auto& p : ptr->nodes.at(i).subtree_prob)
       m(ptr->nodes.at(i).id, k++) = p;
   }
@@ -174,7 +174,7 @@ NumericMatrix get_probabilities(SEXP p) {
 //' @rdname geese-common
 //' @export
 // [[Rcpp::export(rng = false)]]
-std::vector< unsigned int > get_sequence(
+std::vector< size_t > get_sequence(
     SEXP p,
     bool reduced_sequence = true
 ) {
@@ -188,7 +188,7 @@ std::vector< unsigned int > get_sequence(
 //' @rdname geese-common
 //' @export
 // [[Rcpp::export(rng = false, invisible = true)]]
-int set_seed(SEXP p, unsigned int s) {
+int set_seed(SEXP p, size_t s) {
 
   IF_GEESE(p) {
 
@@ -208,7 +208,7 @@ int set_seed(SEXP p, unsigned int s) {
 //' @rdname geese-common
 //' @export
 // [[Rcpp::export(rng = false)]]
-std::vector< std::vector< unsigned int > > sim_geese(
+std::vector< std::vector< size_t > > sim_geese(
     SEXP p,
     const std::vector<double> & par,
     int seed = -1
@@ -362,12 +362,12 @@ double transition_prob(
     bool as_log = false
   ) {
 
-  if (state.size() != static_cast<unsigned int>(array.nrow()))
+  if (state.size() != static_cast<size_t>(array.nrow()))
     stop("The length of -state- does not match the number of functions in -nrow-.");
 
-  phylocounters::PhyloArray A(array.nrow(), array.ncol());
+  PhyloArray A(array.nrow(), array.ncol());
   A.set_data(
-    new phylocounters::NodeData(std::vector<double>(1.0, array.ncol()), state, duplication),
+    new NodeData(std::vector<double>(1.0, array.ncol()), state, duplication),
     true
   );
 
@@ -407,16 +407,16 @@ double conditional_prob(
     bool duplication,
     const std::vector< bool > & state,
     const IntegerMatrix array,
-    unsigned int i, unsigned int j,
+    size_t i, size_t j,
     bool as_log = false
 ) {
 
-  if (state.size() != static_cast<unsigned int>(array.nrow()))
+  if (state.size() != static_cast<size_t>(array.nrow()))
     stop("The length of -state- does not match the number of functions in -nrow-.");
 
-  phylocounters::PhyloArray A(array.nrow(), array.ncol());
+  PhyloArray A(array.nrow(), array.ncol());
   A.set_data(
-    new phylocounters::NodeData(std::vector<double>(1.0, array.ncol()), state, duplication),
+    new NodeData(std::vector<double>(1.0, array.ncol()), state, duplication),
     true
   );
 

@@ -32,8 +32,8 @@ SEXP new_flock() {
 // [[Rcpp::export(rng = false, invisible = true)]]
 int add_geese(
     SEXP p,
-    std::vector< std::vector< unsigned int > > & annotations,
-    std::vector< unsigned int > & geneid,
+    std::vector< std::vector< size_t > > & annotations,
+    std::vector< size_t > & geneid,
     std::vector< int > & parent,
     std::vector< bool > & duplication
 ) {

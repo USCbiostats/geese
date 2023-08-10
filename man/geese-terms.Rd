@@ -28,7 +28,7 @@
 \alias{term_pairwise_neofun_singlefun}
 \title{Evolutionary terms}
 \usage{
-rule_limit_changes(p, term_pos, lb, ub, duplication = TRUE)
+rule_limit_changes(p, term_pos, lb, ub, duplication = 1L)
 
 term_gains(p, funs, duplication = 1L)
 
@@ -81,8 +81,7 @@ term_pairwise_neofun_singlefun(p, nfun, duplication = 1L)
 
 \item{lb, ub}{Integers, minimum and maximum number of changes.}
 
-\item{duplication}{When \code{TRUE} indicates that this term is only valid for
-duplication events.}
+\item{duplication}{Integer. 0 for speciation, 1 for duplication and 2 for either.}
 
 \item{funs}{Vector of function indices (starting from zero).}
 

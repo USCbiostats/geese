@@ -16,8 +16,8 @@ using namespace Rcpp;
 //' @aliases geese
 // [[Rcpp::export(rng = false)]]
 SEXP new_geese(
-    std::vector< std::vector< unsigned int > > & annotations,
-    std::vector< unsigned int > & geneid,
+    std::vector< std::vector< size_t > > & annotations,
+    std::vector< size_t > & geneid,
     std::vector< int > & parent,
     std::vector< bool > & duplication
 ) {

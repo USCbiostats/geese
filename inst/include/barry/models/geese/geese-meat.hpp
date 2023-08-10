@@ -7,14 +7,14 @@ inline void Geese::init_node(Node & n)
 {
 
     // Creating the phyloarray, nfunctions x noffspring
-    n.array = phylocounters::PhyloArray(nfunctions, n.offspring.size());
+    n.array = PhyloArray(nfunctions, n.offspring.size());
 
-    std::vector< bool > tmp_state = vector_caster<bool,uint>(n.annotations);
+    std::vector< bool > tmp_state = vector_caster<bool,size_t>(n.annotations);
 
     std::vector< double > blen(n.offspring.size(), 1.0);
 
     n.array.set_data(
-        new phylocounters::NodeData(blen, tmp_state, n.duplication),
+        new NodeData(blen, tmp_state, n.duplication),
         true
     );
 
@@ -23,11 +23,11 @@ inline void Geese::init_node(Node & n)
     n.subtree_prob.resize(states.size(), 1.0);
 
     // Adding the data, first through functions
-    for (unsigned int k = 0u; k < nfunctions; ++k)
+    for (size_t k = 0u; k < nfunctions; ++k)
     {
 
         // Then through the offspring
-        unsigned int j = 0;
+        size_t j = 0;
         for (auto& o : n.offspring)
         {
 
@@ -62,25 +62,78 @@ inline void Geese::init_node(Node & n)
     {
 
         n.arrays.resize(states.size());
-
         n.narray.resize(states.size());
+        n.arrays_valid.resize(states.size(), false);
 
     }
     
-    for (unsigned int s = 0u; s < states.size(); ++s)
+    // Here we have an issue: Some transitions may not be right
+    // under the dynamic rules. So not all states can be valid.
+    // The arrays and narrays need to be updated once the model
+    // is initialized.
+    //
+    // The later is especially true for leaf nodes, where the
+    // limitations are not known until the model is initialized.
+    PhyloStatsCounter stats_counter;
+    stats_counter.set_counters(model->get_counters());
+    for (size_t s = 0u; s < states.size(); ++s)
     {
 
-        // [2022-02-11]: (IMPORTANT COMMENT!)
-        // n.arrays[s] = phylocounters::PhyloArray(n.array.nrow(), n.array.ncol());
-        n.arrays[s] = phylocounters::PhyloArray(n.array, false);
+        n.arrays[s] = PhyloArray(n.array, false);
 
         n.arrays[s].set_data(
-            new phylocounters::NodeData(blen, states[s], n.duplication),
+            new NodeData(blen, states[s], n.duplication),
             true
         );
 
-        // Once the array is ready, we can add it to the model
-        n.narray[s] = model->add_array(n.arrays[s]);
+
+        // Checking the rule. We need to make sure the counts match
+        // the counts of the current array.
+        if (model->get_rules_dyn() != nullptr)
+        {
+            // Once the array is ready, we can add it to the model
+            stats_counter.reset_array(&n.arrays[s]);
+            auto counts = stats_counter.count_all();
+
+            PhyloRulesDyn dyn_rule(*model->get_rules_dyn());
+            for (auto & r : dyn_rule)
+                r.D().counts = &counts;
+
+            // Finally, we can check if it can bee added. If not,
+            // then we need to skip it.
+            if (!dyn_rule(n.arrays[s], 0u, 0u))
+                continue;
+        }
+
+        // Use try catch to run the following lines of code
+        // only if the array is valid.
+        try
+        {
+            n.narray[s] = model->add_array(n.arrays[s]);
+        }
+        catch (const std::exception & e)
+        {
+            auto err = std::string(e.what());
+
+            err = "Array " + std::to_string(n.id) +
+                " cannot be added to the model with error:\n" + err +
+                "\n. This is likely due to a dynamic rule. " +
+                "The array to be added was in the following state:";
+                
+            std::string state_str = "";
+            for (const auto & ss : states[s])
+                state_str += std::to_string(ss) + " ";
+
+            err += state_str + "\n";
+
+            throw std::runtime_error(err);
+            
+        }
+
+        // n.narray[s] = model->add_array(n.arrays[s]);
+
+        if (model->get_pset(n.narray[s])->size() != 0u)
+            n.arrays_valid[s] = true;
 
     }
 
@@ -100,13 +153,13 @@ inline Geese::~Geese() {
 
 }
 
-inline void Geese::init(unsigned int bar_width) {
+inline void Geese::init(size_t bar_width) {
 
     // Initializing the model, if it is null
     if (this->model == nullptr)
     {
 
-        this->model = new phylocounters::PhyloModel();
+        this->model = new PhyloModel();
 
         this->delete_support = true;
         this->model->add_hasher(keygen_full);
@@ -121,13 +174,13 @@ inline void Geese::init(unsigned int bar_width) {
         this->model->set_rengine(this->rengine, false);
 
     // All combinations of the function
-    phylocounters::PhyloPowerSet pset(nfunctions, 1u);
+    PhyloPowerSet pset(nfunctions, 1u);
 
     pset.calc();
 
     states.reserve(pset.data.size());
 
-    unsigned int i = 0u;
+    size_t i = 0u;
 
     for (auto& iter : pset.data)
     {
@@ -196,7 +249,7 @@ inline void Geese::init(unsigned int bar_width) {
     auto sup_arrays = model->get_pset_arrays();
 
     pset_loc.resize(sup_arrays->size());
-    std::vector< unsigned int > tmpstate(nfunctions);
+    std::vector< size_t > tmpstate(nfunctions);
 
     for (auto s = 0u; s < sup_arrays->size(); ++s)
     {
@@ -255,8 +308,8 @@ inline void Geese::inherit_support(const Geese & model_, bool delete_support_)
 }
 
 inline void Geese::update_annotations(
-    unsigned int nodeid,
-    std::vector< unsigned int > newann
+    size_t nodeid,
+    std::vector< size_t > newann
 ) {
 
     // This can only be done if it has been initialized
@@ -343,7 +396,7 @@ inline void Geese::calc_reduced_sequence()
         if (n.is_leaf())
         {
 
-            for (unsigned int k = 0u; k < nfuns(); ++k)
+            for (size_t k = 0u; k < nfuns(); ++k)
                 if (n.annotations[k] != 9u)
                 {
 
@@ -396,24 +449,24 @@ inline std::vector< double > Geese::get_probabilities() const
     
 }
 
-inline unsigned int Geese::nfuns() const noexcept
+inline size_t Geese::nfuns() const noexcept
 {
 
     return this->nfunctions;
 
 }
 
-inline unsigned int Geese::nnodes() const noexcept
+inline size_t Geese::nnodes() const noexcept
 {
 
     return this->nodes.size();
 
 }
 
-inline unsigned int Geese::nleafs() const noexcept
+inline size_t Geese::nleafs() const noexcept
 {
 
-    unsigned int n = 0u;
+    size_t n = 0u;
 
     for (auto& iter : this->nodes)
         if (iter.second.is_leaf())
@@ -422,7 +475,7 @@ inline unsigned int Geese::nleafs() const noexcept
     return n;
 }
 
-inline unsigned int Geese::nterms() const
+inline size_t Geese::nterms() const
 {
 
     INITIALIZED()
@@ -430,7 +483,7 @@ inline unsigned int Geese::nterms() const
 
 }
 
-inline unsigned int Geese::support_size() const noexcept
+inline size_t Geese::support_size() const noexcept
 {
 
     if (model == nullptr)
@@ -440,10 +493,10 @@ inline unsigned int Geese::support_size() const noexcept
     
 }
 
-inline std::vector< unsigned int > Geese::nannotations() const noexcept
+inline std::vector< size_t > Geese::nannotations() const noexcept
 {
 
-    std::vector< unsigned int > ans = {this->n_zeros, this->n_ones};
+    std::vector< size_t > ans = {this->n_zeros, this->n_ones};
 
     return ans;
 
@@ -456,20 +509,20 @@ inline std::vector< std::string > Geese::colnames() const
 
 }
 
-inline unsigned int Geese::parse_polytomies(
+inline size_t Geese::parse_polytomies(
     bool verb,
     std::vector< size_t > * dist
 ) const noexcept
 {
 
-    unsigned int largest = 0u;
+    size_t largest = 0u;
     for (const auto& n : this->nodes)
     {
 
         if (n.second.is_leaf())
             continue;
 
-        unsigned int noff = n.second.noffspring();
+        size_t noff = n.second.noffspring();
 
         if (dist)
             dist->push_back(noff);
@@ -478,7 +531,7 @@ inline unsigned int Geese::parse_polytomies(
         {
 
             if (verb)
-                printf_barry("Node id: %i has polytomy size %i\n", n.second.id, noff);
+                printf_barry("Node id: %li has polytomy size %li\n", n.second.id, noff);
                 
         }
 
@@ -500,7 +553,7 @@ inline std::vector< std::vector<double> > Geese::observed_counts()
     ans.reserve(nnodes());
 
     // Creating counter
-    phylocounters::PhyloStatsCounter tmpcount;
+    PhyloStatsCounter tmpcount;
 
     tmpcount.set_counters(this->model->get_counters());
 
@@ -516,14 +569,14 @@ inline std::vector< std::vector<double> > Geese::observed_counts()
 
         }
 
-        phylocounters::PhyloArray tmparray(nfuns(), n.second.offspring.size());
+        PhyloArray tmparray(nfuns(), n.second.offspring.size());
 
-        uint j = 0u;
+        size_t j = 0u;
 
         for (auto& o : n.second.offspring)
         {
 
-            for (uint k = 0u; k < nfuns(); ++k)
+            for (size_t k = 0u; k < nfuns(); ++k)
             {
 
                 if (o->annotations.at(k) != 0)
@@ -541,14 +594,14 @@ inline std::vector< std::vector<double> > Geese::observed_counts()
 
         }
 
-        std::vector< bool > tmp_state = vector_caster<bool,uint>(
+        std::vector< bool > tmp_state = vector_caster<bool,size_t>(
             n.second.annotations
             );
 
         std::vector< double > blen(n.second.offspring.size(), 1.0);
 
         tmparray.set_data(
-            new phylocounters::NodeData(blen, tmp_state, n.second.duplication),
+            new NodeData(blen, tmp_state, n.second.duplication),
             true
         );
 
@@ -570,7 +623,7 @@ inline void Geese::print_observed_counts()
     ans.reserve(nnodes());
 
     // Creating counter
-    phylocounters::PhyloStatsCounter tmpcount;
+    PhyloStatsCounter tmpcount;
     tmpcount.set_counters(this->model->get_counters());
 
     // Iterating through the nodes
@@ -581,11 +634,11 @@ inline void Geese::print_observed_counts()
             continue;
         }
 
-        phylocounters::PhyloArray tmparray(nfuns(), n.second.offspring.size());
+        PhyloArray tmparray(nfuns(), n.second.offspring.size());
 
-        uint j = 0u;
+        size_t j = 0u;
         for (auto& o : n.second.offspring) {
-            for (uint k = 0u; k < nfuns(); ++k) {
+            for (size_t k = 0u; k < nfuns(); ++k) {
                 if (o->annotations.at(k) != 0) {
                     tmparray.insert_cell(
                         k, j, o->annotations.at(k), false, false
@@ -595,10 +648,10 @@ inline void Geese::print_observed_counts()
             ++j;
         }
 
-        std::vector< bool > tmp_state =vector_caster<bool,uint>(n.second.annotations);
+        std::vector< bool > tmp_state =vector_caster<bool,size_t>(n.second.annotations);
         std::vector< double > blen(n.second.offspring.size(), 1.0);
         tmparray.set_data(
-            new phylocounters::NodeData(blen, tmp_state, n.second.duplication),
+            new NodeData(blen, tmp_state, n.second.duplication),
             true
         );
 
@@ -608,8 +661,8 @@ inline void Geese::print_observed_counts()
         // Printing
         auto dpl = n.second.duplication ? "duplication" : "speciation";
         printf_barry("----------\n");
-        printf_barry("nodeid: % 3i (%s)\nstate: [", n.second.id, dpl);
-        for (uint f = 0u; f < nfuns(); ++f)
+        printf_barry("nodeid: % 3li (%s)\nstate: [", n.second.id, dpl);
+        for (size_t f = 0u; f < nfuns(); ++f)
             printf_barry("%i, ", (tmparray.D_ptr()->states[f] ? 1 : 0));
 
         printf_barry("]; Array:\n");
@@ -633,11 +686,11 @@ inline void Geese::print() const
     // - Number of nodes and leafs
     // - Number of annotated leafs (0/1)
     printf_barry("GEESE\nINFO ABOUT PHYLOGENY\n");
-    printf_barry("# of functions           : %i\n", this->nfuns());
-    printf_barry("# of nodes [int; leaf]   : [%i; %i]\n", this->nnodes(), this->nleafs());
-    printf_barry("# of ann. [zeros; ones]  : [%i; %i]\n", this->n_zeros, this->n_ones);
-    printf_barry("# of events [dupl; spec] : [%i; %i]\n", this->n_dupl_events, this->n_spec_events);
-    printf_barry("Largest polytomy         : %i\n", parse_polytomies(false));
+    printf_barry("# of functions           : %li\n", this->nfuns());
+    printf_barry("# of nodes [int; leaf]   : [%li; %li]\n", this->nnodes() - this->nleafs(), this->nleafs());
+    printf_barry("# of ann. [zeros; ones]  : [%li; %li]\n", this->n_zeros, this->n_ones);
+    printf_barry("# of events [dupl; spec] : [%li; %li]\n", this->n_dupl_events, this->n_spec_events);
+    printf_barry("Largest polytomy         : %li\n", parse_polytomies(false));
     printf_barry("\nINFO ABOUT THE SUPPORT\n");
     this->model->print();
 
@@ -648,16 +701,16 @@ inline std::mt19937 * Geese::get_rengine()
     return this->rengine;
 }
 
-inline phylocounters::PhyloCounters * Geese::get_counters()
+inline PhyloCounters * Geese::get_counters()
 {
     return this->model->get_counters();
 }
 
-inline phylocounters::PhyloModel * Geese::get_model() {
+inline PhyloModel * Geese::get_model() {
     return this->model;
 }
 
-inline phylocounters::PhyloSupport * Geese::get_support_fun() {
+inline PhyloSupport * Geese::get_support_fun() {
     return this->model->get_support_fun();
 }
 
@@ -665,14 +718,14 @@ inline std::vector< std::vector< bool > > Geese::get_states() const {
     return this->states;
 }
 
-inline std::vector< unsigned int > Geese::get_annotated_nodes() const {
+inline std::vector< size_t > Geese::get_annotated_nodes() const {
 
-    std::vector< unsigned int > ids(0u);
+    std::vector< size_t > ids(0u);
     for (auto & n : nodes)
     {
 
         // Counting non-9 annotations
-        for (unsigned int f = 0u; f < nfuns(); ++f)
+        for (size_t f = 0u; f < nfuns(); ++f)
         {
             // If it has one non-9, then add it to the list
             // and continue to the next node.

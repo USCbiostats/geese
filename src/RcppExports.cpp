@@ -20,13 +20,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // add_geese
-int add_geese(SEXP p, std::vector< std::vector< unsigned int > >& annotations, std::vector< unsigned int >& geneid, std::vector< int >& parent, std::vector< bool >& duplication);
+int add_geese(SEXP p, std::vector< std::vector< size_t > >& annotations, std::vector< size_t >& geneid, std::vector< int >& parent, std::vector< bool >& duplication);
 RcppExport SEXP _geese_add_geese(SEXP pSEXP, SEXP annotationsSEXP, SEXP geneidSEXP, SEXP parentSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< std::vector< std::vector< unsigned int > >& >::type annotations(annotationsSEXP);
-    Rcpp::traits::input_parameter< std::vector< unsigned int >& >::type geneid(geneidSEXP);
+    Rcpp::traits::input_parameter< std::vector< std::vector< size_t > >& >::type annotations(annotationsSEXP);
+    Rcpp::traits::input_parameter< std::vector< size_t >& >::type geneid(geneidSEXP);
     Rcpp::traits::input_parameter< std::vector< int >& >::type parent(parentSEXP);
     Rcpp::traits::input_parameter< std::vector< bool >& >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(add_geese(p, annotations, geneid, parent, duplication));
@@ -108,7 +108,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_sequence
-std::vector< unsigned int > get_sequence(SEXP p, bool reduced_sequence);
+std::vector< size_t > get_sequence(SEXP p, bool reduced_sequence);
 RcppExport SEXP _geese_get_sequence(SEXP pSEXP, SEXP reduced_sequenceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -119,18 +119,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // set_seed
-int set_seed(SEXP p, unsigned int s);
+int set_seed(SEXP p, size_t s);
 RcppExport SEXP _geese_set_seed(SEXP pSEXP, SEXP sSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type s(sSEXP);
+    Rcpp::traits::input_parameter< size_t >::type s(sSEXP);
     rcpp_result_gen = Rcpp::wrap(set_seed(p, s));
     return rcpp_result_gen;
 END_RCPP
 }
 // sim_geese
-std::vector< std::vector< unsigned int > > sim_geese(SEXP p, const std::vector<double>& par, int seed);
+std::vector< std::vector< size_t > > sim_geese(SEXP p, const std::vector<double>& par, int seed);
 RcppExport SEXP _geese_sim_geese(SEXP pSEXP, SEXP parSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -218,7 +218,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // conditional_prob
-double conditional_prob(SEXP p, const std::vector< double >& params, bool duplication, const std::vector< bool >& state, const IntegerMatrix array, unsigned int i, unsigned int j, bool as_log);
+double conditional_prob(SEXP p, const std::vector< double >& params, bool duplication, const std::vector< bool >& state, const IntegerMatrix array, size_t i, size_t j, bool as_log);
 RcppExport SEXP _geese_conditional_prob(SEXP pSEXP, SEXP paramsSEXP, SEXP duplicationSEXP, SEXP stateSEXP, SEXP arraySEXP, SEXP iSEXP, SEXP jSEXP, SEXP as_logSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -227,8 +227,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
     Rcpp::traits::input_parameter< const std::vector< bool >& >::type state(stateSEXP);
     Rcpp::traits::input_parameter< const IntegerMatrix >::type array(arraySEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type i(iSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type j(jSEXP);
+    Rcpp::traits::input_parameter< size_t >::type i(iSEXP);
+    Rcpp::traits::input_parameter< size_t >::type j(jSEXP);
     Rcpp::traits::input_parameter< bool >::type as_log(as_logSEXP);
     rcpp_result_gen = Rcpp::wrap(conditional_prob(p, params, duplication, state, array, i, j, as_log));
     return rcpp_result_gen;
@@ -255,7 +255,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // rule_limit_changes
-int rule_limit_changes(SEXP p, int term_pos, int lb, int ub, bool duplication);
+int rule_limit_changes(SEXP p, int term_pos, int lb, int ub, size_t duplication);
 RcppExport SEXP _geese_rule_limit_changes(SEXP pSEXP, SEXP term_posSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -263,7 +263,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type term_pos(term_posSEXP);
     Rcpp::traits::input_parameter< int >::type lb(lbSEXP);
     Rcpp::traits::input_parameter< int >::type ub(ubSEXP);
-    Rcpp::traits::input_parameter< bool >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(rule_limit_changes(p, term_pos, lb, ub, duplication));
     return rcpp_result_gen;
 END_RCPP
@@ -297,291 +297,291 @@ BEGIN_RCPP
 END_RCPP
 }
 // term_gains
-int term_gains(SEXP p, std::vector<unsigned int>& funs, unsigned int duplication);
+int term_gains(SEXP p, std::vector<size_t>& funs, size_t duplication);
 RcppExport SEXP _geese_term_gains(SEXP pSEXP, SEXP funsSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< std::vector<unsigned int>& >::type funs(funsSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< std::vector<size_t>& >::type funs(funsSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_gains(p, funs, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_loss
-int term_loss(SEXP p, std::vector<unsigned int>& funs, unsigned int duplication);
+int term_loss(SEXP p, std::vector<size_t>& funs, size_t duplication);
 RcppExport SEXP _geese_term_loss(SEXP pSEXP, SEXP funsSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< std::vector<unsigned int>& >::type funs(funsSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< std::vector<size_t>& >::type funs(funsSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_loss(p, funs, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_cogain
-int term_cogain(SEXP p, unsigned int a, unsigned int b, unsigned int duplication);
+int term_cogain(SEXP p, size_t a, size_t b, size_t duplication);
 RcppExport SEXP _geese_term_cogain(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type a(aSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type b(bSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type a(aSEXP);
+    Rcpp::traits::input_parameter< size_t >::type b(bSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_cogain(p, a, b, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_neofun
-int term_neofun(SEXP p, unsigned int a, unsigned int b, unsigned int duplication);
+int term_neofun(SEXP p, size_t a, size_t b, size_t duplication);
 RcppExport SEXP _geese_term_neofun(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type a(aSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type b(bSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type a(aSEXP);
+    Rcpp::traits::input_parameter< size_t >::type b(bSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_neofun(p, a, b, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_subfun
-int term_subfun(SEXP p, unsigned int a, unsigned int b, unsigned int duplication);
+int term_subfun(SEXP p, size_t a, size_t b, size_t duplication);
 RcppExport SEXP _geese_term_subfun(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type a(aSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type b(bSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type a(aSEXP);
+    Rcpp::traits::input_parameter< size_t >::type b(bSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_subfun(p, a, b, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_maxfuns
-int term_maxfuns(SEXP p, unsigned int lb, unsigned int ub, unsigned int duplication);
+int term_maxfuns(SEXP p, size_t lb, size_t ub, size_t duplication);
 RcppExport SEXP _geese_term_maxfuns(SEXP pSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type lb(lbSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type ub(ubSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type lb(lbSEXP);
+    Rcpp::traits::input_parameter< size_t >::type ub(ubSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_maxfuns(p, lb, ub, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_overall_changes
-int term_overall_changes(SEXP p, unsigned int duplication);
+int term_overall_changes(SEXP p, size_t duplication);
 RcppExport SEXP _geese_term_overall_changes(SEXP pSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_overall_changes(p, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_overall_gains
-int term_overall_gains(SEXP p, unsigned int duplication);
+int term_overall_gains(SEXP p, size_t duplication);
 RcppExport SEXP _geese_term_overall_gains(SEXP pSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_overall_gains(p, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_overall_loss
-int term_overall_loss(SEXP p, unsigned int duplication);
+int term_overall_loss(SEXP p, size_t duplication);
 RcppExport SEXP _geese_term_overall_loss(SEXP pSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_overall_loss(p, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_kgains
-int term_kgains(SEXP p, std::vector<unsigned int>& funs, int k, unsigned int duplication);
+int term_kgains(SEXP p, std::vector<size_t>& funs, int k, size_t duplication);
 RcppExport SEXP _geese_term_kgains(SEXP pSEXP, SEXP funsSEXP, SEXP kSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< std::vector<unsigned int>& >::type funs(funsSEXP);
+    Rcpp::traits::input_parameter< std::vector<size_t>& >::type funs(funsSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_kgains(p, funs, k, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_neofun_a2b
-int term_neofun_a2b(SEXP p, int a, int b, unsigned int duplication);
+int term_neofun_a2b(SEXP p, int a, int b, size_t duplication);
 RcppExport SEXP _geese_term_neofun_a2b(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< int >::type a(aSEXP);
     Rcpp::traits::input_parameter< int >::type b(bSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_neofun_a2b(p, a, b, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_genes_changing
-int term_genes_changing(SEXP p, unsigned int duplication);
+int term_genes_changing(SEXP p, size_t duplication);
 RcppExport SEXP _geese_term_genes_changing(SEXP pSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_genes_changing(p, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_prop_genes_changing
-int term_prop_genes_changing(SEXP p, unsigned int duplication);
+int term_prop_genes_changing(SEXP p, size_t duplication);
 RcppExport SEXP _geese_term_prop_genes_changing(SEXP pSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_prop_genes_changing(p, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_coopt
-int term_coopt(SEXP p, unsigned int a, unsigned int b, unsigned int duplication);
+int term_coopt(SEXP p, size_t a, size_t b, size_t duplication);
 RcppExport SEXP _geese_term_coopt(SEXP pSEXP, SEXP aSEXP, SEXP bSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type a(aSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type b(bSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type a(aSEXP);
+    Rcpp::traits::input_parameter< size_t >::type b(bSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_coopt(p, a, b, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_k_genes_changing
-int term_k_genes_changing(SEXP p, unsigned int k, unsigned int duplication);
+int term_k_genes_changing(SEXP p, size_t k, size_t duplication);
 RcppExport SEXP _geese_term_k_genes_changing(SEXP pSEXP, SEXP kSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type k(kSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_k_genes_changing(p, k, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_less_than_p_prop_genes_changing
-int term_less_than_p_prop_genes_changing(SEXP p, double prop, unsigned int duplication);
+int term_less_than_p_prop_genes_changing(SEXP p, double prop, size_t duplication);
 RcppExport SEXP _geese_term_less_than_p_prop_genes_changing(SEXP pSEXP, SEXP propSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< double >::type prop(propSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_less_than_p_prop_genes_changing(p, prop, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_pairwise_preserving
-int term_pairwise_preserving(SEXP p, unsigned int funA, unsigned int funB, unsigned int duplication);
+int term_pairwise_preserving(SEXP p, size_t funA, size_t funB, size_t duplication);
 RcppExport SEXP _geese_term_pairwise_preserving(SEXP pSEXP, SEXP funASEXP, SEXP funBSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type funA(funASEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type funB(funBSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type funA(funASEXP);
+    Rcpp::traits::input_parameter< size_t >::type funB(funBSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_pairwise_preserving(p, funA, funB, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_gains_from_0
-int term_gains_from_0(SEXP p, std::vector<unsigned int>& fun, unsigned int duplication);
+int term_gains_from_0(SEXP p, std::vector<size_t>& fun, size_t duplication);
 RcppExport SEXP _geese_term_gains_from_0(SEXP pSEXP, SEXP funSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< std::vector<unsigned int>& >::type fun(funSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< std::vector<size_t>& >::type fun(funSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_gains_from_0(p, fun, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_overall_gains_from_0
-int term_overall_gains_from_0(SEXP p, unsigned int duplication);
+int term_overall_gains_from_0(SEXP p, size_t duplication);
 RcppExport SEXP _geese_term_overall_gains_from_0(SEXP pSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_overall_gains_from_0(p, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_pairwise_first_gain
-int term_pairwise_first_gain(SEXP p, unsigned int funA, unsigned int funB, unsigned int duplication);
+int term_pairwise_first_gain(SEXP p, size_t funA, size_t funB, size_t duplication);
 RcppExport SEXP _geese_term_pairwise_first_gain(SEXP pSEXP, SEXP funASEXP, SEXP funBSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type funA(funASEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type funB(funBSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type funA(funASEXP);
+    Rcpp::traits::input_parameter< size_t >::type funB(funBSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_pairwise_first_gain(p, funA, funB, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_preserve_pseudogene
-int term_preserve_pseudogene(SEXP p, unsigned int funA, unsigned int funB, unsigned int duplication);
+int term_preserve_pseudogene(SEXP p, size_t funA, size_t funB, size_t duplication);
 RcppExport SEXP _geese_term_preserve_pseudogene(SEXP pSEXP, SEXP funASEXP, SEXP funBSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type funA(funASEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type funB(funBSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type funA(funASEXP);
+    Rcpp::traits::input_parameter< size_t >::type funB(funBSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_preserve_pseudogene(p, funA, funB, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_pairwise_overall_change
-int term_pairwise_overall_change(SEXP p, unsigned int duplication);
+int term_pairwise_overall_change(SEXP p, size_t duplication);
 RcppExport SEXP _geese_term_pairwise_overall_change(SEXP pSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_pairwise_overall_change(p, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // term_pairwise_neofun_singlefun
-int term_pairwise_neofun_singlefun(SEXP p, unsigned int nfun, unsigned int duplication);
+int term_pairwise_neofun_singlefun(SEXP p, size_t nfun, size_t duplication);
 RcppExport SEXP _geese_term_pairwise_neofun_singlefun(SEXP pSEXP, SEXP nfunSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type nfun(nfunSEXP);
-    Rcpp::traits::input_parameter< unsigned int >::type duplication(duplicationSEXP);
+    Rcpp::traits::input_parameter< size_t >::type nfun(nfunSEXP);
+    Rcpp::traits::input_parameter< size_t >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(term_pairwise_neofun_singlefun(p, nfun, duplication));
     return rcpp_result_gen;
 END_RCPP
 }
 // new_geese
-SEXP new_geese(std::vector< std::vector< unsigned int > >& annotations, std::vector< unsigned int >& geneid, std::vector< int >& parent, std::vector< bool >& duplication);
+SEXP new_geese(std::vector< std::vector< size_t > >& annotations, std::vector< size_t >& geneid, std::vector< int >& parent, std::vector< bool >& duplication);
 RcppExport SEXP _geese_new_geese(SEXP annotationsSEXP, SEXP geneidSEXP, SEXP parentSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< std::vector< std::vector< unsigned int > >& >::type annotations(annotationsSEXP);
-    Rcpp::traits::input_parameter< std::vector< unsigned int >& >::type geneid(geneidSEXP);
+    Rcpp::traits::input_parameter< std::vector< std::vector< size_t > >& >::type annotations(annotationsSEXP);
+    Rcpp::traits::input_parameter< std::vector< size_t >& >::type geneid(geneidSEXP);
     Rcpp::traits::input_parameter< std::vector< int >& >::type parent(parentSEXP);
     Rcpp::traits::input_parameter< std::vector< bool >& >::type duplication(duplicationSEXP);
     rcpp_result_gen = Rcpp::wrap(new_geese(annotations, geneid, parent, duplication));

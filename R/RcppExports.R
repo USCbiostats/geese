@@ -175,10 +175,9 @@ get_support <- function(p) {
 #' @export
 #' @param p An object of class [geese] or [flock].
 #' @param funs Vector of function indices (starting from zero).
-#' @param duplication When `TRUE` indicates that this term is only valid for
-#' duplication events.
+#' @param duplication Integer. 0 for speciation, 1 for duplication and 2 for either.
 #' @name geese-terms
-rule_limit_changes <- function(p, term_pos, lb, ub, duplication = TRUE) {
+rule_limit_changes <- function(p, term_pos, lb, ub, duplication = 1L) {
     invisible(.Call(`_geese_rule_limit_changes`, p, term_pos, lb, ub, duplication))
 }
 
@@ -199,8 +198,7 @@ predict_flock <- function(p, par, leave_one_out = FALSE, use_reduced_sequence = 
 #' @export
 #' @param p An object of class [geese] or [flock].
 #' @param funs Vector of function indices (starting from zero).
-#' @param duplication When `TRUE` indicates that this term is only valid for
-#' duplication events.
+#' @param duplication Integer. 0 for speciation, 1 for duplication and 2 for either.
 #' @name geese-terms
 term_gains <- function(p, funs, duplication = 1L) {
     invisible(.Call(`_geese_term_gains`, p, funs, duplication))
