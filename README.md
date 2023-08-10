@@ -1,13 +1,19 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[![Integrative Methods of Analysis for Genetic
-Epidemiology](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
+<div>
+
+[![](https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg)](https://image.usc.edu)
+
+Integrative Methods of Analysis for Genetic Epidemiology
+
+</div>
 
 # geese: *GE*ne-functional *E*volution using *S*uffici*E*ncy <img src="man/figures/logo.svg" align="right" width="180px"/>
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/USCbiostats/geese/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/USCbiostats/geese/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This R package taps into statistical theory mostly developed in the
@@ -29,11 +35,8 @@ duing [George G. Vega Yon](https://ggv.cl)’s doctoral thesis.
 ## Installation
 
 <!-- You can install the released version of geese from [CRAN](https://CRAN.R-project.org) with: -->
-
 <!-- ``` r -->
-
 <!-- install.packages("geese") -->
-
 <!-- ``` -->
 
 The development version from [GitHub](https://github.com/) with:
@@ -89,7 +92,7 @@ params <- c(
 )
 names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
 
-likelihood(amodel, params*0) # Equals 1 b/c all missings
+likelihood(amodel, params*0)
 #> [1] 1
 
 # Simulating data
@@ -113,11 +116,13 @@ ap <- aphylo_from_data_frame(
 plot(ap)
 ```
 
-<img src="man/figures/README-viz-with-aphylo-1.png" width="100%" />
+<img src="man/figures/README-viz-with-aphylo-1.png"
+style="width:100.0%" />
 
 ## Model fitting MLE
 
 ``` r
+# Creating the object
 # Creating the object
 amodel <- new_geese(
   annotations = fake1,
@@ -140,16 +145,17 @@ print(amodel)
 #> GEESE
 #> INFO ABOUT PHYLOGENY
 #> # of functions           : 2
-#> # of nodes [int; leaf]   : [199; 100]
-#> # of ann. [zeros; ones]  : [87; 113]
+#> # of nodes [int; leaf]   : [99; 100]
+#> # of ann. [zeros; ones]  : [72; 128]
 #> # of events [dupl; spec] : [99; 0]
 #> Largest polytomy         : 2
 #> 
 #> INFO ABOUT THE SUPPORT
-#> Num. of Arrays     : 396
-#> Support size       : 4
-#> Support size range : [0, 14]
-#> Model terms (5)   :
+#> Num. of Arrays       : 396
+#> Support size         : 4
+#> Support size range   : [10, 10]
+#> Transform. Fun.      : no
+#> Model terms (5)    :
 #>  - Gains 0 at duplication
 #>  - Gains 1 at duplication
 #>  - Loss 0 at duplication
@@ -159,14 +165,14 @@ print(amodel)
 # Finding MLE
 geese_mle(amodel, hessian = TRUE)
 #> $par
-#> [1]  1.3024291  1.4904183 -1.4668169 -0.9165704  1.8952822 -0.1918496 -0.5043625
+#> [1]  1.7993079  1.5704879 -1.7983070 -1.5682463  1.8652017 -0.3754293 -2.4625330
 #> 
 #> $value
-#> [1] -58.54824
+#> [1] -113.5329
 #> 
 #> $counts
 #> function gradient 
-#>      454       NA 
+#>      358       NA 
 #> 
 #> $convergence
 #> [1] 0
@@ -175,22 +181,14 @@ geese_mle(amodel, hessian = TRUE)
 #> NULL
 #> 
 #> $hessian
-#>               [,1]          [,2]          [,3]          [,4]          [,5]
-#> [1,] -1.920339e+00  3.092661e-02  9.719647e-02 -5.826438e-01  1.230857e+00
-#> [2,]  3.092661e-02 -2.155737e+00 -2.661554e-01  2.058254e+00  2.388066e+00
-#> [3,]  9.719647e-02 -2.661554e-01 -1.562040e+00  1.126001e-01 -1.189657e+00
-#> [4,] -5.826438e-01  2.058254e+00  1.126001e-01 -5.959471e+00 -3.427126e+00
-#> [5,]  1.230857e+00  2.388066e+00 -1.189657e+00 -3.427126e+00 -2.441145e+01
-#> [6,] -8.064660e-07  1.930012e-06 -1.188383e-06  3.367084e-06 -4.565237e-07
-#> [7,]  6.355805e-06 -8.340431e-04  9.558576e-06 -6.562342e-04  1.888223e-04
-#>               [,6]          [,7]
-#> [1,] -8.064660e-07  6.355805e-06
-#> [2,]  1.930012e-06 -8.340431e-04
-#> [3,] -1.188383e-06  9.558576e-06
-#> [4,]  3.367084e-06 -6.562342e-04
-#> [5,] -4.565237e-07  1.888223e-04
-#> [6,]  4.263256e-08  6.750156e-08
-#> [7,]  6.750156e-08 -2.657963e-05
+#>           [,1]      [,2]       [,3]      [,4]       [,5] [,6] [,7]
+#> [1,] -2.431079  1.528790   4.523126 -2.239999   2.750223    0    0
+#> [2,]  1.528790 -3.908190  -3.182631  5.676470   4.393816    0    0
+#> [3,]  4.523126 -3.182631 -10.266878  4.829841  -5.853157    0    0
+#> [4,] -2.239999  5.676470   4.829841 -8.709530  -6.596900    0    0
+#> [5,]  2.750223  4.393816  -5.853157 -6.596900 -20.994365    0    0
+#> [6,]  0.000000  0.000000   0.000000  0.000000   0.000000    0    0
+#> [7,]  0.000000  0.000000   0.000000  0.000000   0.000000    0    0
 
 transition_prob(
   amodel,
@@ -198,7 +196,7 @@ transition_prob(
   duplication = TRUE, state = c(FALSE, FALSE),
   array = matrix(c(1, 0, 0, 1)*0, ncol=2)
 )
-#> [1] 0.2315802
+#> [1] 0.399769
 ```
 
 ## Model fitting MCMC
@@ -211,15 +209,12 @@ ans_mcmc <- geese_mcmc(
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
   prior   = function(p) dlogis(p, scale = 2, log = TRUE)
   )
-#> 
-#> |0%                 |25%                |50%                |75%           100%|
-#> --------------------------------------------------------------------------------
-#> ////////////////////////////////////////////////////////////////////////////////
 ```
 
 We can take a look at the results like this:
 
-<img src="man/figures/README-mcmc-analysis-1.png" width="100%" />
+<img src="man/figures/README-mcmc-analysis-1.png"
+style="width:100.0%" />
 
     #> 
     #> Iterations = 15000:20000
@@ -231,27 +226,26 @@ We can take a look at the results like this:
     #>    plus standard error of the mean:
     #> 
     #>                                          Mean     SD Naive SE Time-series SE
-    #> Gains 0 at duplication                 1.2723 0.7586 0.010727        0.05294
-    #> Gains 1 at duplication                 1.8373 0.9848 0.013926        0.07326
-    #> Loss 0 at duplication                 -1.4241 0.8064 0.011403        0.05438
-    #> Loss 1 at duplication                 -0.8163 0.5572 0.007879        0.03446
-    #> Genes with [1, 1] funs at duplication  1.9937 0.2215 0.003132        0.01277
-    #> Root 1                                 0.3445 2.9532 0.041761        0.31086
-    #> Root 2                                -0.3347 3.0158 0.042645        0.33184
+    #> Gains 0 at duplication                 2.5163 1.5272 0.021595        0.17972
+    #> Gains 1 at duplication                 2.0925 1.2076 0.017077        0.13709
+    #> Loss 0 at duplication                 -1.7518 0.6079 0.008596        0.05062
+    #> Loss 1 at duplication                 -1.4358 0.6546 0.009257        0.04587
+    #> Genes with [1, 1] funs at duplication  1.8845 0.4698 0.006643        0.03823
+    #> Root 1                                 0.2000 4.5845 0.064828        0.84884
+    #> Root 2                                -0.4791 3.3166 0.046900        0.49277
     #> 
     #> 2. Quantiles for each variable:
     #> 
-    #>                                          2.5%     25%     50%     75%   97.5%
-    #> Gains 0 at duplication                -0.1466  0.7817  1.2424  1.7714 2.73773
-    #> Gains 1 at duplication                 0.2052  1.1583  1.7674  2.4307 3.76635
-    #> Loss 0 at duplication                 -3.0947 -1.9784 -1.4155 -0.8769 0.06948
-    #> Loss 1 at duplication                 -1.8223 -1.1907 -0.8697 -0.4792 0.39775
-    #> Genes with [1, 1] funs at duplication  1.6037  1.8319  1.9926  2.1413 2.42520
-    #> Root 1                                -4.9226 -1.7294  0.2676  2.0521 6.89956
-    #> Root 2                                -6.3861 -2.1793 -0.2905  1.6815 5.45537
+    #>                                          2.5%    25%      50%    75%   97.5%
+    #> Gains 0 at duplication                 0.3490  1.484  2.22730  3.187  6.9267
+    #> Gains 1 at duplication                 0.3154  1.258  1.89930  2.630  5.2817
+    #> Loss 0 at duplication                 -2.9349 -2.191 -1.72650 -1.306 -0.6860
+    #> Loss 1 at duplication                 -2.7509 -1.892 -1.44436 -0.984 -0.1482
+    #> Genes with [1, 1] funs at duplication  1.0690  1.534  1.86367  2.195  2.8358
+    #> Root 1                                -8.7570 -2.336  0.03266  2.579 10.9341
+    #> Root 2                                -6.9796 -2.679 -0.45639  1.848  5.8369
 
 ``` r
-# Obtaining estimates
 par_estimates <- colMeans(window(ans_mcmc, start = 20000))
 ans_pred      <- predict_geese(amodel, par_estimates, leave_one_out = TRUE)
 ans_pred      <- do.call(rbind, ans_pred)
@@ -263,7 +257,7 @@ ann_obs <- do.call(rbind, fake1)
 hist(abs(ans_pred - ann_obs))
 ```
 
-<img src="man/figures/README-prediction-1.png" width="100%" />
+<img src="man/figures/README-prediction-1.png" style="width:100.0%" />
 
 ``` r
 
@@ -275,20 +269,27 @@ hist(abs(ans_pred - ann_obs))
 #> Prediction score (H0: Observed = Random)
 #> 
 #>  N obs.      : 398
-#>  alpha(0, 1) : 0.42, 0.58
-#>  Observed    : 0.81 ***
-#>  Random      : 0.51 
-#>  P(<t)       : 0.0000
+#>  alpha(0, 1) : 0.37, 0.63
+#>  Observed    : 0.55 
+#>  Random      : 0.53 
+#>  P(<t)       : 0.2869
 #> --------------------------------------------------------------------------------
 #> Values scaled to range between 0 and 1, 1 being best.
 #> 
 #> Significance levels: *** p < .01, ** p < .05, * p < .10
-#> AUC 0.93.
-#> MAE 0.19.
+#> AUC 0.51.
+#> MAE 0.45.
+
 plot(ans$auc)
 ```
 
-<img src="man/figures/README-prediction-2.png" width="100%" />
+<img src="man/figures/README-prediction-2.png" style="width:100.0%" />
+
+<!-- We can compare these results to what we would obtain using aphylo -->
+<!-- # ```{r aphylo} -->
+<!-- # ans_aphylo <- aphylo_mcmc(ap ~ mu_d + mu_s + Pi) -->
+<!-- # (ps <- prediction_score(ans_aphylo)) -->
+<!-- # ``` -->
 
 ## Using a flock
 
@@ -315,16 +316,14 @@ add_geese(
   duplication = duplication  
 )
 
-# Adding the model terms
-term_gains(flock, 0:1)
-term_loss(flock, 0:1)
-term_maxfuns(flock, 1, 1)
+# Persistence to preserve parent state
+term_gains(flock, 0:1, duplication = 1)
+term_gains(flock, 0:1, duplication = 1)
+term_maxfuns(flock, 1, 1, duplication = 1)
 
 # We need to initialize to do all the accountintg
 init_model(flock)
-#> Initializing nodes in Geese (this could take a while)...
-#> ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| done.
-#> Initializing nodes in Geese (this could take a while)...
+#> Initializing nodes in Flock (this could take a while)...
 #> ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| done.
 
 print(flock)
@@ -332,19 +331,20 @@ print(flock)
 #> INFO ABOUT THE PHYLOGENIES
 #> # of phylogenies         : 2
 #> # of functions           : 2
-#> # of ann. [zeros; ones]  : [166; 234]
+#> # of ann. [zeros; ones]  : [145; 255]
 #> # of events [dupl; spec] : [198; 0]
 #> Largest polytomy         : 2
 #> 
 #> INFO ABOUT THE SUPPORT
-#> Num. of Arrays     : 792
-#> Support size       : 4
-#> Support size range : [0, 14]
-#> Model terms (5)   :
+#> Num. of Arrays       : 792
+#> Support size         : 4
+#> Support size range   : [3, 10]
+#> Transform. Fun.      : no
+#> Model terms (5)    :
 #>  - Gains 0 at duplication
 #>  - Gains 1 at duplication
-#>  - Loss 0 at duplication
-#>  - Loss 1 at duplication
+#>  - Gains 0 at duplication
+#>  - Gains 1 at duplication
 #>  - Genes with [1, 1] funs at duplication
 ```
 
@@ -378,7 +378,7 @@ for (i in 1:ncol(ans_mcmc2)) {
 par(op)
 ```
 
-<img src="man/figures/README-viz-flock-1.png" width="100%" />
+<img src="man/figures/README-viz-flock-1.png" style="width:100.0%" />
 
 ``` r
 summary(window(ans_mcmc2, start = 10000))
@@ -391,33 +391,33 @@ summary(window(ans_mcmc2, start = 10000))
 #> 1. Empirical mean and standard deviation for each variable,
 #>    plus standard error of the mean:
 #> 
-#>          Mean     SD Naive SE Time-series SE
-#> par1  1.75029 0.5658 0.005658       0.031031
-#> par2  1.15245 0.6418 0.006418       0.031898
-#> par3 -1.27191 0.5489 0.005488       0.026757
-#> par4 -1.37351 0.3635 0.003635       0.015714
-#> par5  1.81130 0.1630 0.001630       0.007164
-#> par6  0.20264 2.6196 0.026195       0.304291
-#> par7 -0.09525 1.9988 0.019987       0.192587
+#>                                         Mean     SD Naive SE Time-series SE
+#> Gains 0 at duplication                1.2650 2.2088 0.022087       0.222041
+#> Gains 1 at duplication                0.6656 2.5350 0.025348       0.445193
+#> Gains 0 at duplication                1.5533 2.3386 0.023385       0.333928
+#> Gains 1 at duplication                0.6474 2.5415 0.025414       0.394829
+#> Genes with [1, 1] funs at duplication 0.8878 0.1446 0.001446       0.004478
+#> Root 1                                0.5259 3.5929 0.035927       0.363434
+#> Root 2                                0.1195 3.6405 0.036403       0.413736
 #> 
 #> 2. Quantiles for each variable:
 #> 
-#>          2.5%     25%     50%     75%   97.5%
-#> par1  0.72459  1.3498  1.7308  2.1272  2.8592
-#> par2  0.03824  0.7103  1.1054  1.5305  2.5470
-#> par3 -2.37365 -1.6300 -1.2692 -0.9166 -0.1438
-#> par4 -2.09160 -1.6242 -1.3736 -1.1207 -0.6764
-#> par5  1.49584  1.6992  1.8025  1.9109  2.1439
-#> par6 -4.78636 -1.4981  0.1150  1.8273  5.1856
-#> par7 -4.12554 -1.3982 -0.1091  1.1896  4.0561
+#>                                          2.5%      25%      50%    75% 97.5%
+#> Gains 0 at duplication                -3.3453 -0.16720  1.28576 2.7768 5.455
+#> Gains 1 at duplication                -4.5441 -1.03143  0.92544 2.4571 5.112
+#> Gains 0 at duplication                -2.4602 -0.07041  1.44898 2.8152 6.893
+#> Gains 1 at duplication                -3.9060 -1.09242  0.33373 2.3327 5.772
+#> Genes with [1, 1] funs at duplication  0.6098  0.78839  0.89160 0.9865 1.166
+#> Root 1                                -7.0003 -1.66898  0.41966 2.6846 8.177
+#> Root 2                                -7.0876 -2.23377 -0.03671 2.3143 7.521
 ```
 
 ## Limiting the support
 
 In this example, we use the function `rule_limit_changes()` to apply a
-constraint to the support of the model. This takes the 6th term (5th
-since the index is in C++), and restricts the support to states where
-there are between \([0, 2]\) changes, at most.
+constraint to the support of the model. This takes the first 2 term (0
+and 1 since the index is in C++), and restricts the support to states
+where there are between $[0, 2]$ changes, at most.
 
 This should be useful when dealing with multiple functions or
 [pylotomies](https://en.wikipedia.org/wiki/Polytomy).
@@ -440,7 +440,6 @@ term_overall_changes(amodel_limited, TRUE)
 # At most one gain
 rule_limit_changes(amodel_limited, 5, 0, 2)
 
-
 # We need to initialize to do all the accounting
 init_model(amodel_limited)
 #> Initializing nodes in Geese (this could take a while)...
@@ -448,7 +447,7 @@ init_model(amodel_limited)
 
 # Is limiting the support any useful?
 support_size(amodel_limited)
-#> [1] 38
+#> [1] 196
 ```
 
 Since we added the constraint based on the term
@@ -468,7 +467,8 @@ ans_mcmc2 <- geese_mcmc(
   )
 ```
 
-<img src="man/figures/README-mcmc-analysis-limited-1.png" width="100%" />
+<img src="man/figures/README-mcmc-analysis-limited-1.png"
+style="width:100.0%" />
 
     #> 
     #> Iterations = 15000:20000
@@ -479,27 +479,27 @@ ans_mcmc2 <- geese_mcmc(
     #> 1. Empirical mean and standard deviation for each variable,
     #>    plus standard error of the mean:
     #> 
-    #>         Mean     SD Naive SE Time-series SE
-    #> par1  1.5978 0.7201 0.010182        0.04988
-    #> par2  0.2838 0.6662 0.009421        0.04107
-    #> par3 -0.5430 0.7374 0.010428        0.04801
-    #> par4 -1.6198 0.4177 0.005906        0.02535
-    #> par5  1.5778 0.2493 0.003525        0.01590
-    #> par6  0.0000 0.0000 0.000000        0.00000
-    #> par7  0.9949 4.0323 0.057019        0.68642
-    #> par8  0.2408 4.1023 0.058010        0.78150
+    #>                                          Mean     SD Naive SE Time-series SE
+    #> Gains 0 at duplication                 1.6856 0.7710 0.010903        0.06718
+    #> Gains 1 at duplication                 1.2504 0.6159 0.008710        0.05071
+    #> Loss 0 at duplication                 -2.1333 0.4745 0.006710        0.03759
+    #> Loss 1 at duplication                 -2.0015 0.5112 0.007228        0.03887
+    #> Genes with [1, 1] funs at duplication  1.8496 0.4501 0.006365        0.04513
+    #> Overall changes at duplication         0.0000 0.0000 0.000000        0.00000
+    #> Root 1                                 1.2771 3.7952 0.053667        0.68404
+    #> Root 2                                 0.8512 4.1709 0.058980        0.88754
     #> 
     #> 2. Quantiles for each variable:
     #> 
-    #>         2.5%     25%     50%      75%   97.5%
-    #> par1  0.2735  1.0748  1.6196  2.08840  3.0638
-    #> par2 -1.0489 -0.1436  0.2981  0.70806  1.6241
-    #> par3 -1.9553 -1.0994 -0.5369 -0.03162  0.9411
-    #> par4 -2.4332 -1.9108 -1.6239 -1.35157 -0.7724
-    #> par5  1.1535  1.3999  1.5442  1.72195  2.1680
-    #> par6  0.0000  0.0000  0.0000  0.00000  0.0000
-    #> par7 -5.9244 -1.3063  0.4356  2.95659 11.2694
-    #> par8 -9.3450 -2.1194  0.1551  2.63111  8.7294
+    #>                                          2.5%     25%     50%    75%  97.5%
+    #> Gains 0 at duplication                 0.2086  1.2028  1.6296  2.094  3.416
+    #> Gains 1 at duplication                 0.1729  0.8426  1.1963  1.607  2.741
+    #> Loss 0 at duplication                 -3.2783 -2.4047 -2.0937 -1.817 -1.312
+    #> Loss 1 at duplication                 -3.0921 -2.3142 -1.9863 -1.634 -1.059
+    #> Genes with [1, 1] funs at duplication  1.0983  1.5270  1.8241  2.102  2.881
+    #> Overall changes at duplication         0.0000  0.0000  0.0000  0.000  0.000
+    #> Root 1                                -6.9795 -0.7165  1.2224  3.274 10.102
+    #> Root 2                                -6.7988 -1.8052  0.8011  3.201 11.354
 
 # Code of Conduct
 

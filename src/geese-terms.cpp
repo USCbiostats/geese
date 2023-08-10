@@ -24,13 +24,13 @@ int term_gains(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_gains(ptr->get_counters(), funs, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_gains(ptr->get_counters(), funs, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_gains(ptr->get_counters(), funs, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_gains(ptr->get_counters(), funs, duplication);
 
   } IF_NEITHER()
 
@@ -46,13 +46,13 @@ int term_loss(SEXP p, std::vector<size_t> & funs,
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_loss(ptr->get_counters(), funs, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_loss(ptr->get_counters(), funs, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_loss(ptr->get_counters(), funs, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_loss(ptr->get_counters(), funs, duplication);
 
   } IF_NEITHER()
 
@@ -68,13 +68,13 @@ int term_cogain(SEXP p, size_t a, size_t b, size_t duplication = 1) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_cogain(ptr->get_counters(), a, b, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_cogain(ptr->get_counters(), a, b, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_cogain(ptr->get_counters(), a, b, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_cogain(ptr->get_counters(), a, b, duplication);
 
   } IF_NEITHER()
 
@@ -89,13 +89,13 @@ int term_neofun(SEXP p, size_t a, size_t b, size_t duplication = 1) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_neofun(ptr->get_counters(), a, b, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_neofun(ptr->get_counters(), a, b, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_neofun(ptr->get_counters(), a, b, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_neofun(ptr->get_counters(), a, b, duplication);
 
   } IF_NEITHER()
 
@@ -113,13 +113,13 @@ int term_subfun(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_subfun(ptr->get_counters(), a, b, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_subfun(ptr->get_counters(), a, b, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_subfun(ptr->get_counters(), a, b, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_subfun(ptr->get_counters(), a, b, duplication);
 
   } IF_NEITHER()
 
@@ -138,15 +138,15 @@ int term_maxfuns(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_maxfuns(
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_maxfuns(
       ptr->get_counters(), lb, ub, duplication
     );
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_maxfuns(
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_maxfuns(
       ptr->get_counters(), lb, ub, duplication
     );
 
@@ -164,13 +164,13 @@ int term_overall_changes(SEXP p, size_t duplication = 1) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_overall_changes(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_overall_changes(ptr->get_counters(), duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_overall_changes(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_overall_changes(ptr->get_counters(), duplication);
 
   } IF_NEITHER()
 
@@ -186,13 +186,13 @@ int term_overall_gains(SEXP p, size_t duplication = 1) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_overall_gains(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_overall_gains(ptr->get_counters(), duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_overall_gains(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_overall_gains(ptr->get_counters(), duplication);
 
   } IF_NEITHER()
 
@@ -208,13 +208,13 @@ int term_overall_loss(SEXP p, size_t duplication = 1) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_overall_loss(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_overall_loss(ptr->get_counters(), duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_overall_loss(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_overall_loss(ptr->get_counters(), duplication);
 
   } IF_NEITHER()
 
@@ -236,15 +236,15 @@ int term_kgains(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_gains_k_offspring(
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_gains_k_offspring(
       ptr->get_counters(), funs,
       static_cast<size_t>(k), duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_gains_k_offspring(
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_gains_k_offspring(
       ptr->get_counters(), funs,
       static_cast<size_t>(k), duplication);
 
@@ -268,13 +268,13 @@ int term_neofun_a2b(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_neofun_a2b(ptr->get_counters(), a, b, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_neofun_a2b(ptr->get_counters(), a, b, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_neofun_a2b(ptr->get_counters(), a, b, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_neofun_a2b(ptr->get_counters(), a, b, duplication);
 
   } IF_NEITHER()
 
@@ -294,13 +294,13 @@ int term_genes_changing(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_genes_changing(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_genes_changing(ptr->get_counters(), duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_genes_changing(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_genes_changing(ptr->get_counters(), duplication);
 
   } IF_NEITHER()
 
@@ -318,13 +318,13 @@ int term_prop_genes_changing(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_prop_genes_changing(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_prop_genes_changing(ptr->get_counters(), duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_prop_genes_changing(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_prop_genes_changing(ptr->get_counters(), duplication);
 
   } IF_NEITHER()
 
@@ -346,13 +346,13 @@ int term_coopt(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_co_opt(ptr->get_counters(), a, b, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_co_opt(ptr->get_counters(), a, b, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_co_opt(ptr->get_counters(), a, b, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_co_opt(ptr->get_counters(), a, b, duplication);
 
   } IF_NEITHER()
 
@@ -371,13 +371,13 @@ int term_k_genes_changing(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_k_genes_changing(ptr->get_counters(), k, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_k_genes_changing(ptr->get_counters(), k, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_k_genes_changing(ptr->get_counters(), k, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_k_genes_changing(ptr->get_counters(), k, duplication);
 
   } IF_NEITHER()
 
@@ -396,13 +396,13 @@ int term_less_than_p_prop_genes_changing(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_less_than_p_prop_genes_changing(ptr->get_counters(), prop, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_less_than_p_prop_genes_changing(ptr->get_counters(), prop, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_less_than_p_prop_genes_changing(ptr->get_counters(), prop, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_less_than_p_prop_genes_changing(ptr->get_counters(), prop, duplication);
 
   } IF_NEITHER()
 
@@ -422,13 +422,13 @@ int term_pairwise_preserving(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_pairwise_preserving(ptr->get_counters(), funA, funB, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_pairwise_preserving(ptr->get_counters(), funA, funB, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_pairwise_preserving(ptr->get_counters(), funA, funB, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_pairwise_preserving(ptr->get_counters(), funA, funB, duplication);
 
   } IF_NEITHER()
 
@@ -447,13 +447,13 @@ int term_gains_from_0(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_gains_from_0(ptr->get_counters(), fun, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_gains_from_0(ptr->get_counters(), fun, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_gains_from_0(ptr->get_counters(), fun, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_gains_from_0(ptr->get_counters(), fun, duplication);
 
   } IF_NEITHER()
 
@@ -471,13 +471,13 @@ int term_overall_gains_from_0(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_overall_gains_from_0(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_overall_gains_from_0(ptr->get_counters(), duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_overall_gains_from_0(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_overall_gains_from_0(ptr->get_counters(), duplication);
 
   } IF_NEITHER()
 
@@ -497,13 +497,13 @@ int term_pairwise_first_gain(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_pairwise_first_gain(ptr->get_counters(), funA, funB, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_pairwise_first_gain(ptr->get_counters(), funA, funB, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_pairwise_first_gain(ptr->get_counters(), funA, funB, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_pairwise_first_gain(ptr->get_counters(), funA, funB, duplication);
 
   } IF_NEITHER()
 
@@ -524,13 +524,13 @@ int term_preserve_pseudogene(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_preserve_pseudogene(ptr->get_counters(), funA, funB, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_preserve_pseudogene(ptr->get_counters(), funA, funB, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_preserve_pseudogene(ptr->get_counters(), funA, funB, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_preserve_pseudogene(ptr->get_counters(), funA, funB, duplication);
 
   } IF_NEITHER()
 
@@ -549,13 +549,13 @@ int term_pairwise_overall_change(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_pairwise_overall_change(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_pairwise_overall_change(ptr->get_counters(), duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_pairwise_overall_change(ptr->get_counters(), duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_pairwise_overall_change(ptr->get_counters(), duplication);
 
   } IF_NEITHER()
 
@@ -574,13 +574,13 @@ int term_pairwise_neofun_singlefun(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
-    phylocounters::counter_pairwise_neofun_singlefun(ptr->get_counters(), nfun, duplication);
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    geese::counter_pairwise_neofun_singlefun(ptr->get_counters(), nfun, duplication);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
-    phylocounters::counter_pairwise_neofun_singlefun(ptr->get_counters(), nfun, duplication);
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    geese::counter_pairwise_neofun_singlefun(ptr->get_counters(), nfun, duplication);
 
   } IF_NEITHER()
 

@@ -14,7 +14,7 @@ using namespace Rcpp;
 // [[Rcpp::export(rng = false)]]
 SEXP new_flock() {
 
-  Rcpp::XPtr< Flock > dat(new Flock());
+  Rcpp::XPtr<geese::Flock> dat(new geese::Flock());
 
   dat.attr("class") = "flock";
 
@@ -40,7 +40,7 @@ int add_geese(
 
   CHECK_FLOCK(p)
 
-  Rcpp::XPtr< Flock >ptr(p);
+  Rcpp::XPtr<geese::Flock>ptr(p);
   ptr->add_data(annotations, geneid, parent, duplication);
 
   return 0;

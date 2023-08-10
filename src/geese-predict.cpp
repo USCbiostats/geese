@@ -21,7 +21,7 @@ std::vector< std::vector< double > > predict_geese(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
+    Rcpp::XPtr<geese::Geese>ptr(p);
     res = ptr->predict(
       par, nullptr, leave_one_out, only_annotated, use_reduced_sequence
       );
@@ -56,7 +56,7 @@ std::vector< std::vector< std::vector< double > > > predict_flock(
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
+    Rcpp::XPtr<geese::Flock>ptr(p);
     for (auto& d : ptr->dat)
       res.push_back(
         d.predict(

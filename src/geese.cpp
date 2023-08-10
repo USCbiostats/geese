@@ -22,8 +22,8 @@ SEXP new_geese(
     std::vector< bool > & duplication
 ) {
 
-  Rcpp::XPtr< Geese > dat(
-      new Geese(annotations, geneid, parent, duplication
+  Rcpp::XPtr<geese::Geese> dat(
+      new geese::Geese(annotations, geneid, parent, duplication
       ));
 
   dat.attr("class") = "geese";

@@ -20,12 +20,12 @@ int init_model(SEXP p, int verb = 80) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
+    Rcpp::XPtr<geese::Geese>ptr(p);
     ptr->init(verb);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
+    Rcpp::XPtr<geese::Flock>ptr(p);
     ptr->init(verb);
 
   } IF_NEITHER()
@@ -44,12 +44,12 @@ int nterms(SEXP p) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
+    Rcpp::XPtr<geese::Geese>ptr(p);
     return static_cast<int>(ptr->nterms());
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
+    Rcpp::XPtr<geese::Flock>ptr(p);
     return static_cast<int>(ptr->nterms());
 
   } IF_NEITHER()
@@ -66,12 +66,12 @@ IntegerVector nnodes(SEXP p) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
+    Rcpp::XPtr<geese::Geese>ptr(p);
     return wrap(ptr->nnodes());
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
+    Rcpp::XPtr<geese::Flock>ptr(p);
     return wrap(ptr->nnodes());
 
   } IF_NEITHER()
@@ -92,7 +92,7 @@ int ntrees(SEXP p) {
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
+    Rcpp::XPtr<geese::Flock>ptr(p);
     return ptr->ntrees();
 
   } IF_NEITHER()
@@ -107,12 +107,12 @@ IntegerVector nleafs(SEXP p) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
+    Rcpp::XPtr<geese::Geese>ptr(p);
     return wrap(ptr->nleafs());
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
+    Rcpp::XPtr<geese::Flock>ptr(p);
     return wrap(ptr->nleafs());
 
   } IF_NEITHER()
@@ -136,12 +136,12 @@ double likelihood(
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
+    Rcpp::XPtr<geese::Geese>ptr(p);
     return ptr->likelihood(par, as_log, trunc_seq);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
+    Rcpp::XPtr<geese::Flock>ptr(p);
     return ptr->likelihood_joint(par, as_log, trunc_seq);
 
   } IF_NEITHER()
@@ -156,7 +156,7 @@ NumericMatrix get_probabilities(SEXP p) {
 
   CHECK_GEESE(p)
 
-  Rcpp::XPtr< Geese >ptr(p);
+  Rcpp::XPtr<geese::Geese>ptr(p);
   size_t N = ptr->nodes.size();
   size_t M = ptr->get_states().size();
   NumericMatrix m(N, M);
@@ -181,7 +181,7 @@ std::vector< size_t > get_sequence(
 
   CHECK_GEESE(p)
 
-  Rcpp::XPtr< Geese >ptr(p);
+  Rcpp::XPtr<geese::Geese>ptr(p);
   return reduced_sequence ? ptr->reduced_sequence : ptr->sequence;
 }
 
@@ -192,12 +192,12 @@ int set_seed(SEXP p, size_t s) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese >ptr(p);
+    Rcpp::XPtr<geese::Geese>ptr(p);
     ptr->set_seed(s);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock >ptr(p);
+    Rcpp::XPtr<geese::Flock>ptr(p);
     ptr->set_seed(s);
 
   } IF_NEITHER()
@@ -216,7 +216,7 @@ std::vector< std::vector< size_t > > sim_geese(
 
   CHECK_GEESE(p)
 
-  Rcpp::XPtr< Geese > ptr(p);
+  Rcpp::XPtr<geese::Geese> ptr(p);
 
   if (seed > 0)
     ptr->set_seed(seed);
@@ -234,7 +234,7 @@ std::vector< std::vector< double > > observed_counts(
 
   CHECK_GEESE(p)
 
-  Rcpp::XPtr< Geese > ptr(p);
+  Rcpp::XPtr<geese::Geese> ptr(p);
 
   return ptr->observed_counts();
 
@@ -249,7 +249,7 @@ int print_observed_counts(
 
   CHECK_GEESE(p)
 
-  Rcpp::XPtr< Geese > ptr(p);
+  Rcpp::XPtr<geese::Geese> ptr(p);
 
   ptr->print_observed_counts();
   return 0;
@@ -264,12 +264,12 @@ int support_size(SEXP p) {
   int ans;
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese > ptr(p);
+    Rcpp::XPtr<geese::Geese> ptr(p);
     ans = static_cast<int>(ptr->support_size());
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock > ptr(p);
+    Rcpp::XPtr<geese::Flock> ptr(p);
     ans = static_cast<int>(ptr->get_support_fun()->get_data().size());
 
   } IF_NEITHER()
@@ -286,13 +286,13 @@ int parse_polytomies(SEXP p, bool verbose = true) {
   std::vector< size_t > vec_ans;
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese > ptr(p);
+    Rcpp::XPtr<geese::Geese> ptr(p);
 //    (void) ptr->parse_polytomies(verbose, &vec_ans);
     return ptr->parse_polytomies(verbose);
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock > ptr(p);
+    Rcpp::XPtr<geese::Flock> ptr(p);
     //(void) ptr->parse_polytomies(verbose, &vec_ans);
     return ptr->parse_polytomies(verbose);
 
@@ -310,12 +310,12 @@ int nfuns(SEXP p) {
   int ans = 0;
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese > ptr(p);
+    Rcpp::XPtr<geese::Geese> ptr(p);
     ans = static_cast<int>(ptr->nfuns());
 
   } IF_FLOCK(p) {
 
-    Rcpp::XPtr< Flock > ptr(p);
+    Rcpp::XPtr<geese::Flock> ptr(p);
     ans = static_cast<int>(ptr->nfuns());
 
   } IF_NEITHER()
@@ -331,12 +331,12 @@ std::vector< std::string > names_geese(SEXP p) {
 
   IF_GEESE(p) {
 
-    Rcpp::XPtr< Geese > ptr(p);
+    Rcpp::XPtr<geese::Geese> ptr(p);
     return ptr->colnames();
 
   } IF_FLOCK(p){
 
-    Rcpp::XPtr< Flock > ptr(p);
+    Rcpp::XPtr<geese::Flock> ptr(p);
     return ptr->colnames();
 
 
@@ -365,9 +365,9 @@ double transition_prob(
   if (state.size() != static_cast<size_t>(array.nrow()))
     stop("The length of -state- does not match the number of functions in -nrow-.");
 
-  PhyloArray A(array.nrow(), array.ncol());
+  geese::PhyloArray A(array.nrow(), array.ncol());
   A.set_data(
-    new NodeData(std::vector<double>(1.0, array.ncol()), state, duplication),
+    new geese::NodeData(std::vector<double>(1.0, array.ncol()), state, duplication),
     true
   );
 
@@ -379,13 +379,13 @@ double transition_prob(
   {
 
     // Preparing data
-    Rcpp::XPtr< Geese > ptr(p);
+    Rcpp::XPtr<geese::Geese> ptr(p);
     return ptr->get_model()->likelihood(params, A, -1, as_log);
 
   } IF_FLOCK(p) {
 
     // Preparing data
-    Rcpp::XPtr< Flock > ptr(p);
+    Rcpp::XPtr<geese::Flock> ptr(p);
     return ptr->get_model()->likelihood(params, A, -1, as_log);
 
   } IF_NEITHER()
@@ -414,9 +414,9 @@ double conditional_prob(
   if (state.size() != static_cast<size_t>(array.nrow()))
     stop("The length of -state- does not match the number of functions in -nrow-.");
 
-  PhyloArray A(array.nrow(), array.ncol());
+  geese::PhyloArray A(array.nrow(), array.ncol());
   A.set_data(
-    new NodeData(std::vector<double>(1.0, array.ncol()), state, duplication),
+    new geese::NodeData(std::vector<double>(1.0, array.ncol()), state, duplication),
     true
   );
 
@@ -428,13 +428,13 @@ double conditional_prob(
   {
 
     // Preparing data
-    Rcpp::XPtr< Geese > ptr(p);
+    Rcpp::XPtr<geese::Geese> ptr(p);
     return ptr->get_model()->conditional_prob(A, params, i, j);
 
   } IF_FLOCK(p) {
 
     // Preparing data
-    Rcpp::XPtr< Flock > ptr(p);
+    Rcpp::XPtr<geese::Flock> ptr(p);
     return ptr->get_model()->conditional_prob(A, params, i, j);
 
   } IF_NEITHER()
@@ -451,13 +451,13 @@ int print_geese(SEXP p)
   {
 
     // Preparing data
-    Rcpp::XPtr< Geese > ptr(p);
+    Rcpp::XPtr<geese::Geese> ptr(p);
     ptr->print();
 
   } IF_FLOCK(p) {
 
     // Preparing data
-    Rcpp::XPtr< Flock > ptr(p);
+    Rcpp::XPtr<geese::Flock> ptr(p);
     ptr->print();
 
   } IF_NEITHER()
@@ -480,7 +480,7 @@ std::vector< NumericMatrix > get_support(SEXP p)
   {
 
     // Preparing data
-    Rcpp::XPtr< Geese > ptr(p);
+    Rcpp::XPtr<geese::Geese> ptr(p);
     dat     = *(ptr->get_model()->get_stats_support());
     n_terms = ptr->nterms() - ptr->nfuns() + 1u;
 
@@ -491,7 +491,7 @@ std::vector< NumericMatrix > get_support(SEXP p)
   } IF_FLOCK(p) {
 
     // Preparing data
-    Rcpp::XPtr< Flock > ptr(p);
+    Rcpp::XPtr<geese::Flock> ptr(p);
     dat     = *(ptr->get_model()->get_stats_support());
     n_terms = ptr->nterms() - ptr->nfuns() + 1u;
 

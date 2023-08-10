@@ -1,7 +1,5 @@
 ---
-output:
-  github_document:
-    html_preview: false
+format: gfm
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -63,10 +61,10 @@ n <- 100L
 annotations <- replicate(n * 2 - 1, c(9, 9), simplify = FALSE)
 
 # Random tree
-set.seed(3151)
+set.seed(31)
 tree <- aphylo::sim_tree(n)$edge - 1L
 
-duplication <- c(rep(FALSE, n), sample.int(2, n - 1, replace = TRUE, prob = c(.8, .2)) == 2)
+duplication <- rep(TRUE, n * 2 - 1)
 
 # Reading the data in
 amodel <- new_geese(
@@ -76,32 +74,26 @@ amodel <- new_geese(
   duplication = duplication
   )
 
-# Persistence to preserve parent state
-term_overall_changes(amodel, duplication = 0)
-term_overall_changes(amodel, duplication = 1)
-
-# Tendency for only one sib gaining function 0
-term_pairwise_neofun_singlefun(amodel, 0, duplication = 1)
-
-# Function 1 is gain from function 0
-term_neofun_a2b(amodel, 0, 1, duplication = 1)
-
+# Preparing the model
+term_gains(amodel, 0:1)
+term_loss(amodel, 0:1)
+term_maxfuns(amodel, 1, 1)
 init_model(amodel)
 
 # Testing
 params <- c(
-  # Persist the parent state
-  -4, -4, 
-  # Gain function 0
-  3, 
-  # Neofun 0 -> 1
-  5,
+  # Gains
+  2, 1.5,
+  # Loss
+  -2, -1.5,
+  # Max funs
+  2, 
   # Root probabilities
   -10, -10
 )
-names(params) <- c(names(amodel), "root0", "root1")
+names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
 
-likelihood(amodel, params*0) # Equals 1 b/c all missings
+likelihood(amodel, params*0)
 
 # Simulating data
 fake1 <- sim_geese(p = amodel, par = params, seed = 1110)
@@ -117,8 +109,7 @@ ap <- aphylo_from_data_frame(
   annotations = data.frame(
     id = c(tree[, 2], n),
     do.call(rbind, fake1)
-    ),
-  types = data.frame(0:(2*n-2), as.integer(!duplication))
+    )
 )
 plot(ap)
 ```
@@ -127,6 +118,7 @@ plot(ap)
 
 ```{r mle}
 # Creating the object
+# Creating the object
 amodel <- new_geese(
   annotations = fake1,
   geneid      = c(tree[, 2], n),
@@ -134,15 +126,10 @@ amodel <- new_geese(
   duplication = duplication
   )
 
-# Persistence to preserve parent state
-term_overall_changes(amodel, duplication = 0)
-term_overall_changes(amodel, duplication = 1)
-
-# Tendency for only one sib gaining function 0
-term_pairwise_neofun_singlefun(amodel, 0, duplication = 1)
-
-# Function 1 is gain from function 0
-term_neofun_a2b(amodel, 0, 1, duplication = 1)
+# Adding the model terms
+term_gains(amodel, 0:1)
+term_loss(amodel, 0:1)
+term_maxfuns(amodel, 1, 1)
 
 # We need to initialize to do all the accounting
 init_model(amodel)
@@ -154,7 +141,7 @@ geese_mle(amodel, hessian = TRUE)
 
 transition_prob(
   amodel,
-  params = params[-((length(params) - 1):length(params))], 
+  params = c(-1, -1, -2, -2, -.5), 
   duplication = TRUE, state = c(FALSE, FALSE),
   array = matrix(c(1, 0, 0, 1)*0, ncol=2)
 )
@@ -168,7 +155,7 @@ ans_mcmc <- geese_mcmc(
   amodel,
   nsteps  = 20000,
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
-  prior   = function(p) dnorm(p, sd = 2, log = TRUE)
+  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
   )
 ```
 
@@ -195,18 +182,12 @@ summary(window(mcmc_estimates, start = end(ans_mcmc) * 3/4))
 ```
 
 ```{r prediction}
-# Obtaining estimates
-par_estimates <- colMeans(window(ans_mcmc, start = end(ans_mcmc) * 3/4))
+par_estimates <- colMeans(window(ans_mcmc, start = 20000))
 ans_pred      <- predict_geese(amodel, par_estimates, leave_one_out = TRUE)
 ans_pred      <- do.call(rbind, ans_pred)
 
 # Preparing annotations
 ann_obs <- do.call(rbind, fake1)
-
-# Subsetting
-idx <- which(tree[, 2] < 100)
-ans_pred <- ans_pred[idx,]
-ann_obs <- ann_obs[idx,]
 
 # Mean Absolute Error
 hist(abs(ans_pred - ann_obs))
@@ -216,6 +197,7 @@ hist(abs(ans_pred - ann_obs))
   cbind(as.vector(ans_pred)),
   cbind(as.vector(ann_obs))
   ))
+
 plot(ans$auc)
 ```
 
@@ -254,14 +236,9 @@ add_geese(
 )
 
 # Persistence to preserve parent state
-term_overall_changes(amodel, duplication = 0)
-term_overall_changes(amodel, duplication = 1)
-
-# Tendency for only one sib gaining function 0
-term_pairwise_neofun_singlefun(amodel, 0, duplication = 1)
-
-# Function 1 is gain from function 0
-term_neofun_a2b(amodel, 0, 1, duplication = 1)
+term_gains(flock, 0:1, duplication = 1)
+term_gains(flock, 0:1, duplication = 1)
+term_maxfuns(flock, 1, 1, duplication = 1)
 
 # We need to initialize to do all the accountintg
 init_model(flock)
@@ -318,19 +295,14 @@ amodel_limited <- new_geese(
   duplication = duplication
   )
 
-# Persistence to preserve parent state
-term_overall_changes(amodel_limited, duplication = 0)
-term_overall_changes(amodel_limited, duplication = 1)
+# Adding the model terms
+term_gains(amodel_limited, 0:1)
+term_loss(amodel_limited, 0:1)
+term_maxfuns(amodel_limited, 1, 1)
+term_overall_changes(amodel_limited, TRUE)
 
-# Tendency for only one sib gaining function 0
-term_pairwise_neofun_singlefun(amodel_limited, 0, duplication = 1)
-
-# Function 1 is gain from function 0
-term_neofun_a2b(amodel_limited, 0, 1, duplication = 1)
-
-# At most two moves
-rule_limit_changes(amodel_limited, 0, 0, 2, duplication = 0)
-rule_limit_changes(amodel_limited, 1, 0, 2, duplication = 1)
+# At most one gain
+rule_limit_changes(amodel_limited, 5, 0, 2)
 
 # We need to initialize to do all the accounting
 init_model(amodel_limited)
@@ -348,10 +320,10 @@ ans_mcmc2 <- geese_mcmc(
   amodel_limited,
   nsteps  = 20000,
   kernel  = fmcmc::kernel_ram(
-    warmup = 2000 #,
-    # fixed  = c(TRUE, TRUE, rep(FALSE, nterms(amodel_limited) - 2))
+    warmup = 2000,
+    fixed  = c(FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE)
     ), 
-  prior   = function(p) dnorm(p, sd = 2, log = TRUE)
+  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
   )
 ```
 
