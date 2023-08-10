@@ -46,7 +46,7 @@ Model terms for both geese and flock objects."><meta property="og:image" content
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rule_limit_changes</span><span class="op">(</span><span class="va">p</span>, <span class="va">term_pos</span>, <span class="va">lb</span>, <span class="va">ub</span>, duplication <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rule_limit_changes</span><span class="op">(</span><span class="va">p</span>, <span class="va">term_pos</span>, <span class="va">lb</span>, <span class="va">ub</span>, duplication <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">term_gains</span><span class="op">(</span><span class="va">p</span>, <span class="va">funs</span>, duplication <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span>
 <span></span>
@@ -106,8 +106,7 @@ Model terms for both geese and flock objects."><meta property="og:image" content
 
 
 <dt>duplication</dt>
-<dd><p>When <code>TRUE</code> indicates that this term is only valid for
-duplication events.</p></dd>
+<dd><p>Integer. 0 for speciation, 1 for duplication and 2 for either.</p></dd>
 
 
 <dt>funs</dt>
