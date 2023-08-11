@@ -57,7 +57,7 @@ devtools::install_github("USCbiostats/geese")
 library(geese)
 
 # Preparing data
-n <- 100L
+n <- 200L
 annotations <- replicate(n * 2 - 1, c(9, 9), simplify = FALSE)
 
 # Random tree
@@ -77,7 +77,7 @@ amodel <- new_geese(
 # Preparing the model
 term_gains(amodel, 0:1)
 term_loss(amodel, 0:1)
-term_maxfuns(amodel, 1, 1)
+term_maxfuns(amodel, 0, 1)
 init_model(amodel)
 
 # Testing
@@ -129,7 +129,7 @@ amodel <- new_geese(
 # Adding the model terms
 term_gains(amodel, 0:1)
 term_loss(amodel, 0:1)
-term_maxfuns(amodel, 1, 1)
+term_maxfuns(amodel, 0, 1)
 
 # We need to initialize to do all the accounting
 init_model(amodel)
@@ -138,6 +138,7 @@ print(amodel)
 
 # Finding MLE
 ans_mle <- geese_mle(amodel, hessian = TRUE)
+ans_mle
 
 # Prob of each gene gaining a single function
 transition_prob(
@@ -155,22 +156,30 @@ set.seed(122)
 ans_mcmc <- geese_mcmc(
   amodel,
   nsteps  = 20000,
-  kernel  = fmcmc::kernel_ram(warmup = 2000), 
-  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
-  )
+  kernel  = fmcmc::kernel_ram(warmup = 5000), 
+  prior   = function(p) c(
+      dlogis(
+        p,
+        scale = 2,
+        location = c(
+          rep(0, nterms(amodel) - nfuns(amodel)),
+          rep(-5, nfuns(amodel))
+          ),
+        log = TRUE
+        )
+  ))
 ```
 
 We can take a look at the results like this:
 
 ```{r mcmc-analysis, echo = FALSE}
-mcmc_estimates <- ans_mcmc # oldans$estimates
 op <- par(
   mfrow = c(4, 2), #tcl=.5,
   las=1, mar = c(3,3,1,0),
   bty = "n", oma = rep(1,4)
   )
-for (i in 1:ncol(mcmc_estimates)) {
-  tmpx <- window(mcmc_estimates, start = 10000)[,i,drop=FALSE]
+for (i in 1:ncol(ans_mcmc)) {
+  tmpx <- window(ans_mcmc, start = 10000)[,i,drop=FALSE]
   
   coda::traceplot(
     tmpx, smooth = FALSE, ylim = c(-11,11), col = rgb(0, 128, 128, maxColorValue = 255), 
@@ -179,12 +188,14 @@ for (i in 1:ncol(mcmc_estimates)) {
   abline(h = params[i], lty=3, lwd=4, col = "red")
 }
 par(op)
-summary(window(mcmc_estimates, start = end(ans_mcmc) * 3/4))
+summary(window(ans_mcmc, start = end(ans_mcmc) * 3/4))
 ```
 
 ```{r prediction}
-par_estimates <- colMeans(window(ans_mcmc, start = 20000))
-ans_pred      <- predict_geese(amodel, par_estimates, leave_one_out = TRUE)
+par_estimates <- colMeans(
+  window(ans_mcmc, start = end(ans_mcmc)*3/4)
+  )
+ans_pred      <- predict_geese(amodel, params, leave_one_out = TRUE)
 ans_pred      <- do.call(rbind, ans_pred)
 
 # Preparing annotations

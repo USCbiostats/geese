@@ -92,7 +92,7 @@ params <- c(
 )
 names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
 
-likelihood(amodel, params*0)
+likelihood(amodel, params*0) # Equals 1 b/c all missings
 #> [1] 1
 
 # Simulating data
@@ -168,11 +168,11 @@ ans_mle <- geese_mle(amodel, hessian = TRUE)
 # Prob of each gene gaining a single function
 transition_prob(
   amodel,
-  params = head(ans_mle$par, -2), 
+  params = c(-1, -1, -2, -2, -.5), 
   duplication = TRUE, state = c(FALSE, FALSE),
   array = matrix(c(1, 0, 0, 1), ncol=2)
 )
-#> [1] 0.1208281
+#> [1] 0.01990333
 ```
 
 ## Model fitting MCMC

@@ -85,25 +85,6 @@ inline void Geese::init_node(Node & n)
             true
         );
 
-
-        // // Checking the rule. We need to make sure the counts match
-        // // the counts of the current array.
-        // if (model->get_rules_dyn() != nullptr)
-        // {
-        //     // Once the array is ready, we can add it to the model
-        //     stats_counter.reset_array(&n.arrays[s]);
-        //     auto counts = stats_counter.count_all();
-
-        //     PhyloRulesDyn dyn_rule(*model->get_rules_dyn());
-        //     for (auto & r : dyn_rule)
-        //         r.D().counts = &counts;
-
-        //     // Finally, we can check if it can bee added. If not,
-        //     // then we need to skip it.
-        //     if (!dyn_rule(n.arrays[s], 0u, 0u))
-        //         continue;
-        // }
-
         // Use try catch to run the following lines of code
         // only if the array is valid.
         try
@@ -190,7 +171,7 @@ inline void Geese::init(size_t bar_width) {
         }
 
         // Adding to map so we can look at it later on
-        map_to_nodes.insert({iter.get_col_vec(0u, false), i});
+        map_to_state_id.insert({iter.get_col_vec(0u, false), i});
 
         i++;
 
@@ -258,7 +239,7 @@ inline void Geese::init(size_t bar_width) {
             {
 
                 sup_array[a].get_col_vec(&tmpstate, o, false);
-                pset_loc[s][a].push_back(map_to_nodes[tmpstate]);
+                pset_loc[s][a].push_back(map_to_state_id[tmpstate]);
                 
             }   
 
@@ -687,6 +668,79 @@ inline void Geese::print() const
     printf_barry("Largest polytomy         : %li\n", parse_polytomies(false));
     printf_barry("\nINFO ABOUT THE SUPPORT\n");
     this->model->print();
+
+}
+
+inline void Geese::print_nodes() const
+{
+
+    printf_barry("GEESE\nINFO ABOUT NODES\n");
+
+    for (const auto & n: nodes)
+    {            
+        printf_barry("% 4li - Id: %li -- ", n.second.ord, n.second.id);
+
+        // Node type
+        printf_barry(
+            "node type: %s -- ",
+            n.second.is_leaf() ? 
+                std::string("leaf").c_str() :
+                std::string("internal").c_str()
+            );
+        
+        // Event type
+        printf_barry(
+            "event type: %s -- ",
+            n.second.duplication ?
+                std::string("duplication").c_str() :
+                std::string("speciation").c_str()
+            );
+
+        // Annotations
+        printf_barry("ann: [");
+        for (const auto & a: n.second.annotations)
+        {
+            // Print with ']' if last element
+            if (&a == &n.second.annotations.back())
+            {
+                printf_barry("%i] -- ", a);
+            }
+            else
+            {
+                printf_barry("%i, ", a);
+            }
+        }
+
+        // Parent information
+        if (n.second.parent == nullptr)
+        {
+            printf_barry("parent id: (none) -- ");
+        } else {
+            printf_barry("parent id: %li -- ", n.second.parent->id);
+        }
+
+        // Offspring information
+        if (n.second.offspring.size() > 0u)
+        {
+            printf_barry("off ids: [");
+            for (const auto & o: n.second.offspring)
+            {
+                // Same as in previous loop
+                if (&o == &n.second.offspring.back())
+                {
+                    printf_barry("%li].", o->id);
+                }
+                else
+                {
+                    printf_barry("%li, ", o->id);
+                }
+            }
+        }
+
+        printf_barry("\n");
+
+    }
+
 
 }
 

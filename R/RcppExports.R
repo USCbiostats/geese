@@ -164,6 +164,10 @@ print_geese <- function(p) {
     invisible(.Call(`_geese_print_geese`, p))
 }
 
+print_nodes_cpp <- function(p) {
+    invisible(.Call(`_geese_print_nodes_cpp`, p))
+}
+
 #' Returns the support of the model
 #' @export
 get_support <- function(p) {

@@ -23,6 +23,7 @@
 \alias{predict_flock}
 \alias{names.flock}
 \alias{print.geese}
+\alias{print_nodes}
 \alias{print.flock}
 \title{Common functions for \code{geese} and \code{flock}.}
 \usage{
@@ -77,6 +78,8 @@ predict_flock(
 \method{names}{flock}(x)
 
 \method{print}{geese}(x, ...)
+
+print_nodes(x, ...)
 
 \method{print}{flock}(x, ...)
 }

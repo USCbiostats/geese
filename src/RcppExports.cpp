@@ -244,6 +244,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// print_nodes_cpp
+int print_nodes_cpp(SEXP p);
+RcppExport SEXP _geese_print_nodes_cpp(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(print_nodes_cpp(p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // get_support
 std::vector< NumericMatrix > get_support(SEXP p);
 RcppExport SEXP _geese_get_support(SEXP pSEXP) {
@@ -611,6 +621,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_transition_prob", (DL_FUNC) &_geese_transition_prob, 6},
     {"_geese_conditional_prob", (DL_FUNC) &_geese_conditional_prob, 8},
     {"_geese_print_geese", (DL_FUNC) &_geese_print_geese, 1},
+    {"_geese_print_nodes_cpp", (DL_FUNC) &_geese_print_nodes_cpp, 1},
     {"_geese_get_support", (DL_FUNC) &_geese_get_support, 1},
     {"_geese_rule_limit_changes", (DL_FUNC) &_geese_rule_limit_changes, 5},
     {"_geese_predict_geese", (DL_FUNC) &_geese_predict_geese, 5},

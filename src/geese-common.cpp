@@ -466,6 +466,28 @@ int print_geese(SEXP p)
 
 }
 
+// [[Rcpp::export(rng = false, invisible = true)]]
+int print_nodes_cpp(SEXP p)
+{
+  
+    IF_GEESE(p)
+    {
+  
+      // Preparing data
+      Rcpp::XPtr<geese::Geese> ptr(p);
+      ptr->print_nodes();
+  
+    } IF_FLOCK(p) {
+  
+      // Preparing data
+      printf_barry("Not implemented yet for flocks.\n");
+  
+    } IF_NEITHER()
+  
+    return 0;
+  
+}
+
 //' Returns the support of the model
 //' @export
 // [[Rcpp::export(rng = false)]]
