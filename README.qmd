@@ -93,7 +93,7 @@ params <- c(
 )
 names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
 
-likelihood(amodel, params*0)
+likelihood(amodel, params*0) # Equals 1 b/c all missings
 
 # Simulating data
 fake1 <- sim_geese(p = amodel, par = params, seed = 1110)
@@ -137,19 +137,20 @@ init_model(amodel)
 print(amodel)
 
 # Finding MLE
-geese_mle(amodel, hessian = TRUE)
+ans_mle <- geese_mle(amodel, hessian = TRUE)
 
+# Prob of each gene gaining a single function
 transition_prob(
   amodel,
   params = c(-1, -1, -2, -2, -.5), 
   duplication = TRUE, state = c(FALSE, FALSE),
-  array = matrix(c(1, 0, 0, 1)*0, ncol=2)
+  array = matrix(c(1, 0, 0, 1), ncol=2)
 )
 ```
 
 ## Model fitting MCMC
 
-```{r mcmc-fit, cache=TRUE}
+```{r mcmc-fit}
 set.seed(122)
 ans_mcmc <- geese_mcmc(
   amodel,
@@ -248,7 +249,7 @@ print(flock)
 
 We can use the same program to fit the MCMC
 
-```{r flock-mcmc, cache=TRUE}
+```{r flock-mcmc}
 set.seed(122)
 ans_mcmc2 <- geese_mcmc(
   flock,
@@ -314,7 +315,7 @@ support_size(amodel_limited)
 Since we added the constraint based on the term `term_overall_changes()`, we
 now need to fix the parameter at 0 (i.e. no effect) during the MCMC model:
 
-```{r limit-mcmc, cache = TRUE}
+```{r limit-mcmc}
 set.seed(122)
 ans_mcmc2 <- geese_mcmc(
   amodel_limited,

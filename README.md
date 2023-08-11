@@ -163,40 +163,16 @@ print(amodel)
 #>  - Genes with [1, 1] funs at duplication
 
 # Finding MLE
-geese_mle(amodel, hessian = TRUE)
-#> $par
-#> [1]  1.7993079  1.5704879 -1.7983070 -1.5682463  1.8652017 -0.3754293 -2.4625330
-#> 
-#> $value
-#> [1] -113.5329
-#> 
-#> $counts
-#> function gradient 
-#>      358       NA 
-#> 
-#> $convergence
-#> [1] 0
-#> 
-#> $message
-#> NULL
-#> 
-#> $hessian
-#>           [,1]      [,2]       [,3]      [,4]       [,5] [,6] [,7]
-#> [1,] -2.431079  1.528790   4.523126 -2.239999   2.750223    0    0
-#> [2,]  1.528790 -3.908190  -3.182631  5.676470   4.393816    0    0
-#> [3,]  4.523126 -3.182631 -10.266878  4.829841  -5.853157    0    0
-#> [4,] -2.239999  5.676470   4.829841 -8.709530  -6.596900    0    0
-#> [5,]  2.750223  4.393816  -5.853157 -6.596900 -20.994365    0    0
-#> [6,]  0.000000  0.000000   0.000000  0.000000   0.000000    0    0
-#> [7,]  0.000000  0.000000   0.000000  0.000000   0.000000    0    0
+ans_mle <- geese_mle(amodel, hessian = TRUE)
 
+# Prob of each gene gaining a single function
 transition_prob(
   amodel,
-  params = c(-1, -1, -2, -2, -.5), 
+  params = head(ans_mle$par, -2), 
   duplication = TRUE, state = c(FALSE, FALSE),
-  array = matrix(c(1, 0, 0, 1)*0, ncol=2)
+  array = matrix(c(1, 0, 0, 1), ncol=2)
 )
-#> [1] 0.399769
+#> [1] 0.1208281
 ```
 
 ## Model fitting MCMC
@@ -480,26 +456,26 @@ style="width:100.0%" />
     #>    plus standard error of the mean:
     #> 
     #>                                          Mean     SD Naive SE Time-series SE
-    #> Gains 0 at duplication                 1.6856 0.7710 0.010903        0.06718
-    #> Gains 1 at duplication                 1.2504 0.6159 0.008710        0.05071
-    #> Loss 0 at duplication                 -2.1333 0.4745 0.006710        0.03759
-    #> Loss 1 at duplication                 -2.0015 0.5112 0.007228        0.03887
-    #> Genes with [1, 1] funs at duplication  1.8496 0.4501 0.006365        0.04513
+    #> Gains 0 at duplication                 1.4575 0.6083 0.008602        0.04453
+    #> Gains 1 at duplication                 1.1337 0.6868 0.009711        0.05444
+    #> Loss 0 at duplication                 -1.8499 0.4843 0.006849        0.04207
+    #> Loss 1 at duplication                 -1.7043 0.4894 0.006920        0.03454
+    #> Genes with [1, 1] funs at duplication  1.6845 0.4270 0.006038        0.03512
     #> Overall changes at duplication         0.0000 0.0000 0.000000        0.00000
-    #> Root 1                                 1.2771 3.7952 0.053667        0.68404
-    #> Root 2                                 0.8512 4.1709 0.058980        0.88754
+    #> Root 1                                -0.4058 4.0884 0.057813        0.76638
+    #> Root 2                                 0.4454 3.8899 0.055006        0.78296
     #> 
     #> 2. Quantiles for each variable:
     #> 
-    #>                                          2.5%     25%     50%    75%  97.5%
-    #> Gains 0 at duplication                 0.2086  1.2028  1.6296  2.094  3.416
-    #> Gains 1 at duplication                 0.1729  0.8426  1.1963  1.607  2.741
-    #> Loss 0 at duplication                 -3.2783 -2.4047 -2.0937 -1.817 -1.312
-    #> Loss 1 at duplication                 -3.0921 -2.3142 -1.9863 -1.634 -1.059
-    #> Genes with [1, 1] funs at duplication  1.0983  1.5270  1.8241  2.102  2.881
-    #> Overall changes at duplication         0.0000  0.0000  0.0000  0.000  0.000
-    #> Root 1                                -6.9795 -0.7165  1.2224  3.274 10.102
-    #> Root 2                                -6.7988 -1.8052  0.8011  3.201 11.354
+    #>                                            2.5%     25%      50%    75%   97.5%
+    #> Gains 0 at duplication                  0.40725  1.0206  1.42499  1.832  2.8323
+    #> Gains 1 at duplication                 -0.04293  0.6465  1.09431  1.593  2.6107
+    #> Loss 0 at duplication                  -2.81021 -2.1509 -1.82709 -1.512 -0.9524
+    #> Loss 1 at duplication                  -2.65462 -1.9963 -1.68462 -1.377 -0.8145
+    #> Genes with [1, 1] funs at duplication   0.93538  1.3850  1.65966  1.936  2.6215
+    #> Overall changes at duplication          0.00000  0.0000  0.00000  0.000  0.0000
+    #> Root 1                                -10.37064 -2.6885 -0.09387  2.250  6.7433
+    #> Root 2                                 -6.89559 -1.9881  0.26227  2.743  9.1986
 
 # Code of Conduct
 
