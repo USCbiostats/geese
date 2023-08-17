@@ -67,12 +67,15 @@
       </header><div class="row">
   <div class="contents col-md-9">
 
-<p><a href="https://image.usc.edu" class="external-link"><img src="https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg" alt="Integrative Methods of Analysis for Genetic Epidemiology"></a></p>
+<div>
+<p><a href="https://image.usc.edu" class="external-link"><img src="https://raw.githubusercontent.com/USCbiostats/badges/master/tommy-image-badge.svg"></a></p>
+<p>Integrative Methods of Analysis for Genetic Epidemiology</p>
+</div>
 <div class="section level1">
 <div class="page-header"><h1 id="geese-gene-functional-evolution-using-sufficiency-">geese: <em>GE</em>ne-functional <em>E</em>volution using <em>S</em>uffici<em>E</em>ncy <img src="reference/figures/logo.svg" align="right" width="180px"><a class="anchor" aria-label="anchor" href="#geese-gene-functional-evolution-using-sufficiency-"></a>
 </h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
+
 <p>This R package taps into statistical theory mostly developed in the social networks realm. Using Exponential-Family Random Graph Models (ERGMs), <code>geese</code> provides an statistical framework for building Gene Functional Evolution Models using Sufficiency. For example, users can directly hypothesize whether Neofunctionalization or Subfunctionalization events were taking place in a phylogeny, without having to estimate the full transition Markov Matrix that is usually used.</p>
 <p>GEESE is computationally efficient, with C++ under-the-hood, allowing the analyses of either single trees (a GEESE) or multiple trees simulatenously (pooled model), in a Flock.</p>
 <p>This is work in progress and based on the theoretical work developed duing <a href="https://ggv.cl" class="external-link">George G. Vega Yon</a>’s doctoral thesis.</p>
@@ -145,7 +148,7 @@
 <span><span class="va">fake2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/geese-common.html">sim_geese</a></span><span class="op">(</span>p <span class="op">=</span> <span class="va">amodel</span>, par <span class="op">=</span> <span class="va">params</span><span class="op">)</span></span></code></pre></div>
 <p>We can now visualize either of the annotations using the <a href="https://github.com/USCbiostats/aphylo" class="external-link">aphylo</a> package.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/USCbiostats/aphylo" class="external-link">aphylo</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">aphylo</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: ape</span></span>
 <span><span class="va">ap</span> <span class="op">&lt;-</span> <span class="fu">aphylo_from_data_frame</span><span class="op">(</span></span>
 <span>  tree        <span class="op">=</span> <span class="fu">as.phylo</span><span class="op">(</span><span class="va">tree</span><span class="op">)</span>, </span>
@@ -155,13 +158,14 @@
 <span>    <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ap</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-viz-with-aphylo-1.png" width="100%"></p>
+<p><img src="reference/figures/README-viz-with-aphylo-1.png" style="width:100.0%"></p>
 </div>
 <div class="section level2">
 <h2 id="model-fitting-mle">Model fitting MLE<a class="anchor" aria-label="anchor" href="#model-fitting-mle"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Creating the object</span></span>
+<span><span class="co"># Creating the object</span></span>
 <span><span class="va">amodel</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/geese-class.html">new_geese</a></span><span class="op">(</span></span>
 <span>  annotations <span class="op">=</span> <span class="va">fake1</span>,</span>
 <span>  geneid      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">tree</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>, <span class="va">n</span><span class="op">)</span>,</span>
@@ -183,16 +187,17 @@
 <span><span class="co">#&gt; GEESE</span></span>
 <span><span class="co">#&gt; INFO ABOUT PHYLOGENY</span></span>
 <span><span class="co">#&gt; # of functions           : 2</span></span>
-<span><span class="co">#&gt; # of nodes [int; leaf]   : [199; 100]</span></span>
-<span><span class="co">#&gt; # of ann. [zeros; ones]  : [87; 113]</span></span>
+<span><span class="co">#&gt; # of nodes [int; leaf]   : [99; 100]</span></span>
+<span><span class="co">#&gt; # of ann. [zeros; ones]  : [72; 128]</span></span>
 <span><span class="co">#&gt; # of events [dupl; spec] : [99; 0]</span></span>
 <span><span class="co">#&gt; Largest polytomy         : 2</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; INFO ABOUT THE SUPPORT</span></span>
-<span><span class="co">#&gt; Num. of Arrays     : 396</span></span>
-<span><span class="co">#&gt; Support size       : 4</span></span>
-<span><span class="co">#&gt; Support size range : [0, 14]</span></span>
-<span><span class="co">#&gt; Model terms (5)   :</span></span>
+<span><span class="co">#&gt; Num. of Arrays       : 396</span></span>
+<span><span class="co">#&gt; Support size         : 4</span></span>
+<span><span class="co">#&gt; Support size range   : [10, 10]</span></span>
+<span><span class="co">#&gt; Transform. Fun.      : no</span></span>
+<span><span class="co">#&gt; Model terms (5)    :</span></span>
 <span><span class="co">#&gt;  - Gains 0 at duplication</span></span>
 <span><span class="co">#&gt;  - Gains 1 at duplication</span></span>
 <span><span class="co">#&gt;  - Loss 0 at duplication</span></span>
@@ -200,48 +205,16 @@
 <span><span class="co">#&gt;  - Genes with [1, 1] funs at duplication</span></span>
 <span></span>
 <span><span class="co"># Finding MLE</span></span>
-<span><span class="fu"><a href="reference/geese_mle.html">geese_mle</a></span><span class="op">(</span><span class="va">amodel</span>, hessian <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; $par</span></span>
-<span><span class="co">#&gt; [1]  1.3024291  1.4904183 -1.4668169 -0.9165704  1.8952822 -0.1918496 -0.5043625</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $value</span></span>
-<span><span class="co">#&gt; [1] -58.54824</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $counts</span></span>
-<span><span class="co">#&gt; function gradient </span></span>
-<span><span class="co">#&gt;      454       NA </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $convergence</span></span>
-<span><span class="co">#&gt; [1] 0</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $message</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $hessian</span></span>
-<span><span class="co">#&gt;               [,1]          [,2]          [,3]          [,4]          [,5]</span></span>
-<span><span class="co">#&gt; [1,] -1.920339e+00  3.092661e-02  9.719647e-02 -5.826438e-01  1.230857e+00</span></span>
-<span><span class="co">#&gt; [2,]  3.092661e-02 -2.155737e+00 -2.661554e-01  2.058254e+00  2.388066e+00</span></span>
-<span><span class="co">#&gt; [3,]  9.719647e-02 -2.661554e-01 -1.562040e+00  1.126001e-01 -1.189657e+00</span></span>
-<span><span class="co">#&gt; [4,] -5.826438e-01  2.058254e+00  1.126001e-01 -5.959471e+00 -3.427126e+00</span></span>
-<span><span class="co">#&gt; [5,]  1.230857e+00  2.388066e+00 -1.189657e+00 -3.427126e+00 -2.441145e+01</span></span>
-<span><span class="co">#&gt; [6,] -8.064660e-07  1.930012e-06 -1.188383e-06  3.367084e-06 -4.565237e-07</span></span>
-<span><span class="co">#&gt; [7,]  6.355805e-06 -8.340431e-04  9.558576e-06 -6.562342e-04  1.888223e-04</span></span>
-<span><span class="co">#&gt;               [,6]          [,7]</span></span>
-<span><span class="co">#&gt; [1,] -8.064660e-07  6.355805e-06</span></span>
-<span><span class="co">#&gt; [2,]  1.930012e-06 -8.340431e-04</span></span>
-<span><span class="co">#&gt; [3,] -1.188383e-06  9.558576e-06</span></span>
-<span><span class="co">#&gt; [4,]  3.367084e-06 -6.562342e-04</span></span>
-<span><span class="co">#&gt; [5,] -4.565237e-07  1.888223e-04</span></span>
-<span><span class="co">#&gt; [6,]  4.263256e-08  6.750156e-08</span></span>
-<span><span class="co">#&gt; [7,]  6.750156e-08 -2.657963e-05</span></span>
+<span><span class="va">ans_mle</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/geese_mle.html">geese_mle</a></span><span class="op">(</span><span class="va">amodel</span>, hessian <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Prob of each gene gaining a single function</span></span>
 <span><span class="fu"><a href="reference/transition_prob.html">transition_prob</a></span><span class="op">(</span></span>
 <span>  <span class="va">amodel</span>,</span>
 <span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">.5</span><span class="op">)</span>, </span>
 <span>  duplication <span class="op">=</span> <span class="cn">TRUE</span>, state <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">FALSE</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>  array <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">*</span><span class="fl">0</span>, ncol<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span>  array <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, ncol<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.2315802</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.01990333</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="model-fitting-mcmc">Model fitting MCMC<a class="anchor" aria-label="anchor" href="#model-fitting-mcmc"></a>
@@ -253,13 +226,9 @@
 <span>  nsteps  <span class="op">=</span> <span class="fl">20000</span>,</span>
 <span>  kernel  <span class="op">=</span> <span class="fu">fmcmc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/fmcmc/man/kernel_ram.html" class="external-link">kernel_ram</a></span><span class="op">(</span>warmup <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span>, </span>
 <span>  prior   <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">dlogis</a></span><span class="op">(</span><span class="va">p</span>, scale <span class="op">=</span> <span class="fl">2</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; |0%                 |25%                |50%                |75%           100%|</span></span>
-<span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
-<span><span class="co">#&gt; ////////////////////////////////////////////////////////////////////////////////</span></span></code></pre></div>
+<span>  <span class="op">)</span></span></code></pre></div>
 <p>We can take a look at the results like this:</p>
-<p><img src="reference/figures/README-mcmc-analysis-1.png" width="100%"></p>
+<p><img src="reference/figures/README-mcmc-analysis-1.png" style="width:100.0%"></p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Iterations = 15000:20000</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Thinning interval = 1 </span></span>
@@ -270,27 +239,26 @@
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    plus standard error of the mean:</span></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                          Mean     SD Naive SE Time-series SE</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 0 at duplication                 1.2723 0.7586 0.010727        0.05294</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 1 at duplication                 1.8373 0.9848 0.013926        0.07326</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 0 at duplication                 -1.4241 0.8064 0.011403        0.05438</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 1 at duplication                 -0.8163 0.5572 0.007879        0.03446</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Genes with [1, 1] funs at duplication  1.9937 0.2215 0.003132        0.01277</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 1                                 0.3445 2.9532 0.041761        0.31086</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 2                                -0.3347 3.0158 0.042645        0.33184</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 0 at duplication                 2.5163 1.5272 0.021595        0.17972</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 1 at duplication                 2.0925 1.2076 0.017077        0.13709</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 0 at duplication                 -1.7518 0.6079 0.008596        0.05062</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 1 at duplication                 -1.4358 0.6546 0.009257        0.04587</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Genes with [1, 1] funs at duplication  1.8845 0.4698 0.006643        0.03823</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 1                                 0.2000 4.5845 0.064828        0.84884</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 2                                -0.4791 3.3166 0.046900        0.49277</span></span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2. Quantiles for each variable:</span></span>
 <span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                          2.5%     25%     50%     75%   97.5%</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 0 at duplication                -0.1466  0.7817  1.2424  1.7714 2.73773</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 1 at duplication                 0.2052  1.1583  1.7674  2.4307 3.76635</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 0 at duplication                 -3.0947 -1.9784 -1.4155 -0.8769 0.06948</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 1 at duplication                 -1.8223 -1.1907 -0.8697 -0.4792 0.39775</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Genes with [1, 1] funs at duplication  1.6037  1.8319  1.9926  2.1413 2.42520</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 1                                -4.9226 -1.7294  0.2676  2.0521 6.89956</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 2                                -6.3861 -2.1793 -0.2905  1.6815 5.45537</span></span></code></pre></div>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                          2.5%    25%      50%    75%   97.5%</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 0 at duplication                 0.3490  1.484  2.22730  3.187  6.9267</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 1 at duplication                 0.3154  1.258  1.89930  2.630  5.2817</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 0 at duplication                 -2.9349 -2.191 -1.72650 -1.306 -0.6860</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 1 at duplication                 -2.7509 -1.892 -1.44436 -0.984 -0.1482</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Genes with [1, 1] funs at duplication  1.0690  1.534  1.86367  2.195  2.8358</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 1                                -8.7570 -2.336  0.03266  2.579 10.9341</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 2                                -6.9796 -2.679 -0.45639  1.848  5.8369</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Obtaining estimates</span></span>
-<span><span class="va">par_estimates</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/window.html" class="external-link">window</a></span><span class="op">(</span><span class="va">ans_mcmc</span>, start <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">par_estimates</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/window.html" class="external-link">window</a></span><span class="op">(</span><span class="va">ans_mcmc</span>, start <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">ans_pred</span>      <span class="op">&lt;-</span> <span class="fu"><a href="reference/geese-common.html">predict_geese</a></span><span class="op">(</span><span class="va">amodel</span>, <span class="va">par_estimates</span>, leave_one_out <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ans_pred</span>      <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">ans_pred</span><span class="op">)</span></span>
 <span></span>
@@ -299,7 +267,7 @@
 <span></span>
 <span><span class="co"># Mean Absolute Error</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">ans_pred</span> <span class="op">-</span> <span class="va">ann_obs</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-prediction-1.png" width="100%"></p>
+<p><img src="reference/figures/README-prediction-1.png" style="width:100.0%"></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># AUC</span></span>
@@ -310,18 +278,24 @@
 <span><span class="co">#&gt; Prediction score (H0: Observed = Random)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  N obs.      : 398</span></span>
-<span><span class="co">#&gt;  alpha(0, 1) : 0.42, 0.58</span></span>
-<span><span class="co">#&gt;  Observed    : 0.81 ***</span></span>
-<span><span class="co">#&gt;  Random      : 0.51 </span></span>
-<span><span class="co">#&gt;  P(&lt;t)       : 0.0000</span></span>
+<span><span class="co">#&gt;  alpha(0, 1) : 0.37, 0.63</span></span>
+<span><span class="co">#&gt;  Observed    : 0.55 </span></span>
+<span><span class="co">#&gt;  Random      : 0.53 </span></span>
+<span><span class="co">#&gt;  P(&lt;t)       : 0.2869</span></span>
 <span><span class="co">#&gt; --------------------------------------------------------------------------------</span></span>
 <span><span class="co">#&gt; Values scaled to range between 0 and 1, 1 being best.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Significance levels: *** p &lt; .01, ** p &lt; .05, * p &lt; .10</span></span>
-<span><span class="co">#&gt; AUC 0.93.</span></span>
-<span><span class="co">#&gt; MAE 0.19.</span></span>
+<span><span class="co">#&gt; AUC 0.51.</span></span>
+<span><span class="co">#&gt; MAE 0.45.</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ans</span><span class="op">$</span><span class="va">auc</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-prediction-2.png" width="100%"></p>
+<p><img src="reference/figures/README-prediction-2.png" style="width:100.0%"></p>
+<!-- We can compare these results to what we would obtain using aphylo -->
+<!-- # ```{r aphylo} -->
+<!-- # ans_aphylo <- aphylo_mcmc(ap ~ mu_d + mu_s + Pi) -->
+<!-- # (ps <- prediction_score(ans_aphylo)) -->
+<!-- # ``` -->
 </div>
 <div class="section level2">
 <h2 id="using-a-flock">Using a flock<a class="anchor" aria-label="anchor" href="#using-a-flock"></a>
@@ -348,16 +322,14 @@
 <span>  duplication <span class="op">=</span> <span class="va">duplication</span>  </span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Adding the model terms</span></span>
-<span><span class="fu"><a href="reference/geese-terms.html">term_gains</a></span><span class="op">(</span><span class="va">flock</span>, <span class="fl">0</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/geese-terms.html">term_loss</a></span><span class="op">(</span><span class="va">flock</span>, <span class="fl">0</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/geese-terms.html">term_maxfuns</a></span><span class="op">(</span><span class="va">flock</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co"># Persistence to preserve parent state</span></span>
+<span><span class="fu"><a href="reference/geese-terms.html">term_gains</a></span><span class="op">(</span><span class="va">flock</span>, <span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, duplication <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/geese-terms.html">term_gains</a></span><span class="op">(</span><span class="va">flock</span>, <span class="fl">0</span><span class="op">:</span><span class="fl">1</span>, duplication <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/geese-terms.html">term_maxfuns</a></span><span class="op">(</span><span class="va">flock</span>, <span class="fl">1</span>, <span class="fl">1</span>, duplication <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># We need to initialize to do all the accountintg</span></span>
 <span><span class="fu"><a href="reference/geese-common.html">init_model</a></span><span class="op">(</span><span class="va">flock</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Initializing nodes in Geese (this could take a while)...</span></span>
-<span><span class="co">#&gt; ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| done.</span></span>
-<span><span class="co">#&gt; Initializing nodes in Geese (this could take a while)...</span></span>
+<span><span class="co">#&gt; Initializing nodes in Flock (this could take a while)...</span></span>
 <span><span class="co">#&gt; ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| done.</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">flock</span><span class="op">)</span></span>
@@ -365,19 +337,20 @@
 <span><span class="co">#&gt; INFO ABOUT THE PHYLOGENIES</span></span>
 <span><span class="co">#&gt; # of phylogenies         : 2</span></span>
 <span><span class="co">#&gt; # of functions           : 2</span></span>
-<span><span class="co">#&gt; # of ann. [zeros; ones]  : [166; 234]</span></span>
+<span><span class="co">#&gt; # of ann. [zeros; ones]  : [145; 255]</span></span>
 <span><span class="co">#&gt; # of events [dupl; spec] : [198; 0]</span></span>
 <span><span class="co">#&gt; Largest polytomy         : 2</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; INFO ABOUT THE SUPPORT</span></span>
-<span><span class="co">#&gt; Num. of Arrays     : 792</span></span>
-<span><span class="co">#&gt; Support size       : 4</span></span>
-<span><span class="co">#&gt; Support size range : [0, 14]</span></span>
-<span><span class="co">#&gt; Model terms (5)   :</span></span>
+<span><span class="co">#&gt; Num. of Arrays       : 792</span></span>
+<span><span class="co">#&gt; Support size         : 4</span></span>
+<span><span class="co">#&gt; Support size range   : [3, 10]</span></span>
+<span><span class="co">#&gt; Transform. Fun.      : no</span></span>
+<span><span class="co">#&gt; Model terms (5)    :</span></span>
 <span><span class="co">#&gt;  - Gains 0 at duplication</span></span>
 <span><span class="co">#&gt;  - Gains 1 at duplication</span></span>
-<span><span class="co">#&gt;  - Loss 0 at duplication</span></span>
-<span><span class="co">#&gt;  - Loss 1 at duplication</span></span>
+<span><span class="co">#&gt;  - Gains 0 at duplication</span></span>
+<span><span class="co">#&gt;  - Gains 1 at duplication</span></span>
 <span><span class="co">#&gt;  - Genes with [1, 1] funs at duplication</span></span></code></pre></div>
 <p>We can use the same program to fit the MCMC</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
@@ -404,7 +377,7 @@
 <span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="va">params</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, lty<span class="op">=</span><span class="fl">3</span>, lwd<span class="op">=</span><span class="fl">4</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">op</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-viz-flock-1.png" width="100%"></p>
+<p><img src="reference/figures/README-viz-flock-1.png" style="width:100.0%"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/window.html" class="external-link">window</a></span><span class="op">(</span><span class="va">ans_mcmc2</span>, start <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -416,30 +389,30 @@
 <span><span class="co">#&gt; 1. Empirical mean and standard deviation for each variable,</span></span>
 <span><span class="co">#&gt;    plus standard error of the mean:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;          Mean     SD Naive SE Time-series SE</span></span>
-<span><span class="co">#&gt; par1  1.75029 0.5658 0.005658       0.031031</span></span>
-<span><span class="co">#&gt; par2  1.15245 0.6418 0.006418       0.031898</span></span>
-<span><span class="co">#&gt; par3 -1.27191 0.5489 0.005488       0.026757</span></span>
-<span><span class="co">#&gt; par4 -1.37351 0.3635 0.003635       0.015714</span></span>
-<span><span class="co">#&gt; par5  1.81130 0.1630 0.001630       0.007164</span></span>
-<span><span class="co">#&gt; par6  0.20264 2.6196 0.026195       0.304291</span></span>
-<span><span class="co">#&gt; par7 -0.09525 1.9988 0.019987       0.192587</span></span>
+<span><span class="co">#&gt;                                         Mean     SD Naive SE Time-series SE</span></span>
+<span><span class="co">#&gt; Gains 0 at duplication                1.2650 2.2088 0.022087       0.222041</span></span>
+<span><span class="co">#&gt; Gains 1 at duplication                0.6656 2.5350 0.025348       0.445193</span></span>
+<span><span class="co">#&gt; Gains 0 at duplication                1.5533 2.3386 0.023385       0.333928</span></span>
+<span><span class="co">#&gt; Gains 1 at duplication                0.6474 2.5415 0.025414       0.394829</span></span>
+<span><span class="co">#&gt; Genes with [1, 1] funs at duplication 0.8878 0.1446 0.001446       0.004478</span></span>
+<span><span class="co">#&gt; Root 1                                0.5259 3.5929 0.035927       0.363434</span></span>
+<span><span class="co">#&gt; Root 2                                0.1195 3.6405 0.036403       0.413736</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; 2. Quantiles for each variable:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;          2.5%     25%     50%     75%   97.5%</span></span>
-<span><span class="co">#&gt; par1  0.72459  1.3498  1.7308  2.1272  2.8592</span></span>
-<span><span class="co">#&gt; par2  0.03824  0.7103  1.1054  1.5305  2.5470</span></span>
-<span><span class="co">#&gt; par3 -2.37365 -1.6300 -1.2692 -0.9166 -0.1438</span></span>
-<span><span class="co">#&gt; par4 -2.09160 -1.6242 -1.3736 -1.1207 -0.6764</span></span>
-<span><span class="co">#&gt; par5  1.49584  1.6992  1.8025  1.9109  2.1439</span></span>
-<span><span class="co">#&gt; par6 -4.78636 -1.4981  0.1150  1.8273  5.1856</span></span>
-<span><span class="co">#&gt; par7 -4.12554 -1.3982 -0.1091  1.1896  4.0561</span></span></code></pre></div>
+<span><span class="co">#&gt;                                          2.5%      25%      50%    75% 97.5%</span></span>
+<span><span class="co">#&gt; Gains 0 at duplication                -3.3453 -0.16720  1.28576 2.7768 5.455</span></span>
+<span><span class="co">#&gt; Gains 1 at duplication                -4.5441 -1.03143  0.92544 2.4571 5.112</span></span>
+<span><span class="co">#&gt; Gains 0 at duplication                -2.4602 -0.07041  1.44898 2.8152 6.893</span></span>
+<span><span class="co">#&gt; Gains 1 at duplication                -3.9060 -1.09242  0.33373 2.3327 5.772</span></span>
+<span><span class="co">#&gt; Genes with [1, 1] funs at duplication  0.6098  0.78839  0.89160 0.9865 1.166</span></span>
+<span><span class="co">#&gt; Root 1                                -7.0003 -1.66898  0.41966 2.6846 8.177</span></span>
+<span><span class="co">#&gt; Root 2                                -7.0876 -2.23377 -0.03671 2.3143 7.521</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="limiting-the-support">Limiting the support<a class="anchor" aria-label="anchor" href="#limiting-the-support"></a>
 </h2>
-<p>In this example, we use the function <code><a href="reference/geese-terms.html">rule_limit_changes()</a></code> to apply a constraint to the support of the model. This takes the 6th term (5th since the index is in C++), and restricts the support to states where there are between ([0, 2]) changes, at most.</p>
+<p>In this example, we use the function <code><a href="reference/geese-terms.html">rule_limit_changes()</a></code> to apply a constraint to the support of the model. This takes the first 2 term (0 and 1 since the index is in C++), and restricts the support to states where there are between <span class="math inline">[0,2]</span> changes, at most.</p>
 <p>This should be useful when dealing with multiple functions or <a href="https://en.wikipedia.org/wiki/Polytomy" class="external-link">pylotomies</a>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Creating the object</span></span>
@@ -459,7 +432,6 @@
 <span><span class="co"># At most one gain</span></span>
 <span><span class="fu"><a href="reference/geese-terms.html">rule_limit_changes</a></span><span class="op">(</span><span class="va">amodel_limited</span>, <span class="fl">5</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
-<span></span>
 <span><span class="co"># We need to initialize to do all the accounting</span></span>
 <span><span class="fu"><a href="reference/geese-common.html">init_model</a></span><span class="op">(</span><span class="va">amodel_limited</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Initializing nodes in Geese (this could take a while)...</span></span>
@@ -467,7 +439,7 @@
 <span></span>
 <span><span class="co"># Is limiting the support any useful?</span></span>
 <span><span class="fu"><a href="reference/geese-common.html">support_size</a></span><span class="op">(</span><span class="va">amodel_limited</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 38</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 196</span></span></code></pre></div>
 <p>Since we added the constraint based on the term <code><a href="reference/geese-terms.html">term_overall_changes()</a></code>, we now need to fix the parameter at 0 (i.e. no effect) during the MCMC model:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">122</span><span class="op">)</span></span>
@@ -480,7 +452,7 @@
 <span>    <span class="op">)</span>, </span>
 <span>  prior   <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">dlogis</a></span><span class="op">(</span><span class="va">p</span>, scale <span class="op">=</span> <span class="fl">2</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-mcmc-analysis-limited-1.png" width="100%"></p>
+<p><img src="reference/figures/README-mcmc-analysis-limited-1.png" style="width:100.0%"></p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Iterations = 15000:20000</span></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Thinning interval = 1 </span></span>
@@ -490,27 +462,27 @@
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1. Empirical mean and standard deviation for each variable,</span></span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    plus standard error of the mean:</span></span>
 <span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         Mean     SD Naive SE Time-series SE</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par1  1.5978 0.7201 0.010182        0.04988</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par2  0.2838 0.6662 0.009421        0.04107</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par3 -0.5430 0.7374 0.010428        0.04801</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par4 -1.6198 0.4177 0.005906        0.02535</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par5  1.5778 0.2493 0.003525        0.01590</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par6  0.0000 0.0000 0.000000        0.00000</span></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par7  0.9949 4.0323 0.057019        0.68642</span></span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par8  0.2408 4.1023 0.058010        0.78150</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                          Mean     SD Naive SE Time-series SE</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 0 at duplication                 1.4575 0.6083 0.008602        0.04453</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 1 at duplication                 1.1337 0.6868 0.009711        0.05444</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 0 at duplication                 -1.8499 0.4843 0.006849        0.04207</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 1 at duplication                 -1.7043 0.4894 0.006920        0.03454</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Genes with [1, 1] funs at duplication  1.6845 0.4270 0.006038        0.03512</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Overall changes at duplication         0.0000 0.0000 0.000000        0.00000</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 1                                -0.4058 4.0884 0.057813        0.76638</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 2                                 0.4454 3.8899 0.055006        0.78296</span></span>
 <span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2. Quantiles for each variable:</span></span>
 <span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         2.5%     25%     50%      75%   97.5%</span></span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par1  0.2735  1.0748  1.6196  2.08840  3.0638</span></span>
-<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par2 -1.0489 -0.1436  0.2981  0.70806  1.6241</span></span>
-<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par3 -1.9553 -1.0994 -0.5369 -0.03162  0.9411</span></span>
-<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par4 -2.4332 -1.9108 -1.6239 -1.35157 -0.7724</span></span>
-<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par5  1.1535  1.3999  1.5442  1.72195  2.1680</span></span>
-<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par6  0.0000  0.0000  0.0000  0.00000  0.0000</span></span>
-<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par7 -5.9244 -1.3063  0.4356  2.95659 11.2694</span></span>
-<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; par8 -9.3450 -2.1194  0.1551  2.63111  8.7294</span></span></code></pre></div>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                            2.5%     25%      50%    75%   97.5%</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 0 at duplication                  0.40725  1.0206  1.42499  1.832  2.8323</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Gains 1 at duplication                 -0.04293  0.6465  1.09431  1.593  2.6107</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 0 at duplication                  -2.81021 -2.1509 -1.82709 -1.512 -0.9524</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Loss 1 at duplication                  -2.65462 -1.9963 -1.68462 -1.377 -0.8145</span></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Genes with [1, 1] funs at duplication   0.93538  1.3850  1.65966  1.936  2.6215</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Overall changes at duplication          0.00000  0.0000  0.00000  0.000  0.0000</span></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 1                                -10.37064 -2.6885 -0.09387  2.250  6.7433</span></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Root 2                                 -6.89559 -1.9881  0.26227  2.743  9.1986</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level1">
@@ -554,7 +526,12 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/USCbiostats/geese/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/USCbiostats/geese/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+</ul>
+</div>
 
   </div>
 </div>
