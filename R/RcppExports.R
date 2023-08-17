@@ -197,6 +197,12 @@ predict_flock <- function(p, par, leave_one_out = FALSE, use_reduced_sequence = 
     .Call(`_geese_predict_flock`, p, par, leave_one_out, use_reduced_sequence, only_annotated)
 }
 
+#' @export
+#' @rdname geese-common
+predict_geese_simulate <- function(p, par, nsim, use_reduced_sequence = TRUE, seed = -1L) {
+    .Call(`_geese_predict_geese_simulate`, p, par, nsim, use_reduced_sequence, seed)
+}
+
 #' @title Evolutionary terms
 #' @description Model terms for both [geese] and [flock] objects.
 #' @export

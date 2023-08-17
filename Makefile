@@ -32,3 +32,5 @@ man: R/*
 .PHONY: clean
 clean:
 	rm -rf src/*.o; rm -rf src/*.a; rm -f ${PKGNAME}_${VERSION}.tar.gz
+
+# Activate debugging by modifying the 

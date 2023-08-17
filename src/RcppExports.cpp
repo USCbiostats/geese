@@ -306,6 +306,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// predict_geese_simulate
+std::vector< std::vector< double > > predict_geese_simulate(SEXP p, const std::vector< double >& par, size_t nsim, bool use_reduced_sequence, int seed);
+RcppExport SEXP _geese_predict_geese_simulate(SEXP pSEXP, SEXP parSEXP, SEXP nsimSEXP, SEXP use_reduced_sequenceSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    Rcpp::traits::input_parameter< const std::vector< double >& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< size_t >::type nsim(nsimSEXP);
+    Rcpp::traits::input_parameter< bool >::type use_reduced_sequence(use_reduced_sequenceSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(predict_geese_simulate(p, par, nsim, use_reduced_sequence, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
 // term_gains
 int term_gains(SEXP p, std::vector<size_t>& funs, size_t duplication);
 RcppExport SEXP _geese_term_gains(SEXP pSEXP, SEXP funsSEXP, SEXP duplicationSEXP) {
@@ -626,6 +641,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_rule_limit_changes", (DL_FUNC) &_geese_rule_limit_changes, 5},
     {"_geese_predict_geese", (DL_FUNC) &_geese_predict_geese, 5},
     {"_geese_predict_flock", (DL_FUNC) &_geese_predict_flock, 5},
+    {"_geese_predict_geese_simulate", (DL_FUNC) &_geese_predict_geese_simulate, 5},
     {"_geese_term_gains", (DL_FUNC) &_geese_term_gains, 3},
     {"_geese_term_loss", (DL_FUNC) &_geese_term_loss, 3},
     {"_geese_term_cogain", (DL_FUNC) &_geese_term_cogain, 4},

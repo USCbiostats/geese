@@ -21,6 +21,7 @@
 \alias{names.geese}
 \alias{predict_geese}
 \alias{predict_flock}
+\alias{predict_geese_simulate}
 \alias{names.flock}
 \alias{print.geese}
 \alias{print_nodes}
@@ -74,6 +75,8 @@ predict_flock(
   use_reduced_sequence = TRUE,
   only_annotated = FALSE
 )
+
+predict_geese_simulate(p, par, nsim, use_reduced_sequence = TRUE, seed = -1L)
 
 \method{names}{flock}(x)
 

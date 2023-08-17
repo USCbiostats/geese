@@ -57,7 +57,7 @@ devtools::install_github("USCbiostats/geese")
 library(geese)
 
 # Preparing data
-n <- 200L
+n <- 100L
 annotations <- replicate(n * 2 - 1, c(9, 9), simplify = FALSE)
 
 # Random tree
