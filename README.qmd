@@ -64,6 +64,9 @@ annotations <- replicate(n * 2 - 1, c(9, 9), simplify = FALSE)
 set.seed(31)
 tree <- aphylo::sim_tree(n)$edge - 1L
 
+# Sorting by the second column
+tree <- tree[order(tree[, 2]), ]
+
 duplication <- rep(TRUE, n * 2 - 1)
 
 # Reading the data in
@@ -98,6 +101,14 @@ likelihood(amodel, params*0) # Equals 1 b/c all missings
 # Simulating data
 fake1 <- sim_geese(p = amodel, par = params, seed = 1110)
 fake2 <- sim_geese(p = amodel, par = params)
+
+# # Removing interior node data
+# is_interior <- which(tree[,2] %in% tree[,1])
+# is_leaf     <- which(!tree[,2] %in% tree[,1])
+# for (i in is_interior) {
+#   fake1[[i]] <- rep(9, 2)
+#   fake2[[i]] <- rep(9, 2)
+# }
 ```
 
 We can now visualize either of the annotations using the [aphylo](https://github.com/USCbiostats/aphylo) package.
@@ -182,7 +193,8 @@ for (i in 1:ncol(ans_mcmc)) {
   tmpx <- window(ans_mcmc, start = 10000)[,i,drop=FALSE]
   
   coda::traceplot(
-    tmpx, smooth = FALSE, ylim = c(-11,11), col = rgb(0, 128, 128, maxColorValue = 255), 
+    tmpx, smooth = FALSE, ylim = c(-11,11),
+    col = rgb(0, 128, 128, maxColorValue = 255), 
     main = names(params)[i]
     )
   abline(h = params[i], lty=3, lwd=4, col = "red")
@@ -195,8 +207,23 @@ summary(window(ans_mcmc, start = end(ans_mcmc) * 3/4))
 par_estimates <- colMeans(
   window(ans_mcmc, start = end(ans_mcmc)*3/4)
   )
-ans_pred      <- predict_geese(amodel, params, leave_one_out = TRUE)
-ans_pred      <- do.call(rbind, ans_pred)
+ans_pred <- predict_geese(
+  amodel, params,
+  leave_one_out = TRUE,
+  only_annotated = TRUE
+  ) |> do.call(what = "rbind")
+ans_pred_sim <- replicate(1e5, {
+  do.call(rbind, sim_geese(amodel, params))
+}, simplify = "array")
+
+ans_pred_avg <- ans_pred_sim[,,1]
+for (i in 2:dim(ans_pred_sim)[3]) {
+  ans_pred_avg <- ans_pred_avg + ans_pred_sim[,,i]
+}
+
+ans_pred_avg <- ans_pred_avg / dim(ans_pred_sim)[3]
+
+ans_pred_sim <- predict_geese_simulate(amodel, params, nsim = 100)
 
 # Preparing annotations
 ann_obs <- do.call(rbind, fake1)
@@ -206,11 +233,11 @@ hist(abs(ans_pred - ann_obs))
 
 # AUC
 (ans <- aphylo::prediction_score(
-  cbind(as.vector(ans_pred)),
-  cbind(as.vector(ann_obs))
+  cbind(as.vector(ans_pred)[is_leaf]),
+  cbind(as.vector(ann_obs)[is_leaf])
   ))
 
-plot(ans$auc)
+plot(ans$auc, xlim = c(0,1), ylim = c(0,1))
 ```
 
 
@@ -292,8 +319,8 @@ summary(window(ans_mcmc2, start = 10000))
 ## Limiting the support
 
 In this example, we use the function `rule_limit_changes()` to apply a
-constraint to the support of the model. This takes the first 2 term (0 and 1 since the
-index is in C++), and restricts the support to states where there are between
+constraint to the support of the model. This takes the first two terms (0 and 1 since the
+index is in C++) and restricts the support to states where there are between
 $[0, 2]$ changes, at most.
 
 This should be useful when dealing with multiple functions or [pylotomies](https://en.wikipedia.org/wiki/Polytomy).

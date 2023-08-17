@@ -45,12 +45,45 @@ tinytest::expect_equivalent(
   ans1_jmor
 )
 
-predict_geese(jmor_model, par = params_jmor, leave_one_out = TRUE)
-set.seed(112)
-predict_geese_simulate(jmor_model, par = params_jmor, nsim = 10000)
+# Testing leave one out --------------------------------------------------------
+loo_pred0 <- predict_geese(jmor_model, par = params_jmor, leave_one_out = TRUE)
 
-# Fitting the model
-ans <- geese_mle(jmor_model)
-predict_geese(jmor_model, par = ans$par, leave_one_out = TRUE)
-predict_geese_simulate(jmor_model, par = ans$par, nsim = 10000)
+preds_loo <- predict_geese(jmor_model, par = params_jmor, leave_one_out = FALSE)
+for (i in 1:3) {
 
+  tmp_ann <- ann_jmor
+  tmp_ann[[i]] <- c(9L)
+
+  tmp_model <- new_geese(
+    annotations = tmp_ann,
+    geneid      = geneid_jmor,
+    parent      = parent_jmor,
+    duplication = duplication_jmor
+  )
+
+  term_gains(tmp_model, 0)
+  term_loss(tmp_model, 0)
+
+  init_model(tmp_model)
+
+  preds_loo[[i]][[1L]] <- predict_geese(
+    tmp_model, par = params_jmor,
+    leave_one_out = FALSE
+    )[[i]]
+    
+}
+
+expect_equivalent(
+  loo_pred0,
+  preds_loo
+)
+
+preds_sim <- predict_geese_simulate(
+  jmor_model,
+  par = params_jmor,
+  nsim = 1000000
+  )
+
+expect_true(
+  all(abs(unlist(loo_pred0) - unlist(preds_sim)) < 0.01) 
+)
