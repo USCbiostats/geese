@@ -67,7 +67,9 @@ tree <- aphylo::sim_tree(n)$edge - 1L
 # Sorting by the second column
 tree <- tree[order(tree[, 2]), ]
 
-duplication <- rep(TRUE, n * 2 - 1)
+duplication <- sample.int(
+  n = 2, size = n * 2 - 1, replace = TRUE, prob = c(.1, .9)
+  ) == 1
 
 # Reading the data in
 amodel <- new_geese(
@@ -81,6 +83,7 @@ amodel <- new_geese(
 term_gains(amodel, 0:1)
 term_loss(amodel, 0:1)
 term_maxfuns(amodel, 0, 1)
+term_overall_changes(amodel, duplication = 0)
 init_model(amodel)
 
 # Testing
@@ -91,6 +94,8 @@ params <- c(
   -2, -1.5,
   # Max funs
   2, 
+  # Overall changes
+  -5,
   # Root probabilities
   -10, -10
 )
@@ -99,12 +104,12 @@ names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1
 likelihood(amodel, params*0) # Equals 1 b/c all missings
 
 # Simulating data
-fake1 <- sim_geese(p = amodel, par = params, seed = 1110)
+fake1 <- sim_geese(p = amodel, par = params, seed = 212)
 fake2 <- sim_geese(p = amodel, par = params)
 
-# # Removing interior node data
-# is_interior <- which(tree[,2] %in% tree[,1])
-# is_leaf     <- which(!tree[,2] %in% tree[,1])
+# Removing interior node data
+is_interior <- which(tree[,2] %in% tree[,1])
+is_leaf     <- which(!tree[,2] %in% tree[,1])
 # for (i in is_interior) {
 #   fake1[[i]] <- rep(9, 2)
 #   fake2[[i]] <- rep(9, 2)
@@ -141,7 +146,7 @@ amodel <- new_geese(
 term_gains(amodel, 0:1)
 term_loss(amodel, 0:1)
 term_maxfuns(amodel, 0, 1)
-
+term_overall_changes(amodel, duplication = 0)
 # We need to initialize to do all the accounting
 init_model(amodel)
 
@@ -154,7 +159,7 @@ ans_mle
 # Prob of each gene gaining a single function
 transition_prob(
   amodel,
-  params = c(-1, -1, -2, -2, -.5), 
+  params = c(-1, -1, -2, -2, -2, -.5), 
   duplication = TRUE, state = c(FALSE, FALSE),
   array = matrix(c(1, 0, 0, 1), ncol=2)
 )
@@ -208,11 +213,11 @@ par_estimates <- colMeans(
   window(ans_mcmc, start = end(ans_mcmc)*3/4)
   )
 ans_pred <- predict_geese(
-  amodel, params,
+  amodel, ans_mle$par,
   leave_one_out = TRUE,
   only_annotated = TRUE
   ) |> do.call(what = "rbind")
-ans_pred_sim <- replicate(1e5, {
+ans_pred_sim <- replicate(1e4, {
   do.call(rbind, sim_geese(amodel, params))
 }, simplify = "array")
 
@@ -223,7 +228,10 @@ for (i in 2:dim(ans_pred_sim)[3]) {
 
 ans_pred_avg <- ans_pred_avg / dim(ans_pred_sim)[3]
 
-ans_pred_sim <- predict_geese_simulate(amodel, params, nsim = 100)
+ans_pred_sim <- predict_geese_simulate(
+  amodel, params, nsim = 100
+  ) |>
+  do.call(what = "rbind")
 
 # Preparing annotations
 ann_obs <- do.call(rbind, fake1)
@@ -233,8 +241,8 @@ hist(abs(ans_pred - ann_obs))
 
 # AUC
 (ans <- aphylo::prediction_score(
-  cbind(as.vector(ans_pred)[is_leaf]),
-  cbind(as.vector(ann_obs)[is_leaf])
+  cbind(as.vector(ans_pred)),
+  cbind(as.vector(ann_obs))
   ))
 
 plot(ans$auc, xlim = c(0,1), ylim = c(0,1))

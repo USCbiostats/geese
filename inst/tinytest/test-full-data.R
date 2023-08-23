@@ -38,11 +38,42 @@ term_gains(jmor_model, 0)
 term_loss(jmor_model, 0)
 
 init_model(jmor_model)
+
+# Aphylo is equivalent in this case
+ap <- aphylo_from_data_frame(
+  tree        = as.phylo(cbind(parent_jmor[-5], geneid_jmor[-5])), 
+  annotations = data.frame(
+    id = geneid_jmor,
+    do.call(rbind, ann_jmor)
+    ), 
+  types = data.frame(
+    id   = c(geneid_jmor),
+    dupl = ifelse(duplication_jmor, 0, 1)
+  )
+)
+
 ans1_jmor <- likelihood(jmor_model, par = params_jmor, as_log = FALSE)
+
+ans2_jmor <- aphylo::LogLike(
+  ap, 
+  psi = c(0,0),
+  mu_d = plogis(params_jmor[1:2]),
+  mu_s = c(0,0),
+  Pi = plogis(params_jmor[3]),
+  eta = c(1,1)
+)$ll
+
+ans2_jmor <- exp(ans2_jmor)
+
 
 tinytest::expect_equivalent(
   ans0_jmor,
   ans1_jmor
+)
+
+tinytest::expect_equivalent(
+  ans0_jmor,
+  ans2_jmor
 )
 
 # Testing leave one out --------------------------------------------------------
