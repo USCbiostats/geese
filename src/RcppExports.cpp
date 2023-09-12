@@ -264,6 +264,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// get_annotations_cpp
+IntegerMatrix get_annotations_cpp(SEXP p);
+RcppExport SEXP _geese_get_annotations_cpp(SEXP pSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
+    rcpp_result_gen = Rcpp::wrap(get_annotations_cpp(p));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rule_limit_changes
 int rule_limit_changes(SEXP p, int term_pos, int lb, int ub, size_t duplication);
 RcppExport SEXP _geese_rule_limit_changes(SEXP pSEXP, SEXP term_posSEXP, SEXP lbSEXP, SEXP ubSEXP, SEXP duplicationSEXP) {
@@ -279,7 +289,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // predict_geese
-std::vector< std::vector< double > > predict_geese(SEXP p, const std::vector< double >& par, bool leave_one_out, bool use_reduced_sequence, bool only_annotated);
+std::vector< NumericVector > predict_geese(SEXP p, const std::vector< double >& par, bool leave_one_out, bool use_reduced_sequence, bool only_annotated);
 RcppExport SEXP _geese_predict_geese(SEXP pSEXP, SEXP parSEXP, SEXP leave_one_outSEXP, SEXP use_reduced_sequenceSEXP, SEXP only_annotatedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -601,11 +611,11 @@ BEGIN_RCPP
 END_RCPP
 }
 // new_geese
-SEXP new_geese(std::vector< std::vector< size_t > >& annotations, std::vector< size_t >& geneid, std::vector< int >& parent, std::vector< bool >& duplication);
+SEXP new_geese(ListOf< IntegerVector >& annotations, std::vector< size_t >& geneid, std::vector< int >& parent, std::vector< bool >& duplication);
 RcppExport SEXP _geese_new_geese(SEXP annotationsSEXP, SEXP geneidSEXP, SEXP parentSEXP, SEXP duplicationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< std::vector< std::vector< size_t > >& >::type annotations(annotationsSEXP);
+    Rcpp::traits::input_parameter< ListOf< IntegerVector >& >::type annotations(annotationsSEXP);
     Rcpp::traits::input_parameter< std::vector< size_t >& >::type geneid(geneidSEXP);
     Rcpp::traits::input_parameter< std::vector< int >& >::type parent(parentSEXP);
     Rcpp::traits::input_parameter< std::vector< bool >& >::type duplication(duplicationSEXP);
@@ -638,6 +648,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_print_geese", (DL_FUNC) &_geese_print_geese, 1},
     {"_geese_print_nodes_cpp", (DL_FUNC) &_geese_print_nodes_cpp, 1},
     {"_geese_get_support", (DL_FUNC) &_geese_get_support, 1},
+    {"_geese_get_annotations_cpp", (DL_FUNC) &_geese_get_annotations_cpp, 1},
     {"_geese_rule_limit_changes", (DL_FUNC) &_geese_rule_limit_changes, 5},
     {"_geese_predict_geese", (DL_FUNC) &_geese_predict_geese, 5},
     {"_geese_predict_flock", (DL_FUNC) &_geese_predict_flock, 5},

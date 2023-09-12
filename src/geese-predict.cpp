@@ -8,7 +8,7 @@ using namespace Rcpp;
 //' @export
 //' @rdname geese-common
 // [[Rcpp::export(rng = false)]]
-std::vector< std::vector< double > > predict_geese(
+std::vector< NumericVector > predict_geese(
     SEXP p,
     const std::vector< double > & par,
     bool leave_one_out        = false,
@@ -17,14 +17,32 @@ std::vector< std::vector< double > > predict_geese(
   ) {
 
   // Preparing output
-  std::vector< std::vector< double > > res(0u);
+  std::vector< NumericVector > res;
 
   IF_GEESE(p) {
 
     Rcpp::XPtr<geese::Geese>ptr(p);
-    res = ptr->predict(
+    auto res0 = ptr->predict(
       par, nullptr, leave_one_out, only_annotated, use_reduced_sequence
       );
+
+    res.resize(res0.size());
+
+    for (const auto n: ptr->nodes) {
+
+      res[n.second.ord] = wrap(res0[n.second.ord]);
+
+      if (!only_annotated)
+        continue;
+
+      for (size_t f = 0u; f < ptr->nfuns(); ++f)
+      {
+        if (n.second.annotations[f] == 9u)
+          res[n.second.ord][f] = NA_REAL;
+      }
+
+    }
+
 
   } IF_FLOCK(p) {
 

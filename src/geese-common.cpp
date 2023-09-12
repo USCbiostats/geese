@@ -547,3 +547,29 @@ std::vector< NumericMatrix > get_support(SEXP p)
 
 
 }
+
+//' @export
+// [[Rcpp::export(name = "get_annotations", rng = false)]]
+IntegerMatrix get_annotations_cpp(SEXP p) {
+
+  Rcpp::XPtr<geese::Geese> ptr(p);
+  
+  auto annotations = ptr->get_annotations();
+  size_t nnodes = ptr->nnodes();
+  size_t nfuns  = ptr->nfuns();
+
+  IntegerMatrix ans(nnodes, nfuns);
+
+  for (size_t i = 0u; i < nnodes; ++i)
+  {
+    for (size_t j = 0u; j < nfuns; ++j)
+    {
+      int tmp = static_cast<int>(annotations[j * nnodes + i]);
+      ans(i, j) = tmp == 9 ? NA_INTEGER : tmp;
+
+    }
+  }
+
+  return ans;
+
+}

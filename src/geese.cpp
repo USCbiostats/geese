@@ -16,14 +16,36 @@ using namespace Rcpp;
 //' @aliases geese
 // [[Rcpp::export(rng = false)]]
 SEXP new_geese(
-    std::vector< std::vector< size_t > > & annotations,
+    ListOf< IntegerVector > & annotations,
     std::vector< size_t > & geneid,
     std::vector< int > & parent,
     std::vector< bool > & duplication
 ) {
 
+  // Preprocessing annotations. (checking for data types)
+  std::vector< std::vector< size_t > > annotations2;
+  for (IntegerVector entry : annotations) {
+
+    std::vector< size_t > tmp;
+    for (size_t i = 0u; i < entry.size(); ++i) {
+      if (Rcpp::traits::is_na<INTSXP>(entry[i]) || entry[i] == 9)
+        tmp.push_back(9);
+      else if (entry[i] != 0 && entry[i] != 1)
+        stop("Invalid annotation value: %d", entry[i]);
+      else
+        tmp.push_back(entry[i]);
+
+    }
+
+    // Rcpp::print(wrap(tmp));
+
+    annotations2.push_back(tmp);
+  }
+
+  // Rcpp::print(wrap(annotations2));
+
   Rcpp::XPtr<geese::Geese> dat(
-      new geese::Geese(annotations, geneid, parent, duplication
+      new geese::Geese(annotations2, geneid, parent, duplication
       ));
 
   dat.attr("class") = "geese";

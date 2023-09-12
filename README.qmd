@@ -68,7 +68,7 @@ tree <- aphylo::sim_tree(n)$edge - 1L
 tree <- tree[order(tree[, 2]), ]
 
 duplication <- sample.int(
-  n = 2, size = n * 2 - 1, replace = TRUE, prob = c(.1, .9)
+  n = 2, size = n * 2 - 1, replace = TRUE, prob = c(.4, .6)
   ) == 1
 
 # Reading the data in
@@ -80,26 +80,36 @@ amodel <- new_geese(
   )
 
 # Preparing the model
-term_gains(amodel, 0:1)
-term_loss(amodel, 0:1)
-term_maxfuns(amodel, 0, 1)
-term_overall_changes(amodel, duplication = 0)
+term_gains(amodel, 0:1, duplication = 1)
+term_loss(amodel, 0:1, duplication = 1)
+term_gains(amodel, 0:1, duplication = 0)
+term_loss(amodel, 0:1, duplication = 0)
+term_maxfuns(amodel, 0, 1, duplication = 2)
 init_model(amodel)
 
 # Testing
 params <- c(
-  # Gains
+  # Gains spe
   2, 1.5,
   # Loss
   -2, -1.5,
+  # Gains spe
+  -2, -1,
+  # Loss spe
+  -4, -4,
   # Max funs
   2, 
-  # Overall changes
-  -5,
   # Root probabilities
   -10, -10
 )
-names(params) <- c("gain0", "gain1", "loss0", "loss1", "onefun", "root0", "root1")
+names(params) <- c(
+  "gain0 dupl", "gain1 dupl",
+  "loss0 dupl", "loss1 dupl",
+  "gain0 spe", "gain1 spe",
+  "loss0 spe", "loss1 spe",
+  "onefun", 
+  "root0", "root1"
+  )
 
 likelihood(amodel, params*0) # Equals 1 b/c all missings
 
@@ -143,11 +153,11 @@ amodel <- new_geese(
   )
 
 # Adding the model terms
-term_gains(amodel, 0:1)
-term_loss(amodel, 0:1)
-term_maxfuns(amodel, 0, 1)
-term_overall_changes(amodel, duplication = 0)
-# We need to initialize to do all the accounting
+term_gains(amodel, 0:1, duplication = 1)
+term_loss(amodel, 0:1, duplication = 1)
+term_gains(amodel, 0:1, duplication = 0)
+term_loss(amodel, 0:1, duplication = 0)
+term_maxfuns(amodel, 0, 1, duplication = 2)
 init_model(amodel)
 
 print(amodel)
@@ -159,7 +169,7 @@ ans_mle
 # Prob of each gene gaining a single function
 transition_prob(
   amodel,
-  params = c(-1, -1, -2, -2, -2, -.5), 
+  params = rep(0, nterms(amodel) - nfuns(amodel)), 
   duplication = TRUE, state = c(FALSE, FALSE),
   array = matrix(c(1, 0, 0, 1), ncol=2)
 )
@@ -176,7 +186,7 @@ ans_mcmc <- geese_mcmc(
   prior   = function(p) c(
       dlogis(
         p,
-        scale = 2,
+        scale = 4,
         location = c(
           rep(0, nterms(amodel) - nfuns(amodel)),
           rep(-5, nfuns(amodel))
@@ -213,37 +223,31 @@ par_estimates <- colMeans(
   window(ans_mcmc, start = end(ans_mcmc)*3/4)
   )
 ans_pred <- predict_geese(
-  amodel, ans_mle$par,
+  amodel, par_estimates,
   leave_one_out = TRUE,
   only_annotated = TRUE
   ) |> do.call(what = "rbind")
-ans_pred_sim <- replicate(1e4, {
-  do.call(rbind, sim_geese(amodel, params))
-}, simplify = "array")
+# ans_pred_sim <- replicate(1e4, {
+#   do.call(rbind, sim_geese(amodel, par_estimates))
+# }, simplify = "array")
 
-ans_pred_avg <- ans_pred_sim[,,1]
-for (i in 2:dim(ans_pred_sim)[3]) {
-  ans_pred_avg <- ans_pred_avg + ans_pred_sim[,,i]
-}
+# ans_pred_avg <- ans_pred_sim[,,1]
+# for (i in 2:dim(ans_pred_sim)[3]) {
+#   ans_pred_avg <- ans_pred_avg + ans_pred_sim[,,i]
+# }
 
-ans_pred_avg <- ans_pred_avg / dim(ans_pred_sim)[3]
+# ans_pred_avg <- ans_pred_avg / dim(ans_pred_sim)[3]
 
-ans_pred_sim <- predict_geese_simulate(
-  amodel, params, nsim = 100
-  ) |>
-  do.call(what = "rbind")
+# ans_pred_sim <- predict_geese_simulate(
+#   amodel, params, nsim = 100
+#   ) |>
+#   do.call(what = "rbind")
 
 # Preparing annotations
 ann_obs <- do.call(rbind, fake1)
 
-# Mean Absolute Error
-hist(abs(ans_pred - ann_obs))
-
 # AUC
-(ans <- aphylo::prediction_score(
-  cbind(as.vector(ans_pred)),
-  cbind(as.vector(ann_obs))
-  ))
+(ans <- prediction_score(ans_pred, ann_obs))
 
 plot(ans$auc, xlim = c(0,1), ylim = c(0,1))
 ```
@@ -284,8 +288,11 @@ add_geese(
 
 # Persistence to preserve parent state
 term_gains(flock, 0:1, duplication = 1)
-term_gains(flock, 0:1, duplication = 1)
-term_maxfuns(flock, 1, 1, duplication = 1)
+term_loss(flock, 0:1, duplication = 1)
+term_gains(flock, 0:1, duplication = 0)
+term_loss(flock, 0:1, duplication = 0)
+term_maxfuns(flock, 0, 1, duplication = 2)
+
 
 # We need to initialize to do all the accountintg
 init_model(flock)
@@ -322,6 +329,47 @@ for (i in 1:ncol(ans_mcmc2)) {
 }
 par(op)
 summary(window(ans_mcmc2, start = 10000))
+```
+
+Are we doing better in AUCs?
+
+```{r}
+par_estimates <- colMeans(
+  window(ans_mcmc2, start = end(ans_mcmc2)*3/4)
+  )
+
+ans_pred <- predict_flock(
+  flock, par_estimates,
+  leave_one_out = TRUE,
+  only_annotated = TRUE
+  ) |>
+  lapply(do.call, what = "rbind") |>
+  do.call(what = rbind)
+# ans_pred_sim <- replicate(1e4, {
+#   do.call(rbind, sim_geese(amodel, par_estimates))
+# }, simplify = "array")
+
+# ans_pred_avg <- ans_pred_sim[,,1]
+# for (i in 2:dim(ans_pred_sim)[3]) {
+#   ans_pred_avg <- ans_pred_avg + ans_pred_sim[,,i]
+# }
+
+# ans_pred_avg <- ans_pred_avg / dim(ans_pred_sim)[3]
+
+# ans_pred_sim <- predict_geese_simulate(
+#   amodel, params, nsim = 100
+#   ) |>
+#   do.call(what = "rbind")
+
+# Preparing annotations
+ann_obs <- rbind(
+  do.call(rbind, fake1),
+  do.call(rbind, fake2)
+)
+
+# AUC
+(ans <- prediction_score(ans_pred, ann_obs))
+plot(ans$auc)
 ```
 
 ## Limiting the support

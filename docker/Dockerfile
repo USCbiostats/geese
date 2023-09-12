@@ -1,0 +1,21 @@
+FROM rocker/r-devel-san
+
+RUN apt update && apt install --no-install-suggests -y libssl-dev
+
+RUN Rscript --vanilla -e \
+  'install.packages(c("Rcpp", "fmcmc", "tinytest"), repos = "https://cloud.r-project.org")'
+
+RUN install2.r aphylo --deps=TRUE
+
+RUN mkdir ~/.R && \
+  echo "CXXFLAGS=-g -O0" > ~/.R/Makevars && \
+  echo "CXX14FLAGS=-g -O0" >> ~/.R/Makevars && \
+  echo "CXX17FLAGS=-g -O0" >> ~/.R/Makevars && \
+  echo "CXX11FLAGS=-g -O0" >> ~/.R/Makevars && \
+  echo "SAFE_FLAGS=-g -O0" >> ~/.R/Makevars
+
+
+CMD ["bash"]
+
+
+

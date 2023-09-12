@@ -8,3 +8,5 @@ vignettes
 Makefile
 inst/simulation-study/
 ^\.github$
+^docker$
+^\.vscode$

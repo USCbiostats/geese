@@ -174,6 +174,11 @@ get_support <- function(p) {
     .Call(`_geese_get_support`, p)
 }
 
+#' @export
+get_annotations <- function(p) {
+    .Call(`_geese_get_annotations_cpp`, p)
+}
+
 #' @title Evolutionary terms
 #' @description Model terms for both [geese] and [flock] objects.
 #' @export

@@ -98,21 +98,31 @@ res <- geese_mle(amodel, lower = -10, upper = 10, method = "L-BFGS-B")
 plogis(res$par)
 coef(ans_aphylo_mle)
 
-ans_geese <- predict_geese(amodel, res$par, only_annotated = TRUE) |>
+ans_geese <- predict_geese(amodel, res$par, only_annotated = TRUE, leave_one_out = TRUE) |>
   do.call(what = rbind)
 
-# predict_geese_simulate(amodel, res$par, seed = 212, nsim = 1000) |>
-#   do.call(what = rbind)
+predict_geese_simulate(amodel, res$par, seed = 212, nsim = 100000) |>
+  do.call(what = rbind)
 
 # The absolute difference should be below 0.01
 differences <- abs(head(plogis(res$par), -2) - head(coef(ans_aphylo_mle), -1))/
     head(coef(ans_aphylo_mle), -1)
 
-# prediction_score(ans_aphylo_mle)
+prediction_score(ans_aphylo_mle)
 
-# prediction_score(
-#   x        = ans_geese,
-#   expected = do.call(rbind, fake1)
-# )
+prediction_score(x = ans_geese, expected = do.call(rbind, fake1))
 
+# plot(sort(predict(ans_aphylo_mle)[1:99,]) -sort(ans_geese[1:99,]))
 
+aphylo_pred <- predict(ans_aphylo_mle, loo = FALSE)
+(aphylo_pred[c(tree[, 2] + 1, n ), ] - 
+  do.call(rbind, fake1)) |> abs() |> mean(na.rm = TRUE)
+
+all(
+  range(do.call(rbind, fake1) - get_annotations(amodel), na.rm = TRUE) == 0
+  )
+
+# All equal
+(aphylo_pred[c(tree[, 2] + 1, n ), ] - ans_geese) |>
+  abs() |>
+  hist()
