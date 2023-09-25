@@ -57,7 +57,7 @@ std::vector< NumericVector > predict_geese(
 //' @export
 //' @rdname geese-common
 // [[Rcpp::export(rng = false)]]
-std::vector< std::vector< std::vector< double > > > predict_flock(
+std::vector< std::vector< NumericVector > > predict_flock(
     SEXP p,
     const std::vector< double > & par,
     bool leave_one_out        = false,
@@ -66,9 +66,7 @@ std::vector< std::vector< std::vector< double > > > predict_flock(
 ) {
 
   // Preparing output
-  std::vector< std::vector< std::vector< double > > > res(0u);
-
-  
+  std::vector< std::vector< NumericVector > > res(0u);
 
   IF_GEESE(p) {
 
@@ -76,13 +74,43 @@ std::vector< std::vector< std::vector< double > > > predict_flock(
 
   } IF_FLOCK(p) {
 
+    // SEXP p,
+    // const std::vector< double > & par,
+    // bool leave_one_out        = false,
+    // bool use_reduced_sequence = true,
+    // bool only_annotated       = false
+
     Rcpp::XPtr<geese::Flock>ptr(p);
+    res.resize(ptr->ntrees());
+
+    size_t i = 0u;
     for (auto& d : ptr->dat)
-      res.push_back(
-        d.predict(
+    {
+
+      auto pred = d.predict(
           par, nullptr, leave_one_out, only_annotated, use_reduced_sequence
-        )
-      );
+        );
+
+      res[i].resize(pred.size());
+      
+      for (const auto n: d.nodes) {
+
+        res[i][n.second.ord] = wrap(pred[n.second.ord]);
+
+        if (!only_annotated)
+          continue;
+
+        for (size_t f = 0u; f < ptr->nfuns(); ++f)
+        {
+          if (n.second.annotations[f] == 9u)
+            res[i][n.second.ord][f] = NA_REAL;
+        }
+
+      }
+
+      ++i;
+
+    }
 
 
   } IF_NEITHER()

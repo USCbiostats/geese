@@ -303,7 +303,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // predict_flock
-std::vector< std::vector< std::vector< double > > > predict_flock(SEXP p, const std::vector< double >& par, bool leave_one_out, bool use_reduced_sequence, bool only_annotated);
+std::vector< std::vector< NumericVector > > predict_flock(SEXP p, const std::vector< double >& par, bool leave_one_out, bool use_reduced_sequence, bool only_annotated);
 RcppExport SEXP _geese_predict_flock(SEXP pSEXP, SEXP parSEXP, SEXP leave_one_outSEXP, SEXP use_reduced_sequenceSEXP, SEXP only_annotatedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

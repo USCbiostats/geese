@@ -3,7 +3,8 @@ PKG_LIBS = $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(SHLIB_OPENMP_CXXFLAGS)
 
 # This is necesary since ARMADILLO now supports OpenMP
 PKG_CXXFLAGS=$(SHLIB_OPENMP_CXXFLAGS) -I../inst/include/ \
-    -Dprintf_barry=Rprintf
+    -Dprintf_barry=Rprintf \
+    -DBARRY_USER_INTERRUPT="Rcpp::checkUserInterrupt();"
 
 # For testing
 #PKG_CXXFLAGS=-Wall
