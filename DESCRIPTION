@@ -1,5 +1,5 @@
 Package: geese
-Version: 0.0.0.9000
+Version: 0.0-9000
 Title: GEne Evolutionary model using SufficiEnsy
 Description: Discrete Exponential Markov Models are a
   family of statistical models that can be used to describe dynamic transitions
