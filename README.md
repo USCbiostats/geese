@@ -16,21 +16,20 @@ Integrative Methods of Analysis for Genetic Epidemiology
 [![R-CMD-check](https://github.com/USCbiostats/geese/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/USCbiostats/geese/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-This R package taps into statistical theory mostly developed in the
-social networks realm. Using Exponential-Family Random Graph Models
-(ERGMs), `geese` provides an statistical framework for building Gene
-Functional Evolution Models using Sufficiency. For example, users can
-directly hypothesize whether Neofunctionalization or
-Subfunctionalization events were taking place in a phylogeny, without
-having to estimate the full transition Markov Matrix that is usually
-used.
+This R package taps into statistical theory primarily developed in
+social networks. Using Exponential-Family Random Graph Models (ERGMs),
+`geese` provides a statistical framework for building Gene Functional
+Evolution Models using Sufficiency. For example, users can directly
+hypothesize whether Neofunctionalization or Subfunctionalization events
+were taking place in a phylogeny, without having to estimate the full
+transition Markov Matrix that is usually used.
 
-GEESE is computationally efficient, with C++ under-the-hood, allowing
+GEESE is computationally efficient, with C++ under the hood, allowing
 the analyses of either single trees (a GEESE) or multiple trees
-simulatenously (pooled model), in a Flock.
+simultaneously (pooled model) in a Flock.
 
-This is work in progress and based on the theoretical work developed
-duing [George G. Vega Yon](https://ggv.cl)’s doctoral thesis.
+This is a work in progress and based on the theoretical work developed
+during [George G. Vega Yon](https://ggv.cl)’s doctoral thesis.
 
 ## Installation
 
@@ -335,21 +334,6 @@ ans_pred <- predict_geese(
   leave_one_out = TRUE,
   only_annotated = TRUE
   ) |> do.call(what = "rbind")
-# ans_pred_sim <- replicate(1e4, {
-#   do.call(rbind, sim_geese(amodel, par_estimates))
-# }, simplify = "array")
-
-# ans_pred_avg <- ans_pred_sim[,,1]
-# for (i in 2:dim(ans_pred_sim)[3]) {
-#   ans_pred_avg <- ans_pred_avg + ans_pred_sim[,,i]
-# }
-
-# ans_pred_avg <- ans_pred_avg / dim(ans_pred_sim)[3]
-
-# ans_pred_sim <- predict_geese_simulate(
-#   amodel, params, nsim = 100
-#   ) |>
-#   do.call(what = "rbind")
 
 # Preparing annotations
 ann_obs <- do.call(rbind, fake1)
@@ -374,12 +358,6 @@ plot(ans$auc, xlim = c(0,1), ylim = c(0,1))
 ```
 
 <img src="man/figures/README-prediction-1.png" style="width:100.0%" />
-
-<!-- We can compare these results to what we would obtain using aphylo -->
-<!-- # ```{r aphylo} -->
-<!-- # ans_aphylo <- aphylo_mcmc(ap ~ mu_d + mu_s + Pi) -->
-<!-- # (ps <- prediction_score(ans_aphylo)) -->
-<!-- # ``` -->
 
 ## Using a flock
 
@@ -536,21 +514,6 @@ ans_pred <- predict_flock(
   ) |>
   lapply(do.call, what = "rbind") |>
   do.call(what = rbind)
-# ans_pred_sim <- replicate(1e4, {
-#   do.call(rbind, sim_geese(amodel, par_estimates))
-# }, simplify = "array")
-
-# ans_pred_avg <- ans_pred_sim[,,1]
-# for (i in 2:dim(ans_pred_sim)[3]) {
-#   ans_pred_avg <- ans_pred_avg + ans_pred_sim[,,i]
-# }
-
-# ans_pred_avg <- ans_pred_avg / dim(ans_pred_sim)[3]
-
-# ans_pred_sim <- predict_geese_simulate(
-#   amodel, params, nsim = 100
-#   ) |>
-#   do.call(what = "rbind")
 
 # Preparing annotations
 ann_obs <- rbind(
@@ -618,8 +581,8 @@ support_size(amodel_limited)
 ```
 
 Since we added the constraint based on the term
-`term_overall_changes()`, we now need to fix the parameter at 0 (i.e. no
-effect) during the MCMC model:
+`term_overall_changes()`, we now need to fix the parameter at 0 (i.e.,
+no effect) during the MCMC model:
 
 ``` r
 set.seed(122)
