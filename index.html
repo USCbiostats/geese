@@ -44,7 +44,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">geese</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0-9000</span>
       </span>
     </div>
 
@@ -76,9 +76,9 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>This R package taps into statistical theory mostly developed in the social networks realm. Using Exponential-Family Random Graph Models (ERGMs), <code>geese</code> provides an statistical framework for building Gene Functional Evolution Models using Sufficiency. For example, users can directly hypothesize whether Neofunctionalization or Subfunctionalization events were taking place in a phylogeny, without having to estimate the full transition Markov Matrix that is usually used.</p>
-<p>GEESE is computationally efficient, with C++ under-the-hood, allowing the analyses of either single trees (a GEESE) or multiple trees simulatenously (pooled model), in a Flock.</p>
-<p>This is work in progress and based on the theoretical work developed duing <a href="https://ggv.cl" class="external-link">George G. Vega Yon</a>’s doctoral thesis.</p>
+<p>This R package taps into statistical theory primarily developed in social networks. Using Exponential-Family Random Graph Models (ERGMs), <code>geese</code> provides a statistical framework for building Gene Functional Evolution Models using Sufficiency. For example, users can directly hypothesize whether Neofunctionalization or Subfunctionalization events were taking place in a phylogeny, without having to estimate the full transition Markov Matrix that is usually used.</p>
+<p>GEESE is computationally efficient, with C++ under the hood, allowing the analyses of either single trees (a GEESE) or multiple trees simultaneously (pooled model) in a Flock.</p>
+<p>This is a work in progress and based on the theoretical work developed during <a href="https://ggv.cl" class="external-link">George G. Vega Yon</a>’s doctoral thesis.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -369,21 +369,6 @@
 <span>  leave_one_out <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  only_annotated <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span>what <span class="op">=</span> <span class="st">"rbind"</span><span class="op">)</span></span>
-<span><span class="co"># ans_pred_sim &lt;- replicate(1e4, {</span></span>
-<span><span class="co">#   do.call(rbind, sim_geese(amodel, par_estimates))</span></span>
-<span><span class="co"># }, simplify = "array")</span></span>
-<span></span>
-<span><span class="co"># ans_pred_avg &lt;- ans_pred_sim[,,1]</span></span>
-<span><span class="co"># for (i in 2:dim(ans_pred_sim)[3]) {</span></span>
-<span><span class="co">#   ans_pred_avg &lt;- ans_pred_avg + ans_pred_sim[,,i]</span></span>
-<span><span class="co"># }</span></span>
-<span></span>
-<span><span class="co"># ans_pred_avg &lt;- ans_pred_avg / dim(ans_pred_sim)[3]</span></span>
-<span></span>
-<span><span class="co"># ans_pred_sim &lt;- predict_geese_simulate(</span></span>
-<span><span class="co">#   amodel, params, nsim = 100</span></span>
-<span><span class="co">#   ) |&gt;</span></span>
-<span><span class="co">#   do.call(what = "rbind")</span></span>
 <span></span>
 <span><span class="co"># Preparing annotations</span></span>
 <span><span class="va">ann_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">fake1</span><span class="op">)</span></span>
@@ -406,11 +391,6 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ans</span><span class="op">$</span><span class="va">auc</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-prediction-1.png" style="width:100.0%"></p>
-<!-- We can compare these results to what we would obtain using aphylo -->
-<!-- # ```{r aphylo} -->
-<!-- # ans_aphylo <- aphylo_mcmc(ap ~ mu_d + mu_s + Pi) -->
-<!-- # (ps <- prediction_score(ans_aphylo)) -->
-<!-- # ``` -->
 </div>
 <div class="section level2">
 <h2 id="using-a-flock">Using a flock<a class="anchor" aria-label="anchor" href="#using-a-flock"></a>
@@ -553,21 +533,6 @@
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">do.call</span>, what <span class="op">=</span> <span class="st">"rbind"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span>what <span class="op">=</span> <span class="va">rbind</span><span class="op">)</span></span>
-<span><span class="co"># ans_pred_sim &lt;- replicate(1e4, {</span></span>
-<span><span class="co">#   do.call(rbind, sim_geese(amodel, par_estimates))</span></span>
-<span><span class="co"># }, simplify = "array")</span></span>
-<span></span>
-<span><span class="co"># ans_pred_avg &lt;- ans_pred_sim[,,1]</span></span>
-<span><span class="co"># for (i in 2:dim(ans_pred_sim)[3]) {</span></span>
-<span><span class="co">#   ans_pred_avg &lt;- ans_pred_avg + ans_pred_sim[,,i]</span></span>
-<span><span class="co"># }</span></span>
-<span></span>
-<span><span class="co"># ans_pred_avg &lt;- ans_pred_avg / dim(ans_pred_sim)[3]</span></span>
-<span></span>
-<span><span class="co"># ans_pred_sim &lt;- predict_geese_simulate(</span></span>
-<span><span class="co">#   amodel, params, nsim = 100</span></span>
-<span><span class="co">#   ) |&gt;</span></span>
-<span><span class="co">#   do.call(what = "rbind")</span></span>
 <span></span>
 <span><span class="co"># Preparing annotations</span></span>
 <span><span class="va">ann_obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
@@ -624,7 +589,7 @@
 <span><span class="co"># Is limiting the support any useful?</span></span>
 <span><span class="fu"><a href="reference/geese-common.html">support_size</a></span><span class="op">(</span><span class="va">amodel_limited</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 224</span></span></code></pre></div>
-<p>Since we added the constraint based on the term <code><a href="reference/geese-terms.html">term_overall_changes()</a></code>, we now need to fix the parameter at 0 (i.e. no effect) during the MCMC model:</p>
+<p>Since we added the constraint based on the term <code><a href="reference/geese-terms.html">term_overall_changes()</a></code>, we now need to fix the parameter at 0 (i.e., no effect) during the MCMC model:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">122</span><span class="op">)</span></span>
 <span><span class="va">ans_mcmc2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/geese_mcmc.html">geese_mcmc</a></span><span class="op">(</span></span>
