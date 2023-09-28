@@ -9,6 +9,7 @@ geese_mle(
   initial = rep(0, nterms(amodel)),
   control = list(),
   offset_list = NULL,
+  ncores = 1L,
   ...
 )
 }

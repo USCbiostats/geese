@@ -10,6 +10,7 @@ geese_mcmc <- function(
   prior   = function(p) {
     stats::dlogis(p, log = TRUE)
   },
+  ncores = 1L,
   ...
   ) {
 
@@ -17,7 +18,7 @@ geese_mcmc <- function(
   # Normalized Log-likelihood function
   fun <- function(p) {
 
-    ans <- likelihood(p = amodel, par = p, as_log = TRUE) + sum(prior(p))
+    ans <- likelihood(p = amodel, par = p, as_log = TRUE, ncores = ncores) + sum(prior(p))
 
     if (!is.finite(ans))
       return(-.Machine$double.xmax * 1e-100)

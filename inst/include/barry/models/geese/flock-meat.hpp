@@ -138,7 +138,8 @@ inline PhyloModel *  Flock::get_model()
 inline double Flock::likelihood_joint(
     const std::vector< double > & par,
     bool as_log,
-    bool use_reduced_sequence
+    bool use_reduced_sequence,
+    size_t ncores
 )
 {
 
@@ -149,14 +150,14 @@ inline double Flock::likelihood_joint(
     if (as_log) {
 
         for (auto& d : this->dat) 
-            ans += d.likelihood(par, as_log, use_reduced_sequence);
+            ans += d.likelihood(par, as_log, use_reduced_sequence, ncores);
 
     }
     else
     {
 
         for (auto& d : this->dat) 
-            ans *= d.likelihood(par, as_log, use_reduced_sequence);
+            ans *= d.likelihood(par, as_log, use_reduced_sequence, ncores);
             
     }
     

@@ -10,6 +10,7 @@ geese_mcmc(
   prior = function(p) {
      stats::dlogis(p, log = TRUE)
  },
+  ncores = 1L,
   ...
 )
 }

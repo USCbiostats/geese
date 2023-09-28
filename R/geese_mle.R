@@ -11,6 +11,7 @@ geese_mle <- function(
   initial = rep(0, nterms(amodel)),
   control = list(),
   offset_list = NULL,
+  ncores = 1L,
   ...
   ) {
 
@@ -26,7 +27,7 @@ geese_mle <- function(
 
       tmppar[not_fixed] <- p
 
-      ans <- likelihood(p = amodel, par = tmppar, as_log = TRUE)
+      ans <- likelihood(p = amodel, par = tmppar, as_log = TRUE, ncores = ncores)
 
       if (!is.finite(ans))
         return(-.Machine$double.xmax * 1e-100)
@@ -51,7 +52,7 @@ geese_mle <- function(
 
     fun <- function(p) {
 
-      ans <- likelihood(p = amodel, par = p, as_log = TRUE)
+      ans <- likelihood(p = amodel, par = p, as_log = TRUE, ncores = ncores)
 
       if (!is.finite(ans))
         return(-.Machine$double.xmax * 1e-100)

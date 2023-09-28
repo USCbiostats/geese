@@ -6,7 +6,8 @@
 inline double Geese::likelihood(
     const std::vector< double > & par,
     bool as_log,
-    bool use_reduced_sequence
+    bool use_reduced_sequence,
+    size_t ncores
 ) {
 
     INITIALIZED()
@@ -148,7 +149,9 @@ inline double Geese::likelihood(
                     off_mult *= model->likelihood(
                         par0,
                         temp_stats,
-                        node.narray[s]
+                        node.narray[s],
+                        false,
+                        ncores
                     );
                 } catch (std::exception & e) {
 

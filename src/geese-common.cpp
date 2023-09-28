@@ -131,18 +131,19 @@ IntegerVector nleafs(SEXP p) {
 double likelihood(
     SEXP p, const std::vector< double > & par,
     bool as_log    = false,
-    bool trunc_seq = true
+    bool trunc_seq = true,
+    int  ncores    = 1
   ) {
 
   IF_GEESE(p) {
 
     Rcpp::XPtr<geese::Geese>ptr(p);
-    return ptr->likelihood(par, as_log, trunc_seq);
+    return ptr->likelihood(par, as_log, trunc_seq, static_cast<size_t>(ncores));
 
   } IF_FLOCK(p) {
 
     Rcpp::XPtr<geese::Flock>ptr(p);
-    return ptr->likelihood_joint(par, as_log, trunc_seq);
+    return ptr->likelihood_joint(par, as_log, trunc_seq, static_cast<size_t>(ncores));
 
   } IF_NEITHER()
 

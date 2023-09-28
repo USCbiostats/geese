@@ -38,7 +38,7 @@ ntrees(p)
 
 nleafs(p)
 
-likelihood(p, par, as_log = FALSE, trunc_seq = TRUE)
+likelihood(p, par, as_log = FALSE, trunc_seq = TRUE, ncores = 1L)
 
 get_probabilities(p)
 
