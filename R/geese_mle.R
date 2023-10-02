@@ -15,7 +15,9 @@ geese_mle <- function(
   ...
   ) {
 
-  control$maxit   <- 1e3L
+  if (length(control) == 0)
+    control$maxit   <- 1e3L
+    
   control$fnscale <- -1
 
   # Normalized Log-likelihood function
