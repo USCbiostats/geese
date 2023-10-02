@@ -7,9 +7,11 @@ inline double Geese::likelihood(
     const std::vector< double > & par,
     bool as_log,
     bool use_reduced_sequence,
-    size_t ncores
+    size_t ncores,
+    bool no_update_normalizing_constant
 ) {
 
+    // Checking whether the model is initialized
     INITIALIZED()
 
     // Splitting the probabilities
@@ -22,30 +24,21 @@ inline double Geese::likelihood(
 
     double ll = 0.0;
 
-    Node * n_off;
+    // Updating normalizing constants
+    if (!no_update_normalizing_constant)
+        model->update_normalizing_constants(par0, ncores);
 
     // Following the prunning sequence
-    std::vector< size_t > * preseq;
-
-    if (use_reduced_sequence)
-    {
-
-        preseq = &this->reduced_sequence;
-
-    }
-    else
-    {   
-
-        preseq = &this->sequence;
-
-    }
+    const std::vector< size_t > & preseq = use_reduced_sequence ?
+        this->reduced_sequence : this->sequence;
 
     // The first time it is called, it need to generate the corresponding
     // hashes of the columns so it is fast to access then (saves time
     // hashing and looking in the map.)
-    auto arrays2support = model->get_arrays2support();
+    const auto arrays2support = model->get_arrays2support();
+    const auto & normconst = model->get_normalizing_constants();
 
-    for (auto& i : *preseq)
+    for (auto& i : preseq)
     {
 
         // We cannot compute probability at the leaf, we need to continue
@@ -60,38 +53,50 @@ inline double Geese::likelihood(
         {
 
             // Starting the prob
-            double totprob = 0.0;
+            size_t array_id = node.narray[s];
 
             // Retrieving the sets of arrays
-            const std::vector< PhyloArray > * psets =
-                model->get_pset(node.narray[s]);
+            const std::vector< PhyloArray > & psets =
+                *(model->get_pset(array_id));
 
-            const std::vector<double> * psets_stats =
-                model->get_pset_stats(node.narray[s]);
+            const std::vector<double> & psets_stats =
+                *(model->get_pset_stats(array_id));
 
             std::vector< std::vector< size_t > > & locations = pset_loc[
-                arrays2support->operator[](node.narray[s])
+                arrays2support->operator[](array_id)
                 ];
+
+            // Making sure parallelization makes sense
+            if (psets.size() < 1000)
+                ncores = 1u;
             
             // Summation over all possible values of X
-            size_t nstate = 0u;
-            size_t narray = 0u;
-            for (auto x = psets->begin(); x != psets->end(); ++x)
+            const auto & node_offspring = node.offspring;
+            std::vector< double > totprob_n(psets.size(), 0.0);
+            #if defined(_OPENMP) || defined(__OPENMP)
+            #pragma omp parallel for num_threads(ncores) \
+                shared(locations, psets, psets_stats, totprob_n) \
+                firstprivate(nfunctions, par0, node_offspring, array_id, normconst)
+            #endif
+            for (size_t n = 0u; n < psets.size(); ++n) // x = psets->begin(); x != psets->end(); ++x)
             {
 
-                if (!x->is_dense())
+                // Retrieving the pset
+                const auto & x = psets[n];
+
+                if (!x.is_dense())
                     throw std::logic_error("This is only supported for dense arrays.");
 
-                std::vector< size_t > & location_x = locations[narray++];
+                const std::vector< size_t > & location_x = locations[n];
 
                 // Extracting the possible values of each offspring
                 double off_mult = 1.0;
 
-                for (auto o = 0u; o < x->ncol(); ++o)
+                for (auto o = 0u; o < x.ncol(); ++o)
                 {
 
                     // Setting the node
-                    n_off = node.offspring[o];
+                    const Node * n_off = node_offspring[o];
                     
                     // In the case that the offspring is a leaf, then we need to
                     // check whether the state makes sense.
@@ -102,7 +107,7 @@ inline double Geese::likelihood(
                             if (n_off->annotations[f] != 9u)
                             {
 
-                                if (x->operator()(f, o) != n_off->annotations[f])
+                                if (x(f, o) != n_off->annotations[f])
                                 {
 
                                     off_mult = -1.0;
@@ -123,36 +128,31 @@ inline double Geese::likelihood(
                     }
 
                     // Retrieving the location to the respective set of probabilities
-                    off_mult *= node.offspring[o]->subtree_prob[location_x[o]];
+                    off_mult *= n_off->subtree_prob[location_x[o]];
 
                 }
 
                 // Is this state valid?
                 if (off_mult < 0.0)
-                {
-
-                    ++nstate;
                     continue;
-                    
-                }
 
                 // Multiplying by P(x|x_n), the transition probability
                 std::vector< double > temp_stats;
                 temp_stats.reserve(par0.size());
                 for (auto p = 0u; p < par0.size(); ++p)
-                    temp_stats.push_back(psets_stats->operator[](par0.size() * nstate + p));
-
-                nstate++;
+                    temp_stats.push_back(psets_stats[par0.size() * n + p]);
 
                 // Use try catch in the following line
                 try {
-                    off_mult *= model->likelihood(
+
+                    off_mult *= barry::likelihood_(
+                        &temp_stats[0u],
                         par0,
-                        temp_stats,
-                        node.narray[s],
-                        false,
-                        ncores
+                        normconst[arrays2support->operator[](array_id)],
+                        par0.size(),
+                        false
                     );
+
                 } catch (std::exception & e) {
 
                     auto err = std::string(e.what());
@@ -171,12 +171,14 @@ inline double Geese::likelihood(
                 }
 
                 // Adding to the total probabilities
-                totprob += off_mult;
+                totprob_n[n] = off_mult;
 
             }
 
             // Setting the probability at the node
-            node.subtree_prob[s] = totprob;
+            node.subtree_prob[s] = 0.0;
+            for (size_t n = 0u; n < psets.size(); ++n)
+                node.subtree_prob[s] += totprob_n[n];
 
         }
 
@@ -206,7 +208,7 @@ inline double Geese::likelihood(
     // In the case that the sequence is empty, then it means
     // that we are looking at a completely unnanotated tree,
     // thus the likelihood should be one
-    if (preseq->size() == 0u)
+    if (preseq.size() == 0u)
         return as_log ? -std::numeric_limits<double>::infinity() : 1.0;
 
 

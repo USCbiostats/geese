@@ -156,7 +156,7 @@ init_model(amodel)
 print(amodel)
 
 # Finding MLE
-ans_mle <- geese_mle(amodel, hessian = TRUE, ncores = 1)
+ans_mle <- geese_mle(amodel, hessian = TRUE, ncores = 4)
 ans_mle
 
 # Prob of each gene gaining a single function
@@ -186,7 +186,7 @@ ans_mcmc <- geese_mcmc(
           ),
         log = TRUE
         )
-  ), ncores = 4L)
+  ), ncores = 1L)
 ```
 
 We can take a look at the results like this:

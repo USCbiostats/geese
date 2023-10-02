@@ -20,11 +20,11 @@ inline double update_normalizing_constant(
 
         std::vector< double > resv(n, 0.0);
 
-        #if defined(__OPENMP) || defined(_OPENMP)
-        #pragma omp parallel for shared(resv) firstprivate(params, n, k) 
-        #elif defined(__GNUC__) && !defined(__clang__)
-            #pragma GCC ivdep
-        #endif
+        // #if defined(__OPENMP) || defined(_OPENMP)
+        // #pragma omp parallel for shared(resv) firstprivate(params, n, k)
+        // #elif defined(__GNUC__) && !defined(__clang__)
+        //     #pragma GCC ivdep
+        // #endif
         for (size_t j = 0u; j < (k - 1u); ++j)
         {
 
@@ -106,11 +106,6 @@ inline double likelihood_(
     double numerator = 0.0;
     
     // Computing the numerator
-    #if defined(__OPENMP) || defined(_OPENMP)
-    #pragma omp simd reduction(+:numerator)
-    #elif defined(__GNUC__) && !defined(__clang__)
-        #pragma GCC ivdep
-    #endif
     for (size_t j = 0u; j < params.size(); ++j)
         numerator += *(stats_target + j) * params[j];
 
@@ -147,6 +142,42 @@ inline double likelihood_(
     #endif
 
     return ans;
+    
+}
+
+template <
+    typename Array_Type,
+    typename Data_Counter_Type,
+    typename Data_Rule_Type,
+    typename Data_Rule_Dyn_Type
+    >
+inline void Model<Array_Type, Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_Type>::update_normalizing_constants(
+    const std::vector< double > & params,
+    size_t ncores
+) {
+
+    // Barrier to make sure paralelization makes sense
+    if ((ncores > 1u) && (stats_support.size() < 1000u))
+        ncores = 1u;
+    
+    #if defined(__OPENMP) || defined(_OPENMP)
+    #pragma omp parallel for firstprivate(params) num_threads(ncores) \
+        shared(stats_support, normalizing_constants, first_calc_done)
+    #endif
+    for (size_t i = 0u; i < stats_support.size(); ++i)
+    {
+
+        size_t k = params.size() + 1u;
+        size_t n = stats_support[i].size() / k;
+
+        first_calc_done[i] = true;
+        normalizing_constants[i] = update_normalizing_constant(
+            params, &stats_support[i][0u], k, n
+        );
+
+    }
+
+    return;
     
 }
 
@@ -601,12 +632,8 @@ inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_
     const std::vector<double> & params,
     const size_t & i,
     bool as_log,
-    BARRY_NCORES_ARG()
+    bool no_update_normconst
 ) {
-
-    #if defined(__OPENMP) || defined(_OPENMP)
-    omp_set_num_threads(ncores);
-    #endif
     
     // Checking if the index exists
     if (i >= arrays2support.size())
@@ -619,7 +646,7 @@ inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_
         return as_log ? -std::numeric_limits<double>::infinity() : 0.0;
     
     // Checking if we have updated the normalizing constant or not
-    if (!first_calc_done[idx] || !vec_equal_approx(params, params_last[idx]) )
+    if (!no_update_normconst && (!first_calc_done[idx] || !vec_equal_approx(params, params_last[idx])))
     {
         
         first_calc_done[idx] = true;
@@ -651,12 +678,8 @@ inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_
     const Array_Type & Array_,
     int i,
     bool as_log,
-    BARRY_NCORES_ARG()
+    bool no_update_normconst
 ) {
-
-    #if defined(__OPENMP) || defined(_OPENMP)
-    omp_set_num_threads(ncores);
-    #endif
     
     // Key of the support set to use
     int loc;
@@ -701,7 +724,7 @@ inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_
         target_ = transform_model_fun(&target_[0u], target_.size());
 
     // Checking if we have updated the normalizing constant or not
-    if (!first_calc_done[loc] || !vec_equal_approx(params, params_last[loc]) )
+    if (!no_update_normconst && (!first_calc_done[loc] || !vec_equal_approx(params, params_last[loc])) )
     {
         
         first_calc_done[loc] = true;
@@ -737,12 +760,8 @@ inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_
     const std::vector<double> & target_,
     const size_t & i,
     bool as_log,
-    BARRY_NCORES_ARG()
+    bool no_update_normconst
 ) {
-
-    #if defined(__OPENMP) || defined(_OPENMP)
-    omp_set_num_threads(ncores);
-    #endif
     
     // Checking if the index exists
     if (i >= arrays2support.size())
@@ -774,7 +793,7 @@ inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_
     }
     
     // Checking if we have updated the normalizing constant or not
-    if (!first_calc_done[loc] || !vec_equal_approx(params, params_last[loc]) ) {
+    if (!no_update_normconst && (!first_calc_done[loc] || !vec_equal_approx(params, params_last[loc])) ) {
         
         first_calc_done[loc] = true;
         
@@ -805,12 +824,8 @@ inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_
     const double * target_,
     const size_t & i,
     bool as_log,
-    BARRY_NCORES_ARG()
+    bool no_update_normconst
 ) {
-
-    #if defined(__OPENMP) || defined(_OPENMP)
-    omp_set_num_threads(ncores);
-    #endif
     
     // Checking if the index exists
     if (i >= arrays2support.size())
@@ -848,7 +863,7 @@ inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_
     }
     
     // Checking if we have updated the normalizing constant or not
-    if (!first_calc_done[loc] || !vec_equal_approx(params, params_last[loc]) ) {
+    if (!no_update_normconst && (!first_calc_done[loc] || !vec_equal_approx(params, params_last[loc]) )) {
         
         first_calc_done[loc] = true;
         
@@ -877,33 +892,42 @@ template <typename Array_Type, typename Data_Counter_Type, typename Data_Rule_Ty
 inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_Type>::likelihood_total(
     const std::vector<double> & params,
     bool as_log,
-    BARRY_NCORES_ARG()
+    BARRY_NCORES_ARG(),
+    bool no_update_normconst
 ) {
-
-    #if defined(__OPENMP) || defined(_OPENMP)
-    omp_set_num_threads(ncores);
-    #endif
     
     size_t params_last_size = params_last.size();
 
-    for (size_t i = 0u; i < params_last_size; ++i)
-    {
+    // #if defined(__OPENMP) || defined(_OPENMP)
+    // #pragma omp parallel for num_threads(ncores)
+    // #endif
 
-        if (!first_calc_done[i] || !vec_equal_approx(params, params_last[i]) )
+    if (!no_update_normconst)
+    {
+        #if defined(__OPENMP) || defined(_OPENMP)
+        #pragma omp parallel for num_threads(ncores) \
+            shared(normalizing_constants, params_last, first_calc_done, stats_support) \
+            firstprivate(params)
+        #endif
+        for (size_t i = 0u; i < params_last_size; ++i)
         {
 
-            size_t k = params.size() + 1u;
-            size_t n = stats_support[i].size() / k;
-            
-            first_calc_done[i] = true;
-            normalizing_constants[i] = update_normalizing_constant(
-                params, &stats_support[i][0u], k, n
-            );
-            
-            params_last[i] = params;
-            
-        }
+            if (!first_calc_done[i] || !vec_equal_approx(params, params_last[i]) )
+            {
 
+                size_t k = params.size() + 1u;
+                size_t n = stats_support[i].size() / k;
+                
+                first_calc_done[i] = true;
+                normalizing_constants[i] = update_normalizing_constant(
+                    params, &stats_support[i][0u], k, n
+                );
+                
+                params_last[i] = params;
+                
+            }
+
+        }
     }
     
     double res = 0.0;
@@ -946,39 +970,10 @@ inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_
 }
 
 template <typename Array_Type, typename Data_Counter_Type, typename Data_Rule_Type, typename Data_Rule_Dyn_Type>
-inline double Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_Type>:: get_norm_const(
-    const std::vector<double> & params,
-    const size_t & i,
-    bool as_log
-) {
+inline std::vector< double > &
+Model<Array_Type,Data_Counter_Type, Data_Rule_Type, Data_Rule_Dyn_Type>:: get_normalizing_constants() {
     
-    // Checking if the index exists
-    if (i >= arrays2support.size())
-        throw std::range_error("The requested support is out of range");
-
-    const auto id = arrays2support[i];
-    
-    // Checking if we have updated the normalizing constant or not
-    if (!first_calc_done[id] || !vec_equal_approx(params, params_last[id]) )
-    {
-        
-        first_calc_done[id] = true;
-        
-        size_t k = params.size() + 1u;
-        size_t n = stats_support[id].size() / k;
-
-        normalizing_constants[id] = update_normalizing_constant(
-            params, &stats_support[id][0u], k, n
-        );
-        
-        params_last[id] = params;
-        
-    }
-    
-    return as_log ? 
-        std::log(normalizing_constants[id]) :
-        normalizing_constants[id]
-        ;
+    return normalizing_constants;
     
 }
 
