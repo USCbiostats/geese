@@ -15,11 +15,11 @@ class Flock {
 public:
 
     std::vector< Geese > dat;
-    size_t         nfunctions  = 0u;
-    bool                 initialized = false;
+    size_t nfunctions  = 0u;
+    bool initialized = false;
     
     // Common components
-    std::mt19937              rengine;
+    std::mt19937 rengine;
     PhyloModel model = PhyloModel();
 
     Flock() {};
@@ -37,8 +37,8 @@ public:
     size_t add_data(
         std::vector< std::vector<size_t> > & annotations,
         std::vector< size_t > &              geneid,
-        std::vector< int > &                       parent,
-        std::vector< bool > &                      duplication
+        std::vector< int > &                 parent,
+        std::vector< bool > &                duplication
     );
 
     /**
@@ -69,7 +69,8 @@ public:
     double likelihood_joint(
         const std::vector< double > & par,
         bool as_log = false,
-        bool use_reduced_sequence = true
+        bool use_reduced_sequence = true,
+        size_t ncores = 1u
     );
 
     /**

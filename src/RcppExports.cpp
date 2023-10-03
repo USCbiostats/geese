@@ -85,15 +85,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // likelihood
-double likelihood(SEXP p, const std::vector< double >& par, bool as_log, bool trunc_seq);
-RcppExport SEXP _geese_likelihood(SEXP pSEXP, SEXP parSEXP, SEXP as_logSEXP, SEXP trunc_seqSEXP) {
+double likelihood(SEXP p, const std::vector< double >& par, bool as_log, bool trunc_seq, int ncores);
+RcppExport SEXP _geese_likelihood(SEXP pSEXP, SEXP parSEXP, SEXP as_logSEXP, SEXP trunc_seqSEXP, SEXP ncoresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< SEXP >::type p(pSEXP);
     Rcpp::traits::input_parameter< const std::vector< double >& >::type par(parSEXP);
     Rcpp::traits::input_parameter< bool >::type as_log(as_logSEXP);
     Rcpp::traits::input_parameter< bool >::type trunc_seq(trunc_seqSEXP);
-    rcpp_result_gen = Rcpp::wrap(likelihood(p, par, as_log, trunc_seq));
+    Rcpp::traits::input_parameter< int >::type ncores(ncoresSEXP);
+    rcpp_result_gen = Rcpp::wrap(likelihood(p, par, as_log, trunc_seq, ncores));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -108,7 +109,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_sequence
-std::vector< size_t > get_sequence(SEXP p, bool reduced_sequence);
+std::vector< IntegerVector > get_sequence(SEXP p, bool reduced_sequence);
 RcppExport SEXP _geese_get_sequence(SEXP pSEXP, SEXP reduced_sequenceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -632,7 +633,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_geese_nnodes", (DL_FUNC) &_geese_nnodes, 1},
     {"_geese_ntrees", (DL_FUNC) &_geese_ntrees, 1},
     {"_geese_nleafs", (DL_FUNC) &_geese_nleafs, 1},
-    {"_geese_likelihood", (DL_FUNC) &_geese_likelihood, 4},
+    {"_geese_likelihood", (DL_FUNC) &_geese_likelihood, 5},
     {"_geese_get_probabilities", (DL_FUNC) &_geese_get_probabilities, 1},
     {"_geese_get_sequence", (DL_FUNC) &_geese_get_sequence, 2},
     {"_geese_set_seed", (DL_FUNC) &_geese_set_seed, 2},

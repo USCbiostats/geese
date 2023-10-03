@@ -138,7 +138,8 @@ inline PhyloModel *  Flock::get_model()
 inline double Flock::likelihood_joint(
     const std::vector< double > & par,
     bool as_log,
-    bool use_reduced_sequence
+    bool use_reduced_sequence,
+    size_t ncores
 )
 {
 
@@ -146,17 +147,42 @@ inline double Flock::likelihood_joint(
 
     double ans = as_log ? 0.0: 1.0;
 
+    std::vector< double > par0(par.begin(), par.end() - nfunctions);
+    model.update_normalizing_constants(par0, ncores);
+
+    // Figuring out core distribution
+    size_t nsubcores = ncores > 2u ? ncores - 2u : 1u;
+    ncores = ncores - nsubcores;
+
     if (as_log) {
 
-        for (auto& d : this->dat) 
-            ans += d.likelihood(par, as_log, use_reduced_sequence);
+        if (ncores > 1u)
+        {
+            #if defined(_OPENMP) || defined(__OPENMP)
+            #pragma omp parallel for reduction(+:ans) num_threads(ncores)
+            #endif
+            for (auto& d : this->dat) 
+                ans += d.likelihood(par, as_log, use_reduced_sequence, nsubcores, true);
+        } else {
+            for (auto& d : this->dat) 
+                ans += d.likelihood(par, as_log, use_reduced_sequence, nsubcores, true);
+        }
 
     }
     else
     {
 
-        for (auto& d : this->dat) 
-            ans *= d.likelihood(par, as_log, use_reduced_sequence);
+        if (ncores > 1u) 
+        {
+            #if defined(_OPENMP) || defined(__OPENMP)
+            #pragma omp parallel for reduction(*:ans) num_threads(ncores)
+            #endif
+            for (auto& d : this->dat) 
+                ans *= d.likelihood(par, as_log, use_reduced_sequence, nsubcores, true);
+        } else {
+            for (auto& d : this->dat) 
+                ans *= d.likelihood(par, as_log, use_reduced_sequence, nsubcores, true);
+        }
             
     }
     

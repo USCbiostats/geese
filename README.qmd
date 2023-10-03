@@ -104,7 +104,7 @@ names(params) <- c(
   "root0", "root1"
   )
 
-likelihood(amodel, params*0) # Equals 1 b/c all missings
+likelihood(amodel, params*1) # Equals 1 b/c all missings
 
 # Simulating data
 fake1 <- sim_geese(p = amodel, par = params, seed = 212)
@@ -156,7 +156,7 @@ init_model(amodel)
 print(amodel)
 
 # Finding MLE
-ans_mle <- geese_mle(amodel, hessian = TRUE)
+ans_mle <- geese_mle(amodel, hessian = TRUE, ncores = 4)
 ans_mle
 
 # Prob of each gene gaining a single function
@@ -186,7 +186,7 @@ ans_mcmc <- geese_mcmc(
           ),
         log = TRUE
         )
-  ))
+  ), ncores = 2L)
 ```
 
 We can take a look at the results like this:
@@ -278,7 +278,8 @@ ans_mcmc2 <- geese_mcmc(
   flock,
   nsteps  = 20000,
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
-  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
+  prior   = function(p) dlogis(p, scale = 2, log = TRUE),
+  ncores  = 2
   )
 ```
 

@@ -215,7 +215,9 @@ public:
     double likelihood(
         const std::vector< double > & par,
         bool as_log = false,
-        bool use_reduced_sequence = true
+        bool use_reduced_sequence = true,
+        size_t ncores = 1u,
+        bool no_update_normalizing_constant = false
         );
 
     double likelihood_exhaust(const std::vector< double > & par);
