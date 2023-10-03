@@ -175,15 +175,47 @@ NumericMatrix get_probabilities(SEXP p) {
 //' @rdname geese-common
 //' @export
 // [[Rcpp::export(rng = false)]]
-std::vector< size_t > get_sequence(
+std::vector< IntegerVector > get_sequence(
     SEXP p,
     bool reduced_sequence = true
 ) {
 
-  CHECK_GEESE(p)
+  IF_GEESE(p) {
 
-  Rcpp::XPtr<geese::Geese>ptr(p);
-  return reduced_sequence ? ptr->reduced_sequence : ptr->sequence;
+    Rcpp::XPtr<geese::Geese>ptr(p);
+    auto res = reduced_sequence ? ptr->reduced_sequence : ptr->sequence;
+
+    IntegerVector resR(res.size());
+
+    for (auto i = 0u; i < res.size(); ++i)
+      resR[i] = res[i];
+
+    return std::vector< IntegerVector >({resR});
+
+  } IF_FLOCK(p) {
+
+    Rcpp::XPtr<geese::Flock>ptr(p);
+    std::vector< IntegerVector > res;
+    res.reserve(ptr->ntrees());
+
+    size_t i = 0u;
+    for (const auto & tree : ptr->dat)
+    {
+      auto tmp = reduced_sequence ? tree.reduced_sequence: tree.sequence;
+      IntegerVector resR(tmp.size());
+      for (auto j = 0u; j < tmp.size(); ++j)
+        resR[i] = tmp[i];
+
+      res.push_back(resR);
+
+    }
+
+    return res;
+
+  } IF_NEITHER()
+
+  return std::vector< IntegerVector >();
+
 }
 
 //' @rdname geese-common

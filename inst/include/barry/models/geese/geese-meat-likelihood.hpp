@@ -14,7 +14,7 @@ inline void pset_loop(
     const std::vector<std::vector<bool>> & states,
     const std::vector< PhyloArray > & psets,
     const std::vector<double> & psets_stats,
-    std::vector< std::vector< size_t > > & locations,
+    const std::vector< std::vector< size_t > > & locations,
     const std::vector<geese::Node *> & node_offspring
 ) 
 {
@@ -72,12 +72,6 @@ inline void pset_loop(
     // Is this state valid?
     if (off_mult < 0.0)
         return;
-
-    // Multiplying by P(x|x_n), the transition probability
-    // std::vector< double > temp_stats;
-    // temp_stats.reserve(par0.size());
-    // for (auto p = 0u; p < par0.size(); ++p)
-    //     temp_stats.push_back(psets_stats[par0.size() * n + p]);
 
     // Use try catch in the following line
     try {
@@ -177,7 +171,7 @@ inline double Geese::likelihood(
             std::vector< std::vector< size_t > > & locations = pset_loc[support_id];
 
             // Making sure parallelization makes sense
-            if (psets.size() < 1000)
+            if (psets.size() < 128)
                 ncores = 1u;
             
             // Summation over all possible values of X

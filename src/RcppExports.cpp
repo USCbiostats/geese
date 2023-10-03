@@ -109,7 +109,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_sequence
-std::vector< size_t > get_sequence(SEXP p, bool reduced_sequence);
+std::vector< IntegerVector > get_sequence(SEXP p, bool reduced_sequence);
 RcppExport SEXP _geese_get_sequence(SEXP pSEXP, SEXP reduced_sequenceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

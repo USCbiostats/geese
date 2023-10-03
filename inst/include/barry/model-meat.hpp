@@ -15,8 +15,8 @@ inline double update_normalizing_constant(
 {
     double res = 0.0;
     
-    if (n > 1000u)
-    {
+    // if (n > 1000u)
+    // {
 
         std::vector< double > resv(n, 0.0);
 
@@ -46,23 +46,23 @@ inline double update_normalizing_constant(
             res += std::exp(resv[i] BARRY_SAFE_EXP) * (*(support + i * k));
         }
 
-    } else {
+    // } else {
 
-        for (size_t i = 0u; i < n; ++i)
-        {
+    //     for (size_t i = 0u; i < n; ++i)
+    //     {
 
-            double tmp = 0.0;
-            const double * support_n = support + i * k + 1u;
+    //         double tmp = 0.0;
+    //         const double * support_n = support + i * k + 1u;
             
-            for (size_t j = 0u; j < (k - 1u); ++j)
-                tmp += (*(support_n + j)) * params[j];
+    //         for (size_t j = 0u; j < (k - 1u); ++j)
+    //             tmp += (*(support_n + j)) * params[j];
             
-            res += std::exp(tmp BARRY_SAFE_EXP) * (*(support + i * k));
+    //         res += std::exp(tmp BARRY_SAFE_EXP) * (*(support + i * k));
 
-        }
+    //     }
 
 
-    }
+    // }
 
 
     #ifdef BARRY_DEBUG
@@ -101,6 +101,9 @@ inline double likelihood_(
     double numerator = 0.0;
     
     // Computing the numerator
+    #if defined(__OPENMP) || defined(_OPENMP)
+    #pragma omp simd reduction(+:numerator)
+    #endif
     for (size_t j = 0u; j < n_params; ++j)
         numerator += *(stats_target + j) * params[j];
 

@@ -186,7 +186,7 @@ ans_mcmc <- geese_mcmc(
           ),
         log = TRUE
         )
-  ), ncores = 1L)
+  ), ncores = 2L)
 ```
 
 We can take a look at the results like this:
@@ -278,7 +278,8 @@ ans_mcmc2 <- geese_mcmc(
   flock,
   nsteps  = 20000,
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
-  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
+  prior   = function(p) dlogis(p, scale = 2, log = TRUE),
+  ncores  = 2
   )
 ```
 
