@@ -527,7 +527,9 @@ int print_nodes_cpp(SEXP p)
 std::vector< NumericMatrix > get_support(SEXP p)
 {
 
-  std::vector< std::vector< double > > dat;
+  std::vector< double > dat;
+  std::vector< size_t > * sizes;
+  std::vector< size_t > * sizes_acc;
   size_t n_terms;
   std::vector< std::string > vnames = {"weights"};
 
@@ -536,8 +538,10 @@ std::vector< NumericMatrix > get_support(SEXP p)
 
     // Preparing data
     Rcpp::XPtr<geese::Geese> ptr(p);
-    dat     = *(ptr->get_model()->get_stats_support());
-    n_terms = ptr->nterms() - ptr->nfuns() + 1u;
+    dat       = *(ptr->get_model()->get_stats_support());
+    sizes     = ptr->get_model()->get_stats_support_sizes();
+    sizes_acc = ptr->get_model()->get_stats_support_sizes_acc();
+    n_terms   = ptr->nterms() - ptr->nfuns() + 1u;
 
     auto names = ptr->colnames();
     for (auto n : names)
@@ -547,8 +551,10 @@ std::vector< NumericMatrix > get_support(SEXP p)
 
     // Preparing data
     Rcpp::XPtr<geese::Flock> ptr(p);
-    dat     = *(ptr->get_model()->get_stats_support());
-    n_terms = ptr->nterms() - ptr->nfuns() + 1u;
+    dat       = *(ptr->get_model()->get_stats_support());
+    sizes     = ptr->get_model()->get_stats_support_sizes();
+    sizes_acc = ptr->get_model()->get_stats_support_sizes_acc();
+    n_terms   = ptr->nterms() - ptr->nfuns() + 1u;
 
     auto names = ptr->colnames();
     for (auto n : names)
@@ -558,14 +564,17 @@ std::vector< NumericMatrix > get_support(SEXP p)
 
 
   std::vector< NumericMatrix > ans;
-  for (auto stats : dat)
+  for (size_t g = 0u; g < sizes_acc->size(); ++g)
   {
-    size_t n_rows = stats.size() / (n_terms);
+    size_t n_rows = sizes->operator[](g);
     NumericMatrix tmp(n_rows, n_terms);
 
     for (auto i = 0u; i < n_rows; ++i)
       for (auto j = 0u; j < n_terms; ++j)
-        tmp(i, j) = stats[i * n_terms + j];
+        tmp(i, j) = dat[
+          sizes_acc->operator[](g) * n_terms +
+          i * n_terms + j
+        ];
 
     tmp.attr("dimnames") = List::create(
       R_NilValue,
