@@ -64,6 +64,7 @@ protected:
     std::vector< size_t >                stats_support_sizes_acc; ///< Accumulated number of vectors included in the support.
     std::vector< size_t >                stats_support_n_arrays;  ///< Number of arrays included per support.
     std::vector< std::vector< double > > stats_target;            ///< Target statistics of the model
+    std::vector< double >                stats_likelihood;
     std::vector< size_t >                arrays2support;
     ///@}
 
@@ -81,8 +82,10 @@ protected:
     ///@{
     bool with_pset = false;
     std::vector< std::vector< Array_Type > > pset_arrays; ///< Arrays of the support(s)
-    std::vector< std::vector<double> >       pset_stats;  ///< Statistics of the support(s)
-    std::vector< std::vector<double> >       pset_probs;  ///< Probabilities of the support(s)
+    std::vector< double > pset_stats;     ///< Statistics of the support(s)
+    std::vector< double > pset_probs;     ///< Probabilities of the support(s)
+    std::vector< size_t > pset_sizes;     ///< Number of vectors included in the support.
+    std::vector< size_t > pset_locations; ///< Accumulated number of vectors included in the support.
     ///@}
     
     /**
@@ -135,6 +138,16 @@ public:
      * variable.
     */
     void update_normalizing_constants(
+        const std::vector< double > & params,
+        BARRY_NCORES_ARG(=1)
+        );
+
+    void update_likelihoods(
+        const std::vector< double > & params,
+        BARRY_NCORES_ARG(=1)
+        );
+
+    void update_pset_probs(
         const std::vector< double > & params,
         BARRY_NCORES_ARG(=1)
         );
@@ -298,13 +311,14 @@ public:
      * constant.
      */
     ///@{
-    std::vector< double > & get_normalizing_constants();
+    const std::vector< double > & get_normalizing_constants() const;
+    const std::vector< double > & get_likelihoods() const;
 
     const std::vector< Array_Type > * get_pset(
         const size_t & i
     );
 
-    const std::vector< double > * get_pset_stats(
+    const double * get_pset_stats(
         const size_t & i
     );
     ///@}
@@ -385,8 +399,10 @@ public:
     std::vector< size_t > * get_stats_support_sizes_acc(); ///< Accumulated number of vectors included in the support.
     std::vector< size_t > * get_arrays2support();
     std::vector< std::vector< Array_Type > > * get_pset_arrays();
-    std::vector< std::vector<double> > * get_pset_stats();  ///< Statistics of the support(s)
-    std::vector< std::vector<double> > * get_pset_probs(); 
+    std::vector< double > * get_pset_stats();  ///< Statistics of the support(s)
+    std::vector< double > * get_pset_probs(); 
+    std::vector< size_t > * get_pset_sizes();
+    std::vector< size_t > * get_pset_locations();
     ///@}
 
     /**
