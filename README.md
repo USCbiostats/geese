@@ -178,7 +178,7 @@ print(amodel)
 #> INFO ABOUT THE SUPPORT
 #> Num. of Arrays       : 396
 #> Support size         : 8
-#> Support size range   : [10, 10]
+#> Support size range   : [1, 1]
 #> Transform. Fun.      : no
 #> Model terms (9)    :
 #>  - Gains 0 at duplication
@@ -277,7 +277,7 @@ ans_mcmc <- geese_mcmc(
           ),
         log = TRUE
         )
-  ), ncores = 1L)
+  ), ncores = 2L)
 ```
 
 We can take a look at the results like this:
@@ -409,7 +409,7 @@ print(flock)
 #> INFO ABOUT THE SUPPORT
 #> Num. of Arrays       : 792
 #> Support size         : 8
-#> Support size range   : [10, 10]
+#> Support size range   : [1, 1]
 #> Transform. Fun.      : no
 #> Model terms (9)    :
 #>  - Gains 0 at duplication
@@ -431,7 +431,8 @@ ans_mcmc2 <- geese_mcmc(
   flock,
   nsteps  = 20000,
   kernel  = fmcmc::kernel_ram(warmup = 2000), 
-  prior   = function(p) dlogis(p, scale = 2, log = TRUE)
+  prior   = function(p) dlogis(p, scale = 2, log = TRUE),
+  ncores  = 2
   )
 ```
 
@@ -577,7 +578,7 @@ init_model(amodel_limited)
 
 # Is limiting the support any useful?
 support_size(amodel_limited)
-#> [1] 224
+#> [1] 31
 ```
 
 Since we added the constraint based on the term
