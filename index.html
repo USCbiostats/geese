@@ -221,7 +221,7 @@
 <span><span class="co">#&gt; INFO ABOUT THE SUPPORT</span></span>
 <span><span class="co">#&gt; Num. of Arrays       : 396</span></span>
 <span><span class="co">#&gt; Support size         : 8</span></span>
-<span><span class="co">#&gt; Support size range   : [10, 10]</span></span>
+<span><span class="co">#&gt; Support size range   : [1, 1]</span></span>
 <span><span class="co">#&gt; Transform. Fun.      : no</span></span>
 <span><span class="co">#&gt; Model terms (9)    :</span></span>
 <span><span class="co">#&gt;  - Gains 0 at duplication</span></span>
@@ -320,7 +320,7 @@
 <span>          <span class="op">)</span>,</span>
 <span>        log <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>        <span class="op">)</span></span>
-<span>  <span class="op">)</span>, ncores <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="op">)</span>, ncores <span class="op">=</span> <span class="fl">2L</span><span class="op">)</span></span></code></pre></div>
 <p>We can take a look at the results like this:</p>
 <p><img src="reference/figures/README-mcmc-analysis-1.png" style="width:100.0%"></p>
 <p><img src="reference/figures/README-mcmc-analysis-2.png" style="width:100.0%"></p>
@@ -442,7 +442,7 @@
 <span><span class="co">#&gt; INFO ABOUT THE SUPPORT</span></span>
 <span><span class="co">#&gt; Num. of Arrays       : 792</span></span>
 <span><span class="co">#&gt; Support size         : 8</span></span>
-<span><span class="co">#&gt; Support size range   : [10, 10]</span></span>
+<span><span class="co">#&gt; Support size range   : [1, 1]</span></span>
 <span><span class="co">#&gt; Transform. Fun.      : no</span></span>
 <span><span class="co">#&gt; Model terms (9)    :</span></span>
 <span><span class="co">#&gt;  - Gains 0 at duplication</span></span>
@@ -461,7 +461,8 @@
 <span>  <span class="va">flock</span>,</span>
 <span>  nsteps  <span class="op">=</span> <span class="fl">20000</span>,</span>
 <span>  kernel  <span class="op">=</span> <span class="fu">fmcmc</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/fmcmc/man/kernel_ram.html" class="external-link">kernel_ram</a></span><span class="op">(</span>warmup <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span>, </span>
-<span>  prior   <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">dlogis</a></span><span class="op">(</span><span class="va">p</span>, scale <span class="op">=</span> <span class="fl">2</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  prior   <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">dlogis</a></span><span class="op">(</span><span class="va">p</span>, scale <span class="op">=</span> <span class="fl">2</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  ncores  <span class="op">=</span> <span class="fl">2</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span></span>
@@ -588,7 +589,7 @@
 <span></span>
 <span><span class="co"># Is limiting the support any useful?</span></span>
 <span><span class="fu"><a href="reference/geese-common.html">support_size</a></span><span class="op">(</span><span class="va">amodel_limited</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 224</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 31</span></span></code></pre></div>
 <p>Since we added the constraint based on the term <code><a href="reference/geese-terms.html">term_overall_changes()</a></code>, we now need to fix the parameter at 0 (i.e., no effect) during the MCMC model:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">122</span><span class="op">)</span></span>
